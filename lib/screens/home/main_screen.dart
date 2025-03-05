@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/screens/attendance/attendance_screen.dart';
+import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
+import 'package:masterjee/widgets/drawers.dart';
 import 'package:masterjee/widgets/home_app_bar.dart';
 import 'package:masterjee/widgets/text.dart';
-import 'package:masterjee/widgets/userDrawer.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -135,8 +136,9 @@ class _MainScreenState extends State<MainScreen> {
         iconTheme: const IconThemeData(
           color: Colors.white, // Change drawer icon color
         ),
-      )*/  CustomHomeAppBar(),
-      drawer: /* Drawer(
+      )*/
+          CustomHomeAppBar(),
+      drawer: /*Drawer(
         backgroundColor: colorGaryBG,
         child: Column(
           children: [
@@ -209,102 +211,193 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
         ),
-      ),*/ NavigationDrawerWidget(
+      ),*/
+          /* NavigationDrawerWidget(
         selectedIndex: selectedIndex,
         onClicked: onDrawerItemClicked, // Pass function to handle clicks
-      ),
-      body:
-      Padding(
-        padding: const EdgeInsets.all(9.0),
-        child:
-        /*GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // 3 columns
-            crossAxisSpacing: 8.0,
-            mainAxisSpacing: 8.0,
-            childAspectRatio: 0.7, // Adjust height
-          ),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                // Handle click event
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Clicked on ${items[index]['name']}')),
-                );
-              },
-              child: Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Image.asset(items[index]['image']!, fit: BoxFit.fitWidth,height: 80,width: 80,),
-                    ),
-                    SizedBox(height: 8),
-                    CommonText.regular(
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      items[index]['name']!,
-                      size: 14.sp,
-                      color: colorBlack,
-                    ).paddingOnly(top: 10),
+      )*/
+          const DrawerWidget(),
+      body: SingleChildScrollView(
+        child: Builder(builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.all(9.0),
+            child:
+                /*GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3, // 3 columns
+              crossAxisSpacing: 8.0,
+              mainAxisSpacing: 8.0,
+              childAspectRatio: 0.7, // Adjust height
+            ),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  // Handle click event
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Clicked on ${items[index]['name']}')),
+                  );
+                },
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Image.asset(items[index]['image']!, fit: BoxFit.fitWidth,height: 80,width: 80,),
+                      ),
+                      SizedBox(height: 8),
+                      CommonText.regular(
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        items[index]['name']!,
+                        size: 14.sp,
+                        color: colorBlack,
+                      ).paddingOnly(top: 10),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),*/
+                Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(20.sp),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 60.sp,
+                        height: 60.sp,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(width: 1, color: Colors.white),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blueGrey.withOpacity(0.2),
+                              blurRadius: 12.r,
+                              spreadRadius: 8.r,
+                            )
+                          ],
+                        ),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(34.r),
+                            child: /*CachedNetworkImage(
+                          imageUrl: LocalDatabase.siteUrl +
+                              LocalDatabase.user!.image.toString(),
+                          placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Image.asset(
+                                LocalDatabase.user!.gender == "Female"
+                                    ? AssetsUtils.femaleImage
+                                    : AssetsUtils.personImage,
+                                fit: BoxFit.cover,
+                                width: 50.w,
+                                height: 50.h,
+                              ),
+                        ),*/
+                                Image.asset(AssetsUtils.logoIcon,
+                                    fit: BoxFit.cover,
+                                    width: 50.w,
+                                    height: 50.h)),
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Pooja M",
+                            style: TextStyle(
+                              fontSize: 25.sp,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0XFF343E87),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 6.h,
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.50.sp,
+                            child: CommonText.medium(
+                              "Admission No. 123 \nClass 5",
+                              // ? "${LocalDatabase.user!.currencySymbol}"
+                              size: 12.sp,
+                              color: Colors.blueGrey,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                const Divider(
+                  color: colorBlack,
+                  thickness: 0.2,
+                ),
+                SizedBox(
+                  height: 25,
+                ),
+                GridView.count(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  crossAxisCount: 3,
+                  childAspectRatio: 0.7,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  children: <Widget>[
+                    cardWid(AppTags.attendance, AssetsUtils.logoIcon, () {
+                       //Navigator.pushNamed(context, AttendanceScreen.routeName);
+                       Navigator.pushNamed(
+                         context,
+                         AttendanceScreen.routeName,
+                         arguments: {'header': AppTags.attendance},
+                       );
+                    }),
+
+                    cardWid(AppTags.duesReport, AssetsUtils.logoIcon, () {
+                      //Navigator.pushNamed(context, DailyAssignmentScreen.routeName);
+                      Navigator.pushNamed(context, DuesReportScreen.routeName);
+                    }),
+                    cardWid(AppTags.timetable, AssetsUtils.logoIcon, () {
+                       //Navigator.pushNamed(context, AttendanceScreen.routeName);
+                       Navigator.pushNamed(
+                         context,
+                         AttendanceScreen.routeName,
+                         arguments: {'header': AppTags.timetable},
+                       );
+                    }),
+                    cardWid(AppTags.leads, AssetsUtils.logoIcon, () {
+                      Navigator.pushNamed(context,LeadsScreen.routeName);
+                    }),
+                    cardWid(AppTags.homework, AssetsUtils.logoIcon, () {
+                      //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
+                    }),
+                    cardWid(AppTags.assesment, AssetsUtils.logoIcon, () {
+                      // Navigator.pushNamed(context, ComingSoon.routeName);
+                      //Navigator.pushNamed(context, MyCoursesScreen.routeName);
+                    }),
+                    cardWid(AppTags.ptm, AssetsUtils.logoIcon, () {
+                      //Navigator.pushNamed(context, GMeetClassScreen.routeName);
+                    }),
+                    cardWid(AppTags.biometricAttendance, AssetsUtils.logoIcon,
+                        () {
+                      //Navigator.pushNamed(context, ZoomClassScreen.routeName);
+                    }),
+                    cardWid(AppTags.leadSection, AssetsUtils.logoIcon, () {
+                      //Navigator.pushNamed(context, ZoomClassScreen.routeName);
+                    }),
                   ],
                 ),
-              ),
-            );
-          },
-        ),*/
-        GridView.count(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          crossAxisCount: 3,
-          childAspectRatio: 0.7,
-          padding:
-          const EdgeInsets.symmetric(horizontal: 5),
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-          children: <Widget>[
-              cardWid(AppTags.attendance,
-                  AssetsUtils.logoIcon, () {
-                   // Navigator.pushNamed(context, HomeWorkScreen.routeName);
-                  }),
-              cardWid(AppTags.duesReport,
-                  AssetsUtils.logoIcon, () {
-                    //Navigator.pushNamed(context, DailyAssignmentScreen.routeName);
-                  }),
-              cardWid(AppTags.timetable,
-                  AssetsUtils.logoIcon, () {
-                   // Navigator.pushNamed(context, LessonPlanScreen.routeName);
-                  }),
-              cardWid(AppTags.leads,
-                  AssetsUtils.logoIcon, () {
-                    //Navigator.pushNamed(context, OnlineExamScreen.routeName);
-                  }),
-              cardWid(AppTags.homework,
-                  AssetsUtils.logoIcon, () {
-                    //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
-                  }),
-              cardWid(AppTags.assesment,
-                  AssetsUtils.logoIcon, () {
-                    // Navigator.pushNamed(context, ComingSoon.routeName);
-                    //Navigator.pushNamed(context, MyCoursesScreen.routeName);
-                  }),
-              cardWid(AppTags.ptm,
-                  AssetsUtils.logoIcon, () {
-                    //Navigator.pushNamed(context, GMeetClassScreen.routeName);
-                  }),
-              cardWid(AppTags.biometricAttendance,
-                    AssetsUtils.logoIcon, () {
-                    //Navigator.pushNamed(context, ZoomClassScreen.routeName);
-                  }),
-            cardWid(AppTags.leadSection,
-                AssetsUtils.logoIcon, () {
-                  //Navigator.pushNamed(context, ZoomClassScreen.routeName);
-                }),
-          ],
-        ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

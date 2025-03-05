@@ -14,6 +14,7 @@ class AppTags {
   static const String studentProgress = "Student Progress";
   static const String ptm = "PTM";
   static const String leads = "Leads";
+  static const String campaign = "Campaign";
   static const String signOut = "Sign out";
   static String singOutMessage = "Are you sure you want to sign out?";
   static String comeBackSoon = "Comeback Soon!";

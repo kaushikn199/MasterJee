@@ -53,19 +53,19 @@ class _CustomHomeAppBarState extends State<CustomHomeAppBar> with TickerProvider
         icon: const Icon(Icons.menu),
       ),
       centerTitle: true,
-      title: Builder(
+      /*title: Builder(
         builder: (context) {
           if (isLoading) {
             return SizedBox();
           }
           // saveImageUrlToSharedPref(snapshot.data.darkLogo);
-          return Image.asset(AssetsUtils.logoIcon,height: 27.sp,)/*CachedNetworkImage(
+          return Image.asset(AssetsUtils.logoIcon,height: 27.sp,)*//*CachedNetworkImage(
             imageUrl: url!.toStrin.g(),
             fit: BoxFit.contain,
             height: 27.sp,
-          )*/;
+          )*//*;
         },
-      ),
+      ),*/
       backgroundColor: Colors.white,
       actions: <Widget>[
         // IconButton(

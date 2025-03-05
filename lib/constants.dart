@@ -20,8 +20,8 @@ const kSecondaryColor = Color(0xFF808080);
 const kRedColor = Color(0xFFEC5252);
 const kDarkButtonBg = Color(0xFF273546);
 const kToastTextColor = Color(0xFFEEEEEE);
-
-
+const kSecondBackgroundColor = Color(0xFFF5F9FF);
+const kDarkGreyColor = Color(0xFF757575);
 
 
 const kDefaultInputBorder = OutlineInputBorder(
