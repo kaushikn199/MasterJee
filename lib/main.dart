@@ -7,6 +7,7 @@ import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/forgot_password_screen.dart';
+import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/splash_screen.dart';
 import 'package:masterjee/screens/home/main_screen.dart';
@@ -88,15 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       initialRoute: SplashScreen.routeName,
                       routes: {
-                       // '/home': (ctx) => const SchoolHomeScreen(),
-                       // TakeUrlScreen.routeName: (ctx) => const TakeUrlScreen(),
                         SignupScreen.routeName: (ctx) =>  SignupScreen(),
                         MainScreen.routeName: (ctx) =>  MainScreen(),
                         ForgotPassword.routeName: (ctx) =>  ForgotPassword(),
                         AttendanceScreen.routeName: (ctx) =>  AttendanceScreen(),
                         DuesReportScreen.routeName: (ctx) =>  DuesReportScreen(),
                         LeadsScreen.routeName: (ctx) => const LeadsScreen(),
-
+                        HomeworkScreen.routeName: (ctx) => const HomeworkScreen(),
                       },
                       home: const SplashScreen()),
                 );

@@ -35,4 +35,12 @@ class AssetsUtils {
   static const String logoIcon = "assets/images/ic_logo.png";
   static const String signOutIcon = "assets/images/signout.png";
 
+  static const String attendanceIcon = "assets/images/ic_attendance.png";
+  static const String biometricAttendanceIcon = "assets/images/ic_biometric_attendance.png";
+  static const String duesReportIcon = "assets/images/ic_dues_report.png";
+  static const String homeworkIcIcon = "assets/images/ic_homework.png";
+  static const String ptmIcon = "assets/images/ic_ptm.png";
+  static const String timeTableIcon = "assets/images/ic_timetable.png";
+  static const String leadIcon = "assets/images/ic_lead.png";
+
 }

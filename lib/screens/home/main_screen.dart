@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/drawers.dart';
@@ -72,8 +73,8 @@ class _MainScreenState extends State<MainScreen> {
             Expanded(
               child: Image.asset(
                 image, // Replace with your image asset
-                width: 60.sp, //
-                height: 60.sp, //
+                width: 50.sp,
+                height: 50.sp,
               ),
             ),
             SizedBox(height: 5.h),
@@ -346,12 +347,12 @@ class _MainScreenState extends State<MainScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   crossAxisCount: 3,
-                  childAspectRatio: 0.7,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  childAspectRatio: 0.8,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
                   children: <Widget>[
-                    cardWid(AppTags.attendance, AssetsUtils.logoIcon, () {
+                    cardWid(AppTags.attendance, AssetsUtils.attendanceIcon, () {
                        //Navigator.pushNamed(context, AttendanceScreen.routeName);
                        Navigator.pushNamed(
                          context,
@@ -360,11 +361,11 @@ class _MainScreenState extends State<MainScreen> {
                        );
                     }),
 
-                    cardWid(AppTags.duesReport, AssetsUtils.logoIcon, () {
+                    cardWid(AppTags.duesReport, AssetsUtils.duesReportIcon, () {
                       //Navigator.pushNamed(context, DailyAssignmentScreen.routeName);
                       Navigator.pushNamed(context, DuesReportScreen.routeName);
                     }),
-                    cardWid(AppTags.timetable, AssetsUtils.logoIcon, () {
+                    cardWid(AppTags.timetable, AssetsUtils.timeTableIcon, () {
                        //Navigator.pushNamed(context, AttendanceScreen.routeName);
                        Navigator.pushNamed(
                          context,
@@ -372,24 +373,25 @@ class _MainScreenState extends State<MainScreen> {
                          arguments: {'header': AppTags.timetable},
                        );
                     }),
-                    cardWid(AppTags.leads, AssetsUtils.logoIcon, () {
+                    cardWid(AppTags.leads, AssetsUtils.leadIcon, () {
                       Navigator.pushNamed(context,LeadsScreen.routeName);
                     }),
-                    cardWid(AppTags.homework, AssetsUtils.logoIcon, () {
+                    cardWid(AppTags.homework, AssetsUtils.homeworkIcIcon, () {
                       //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
+                      Navigator.pushNamed(context,HomeworkScreen.routeName);
                     }),
-                    cardWid(AppTags.assesment, AssetsUtils.logoIcon, () {
+                    cardWid(AppTags.assesment, AssetsUtils.attendanceIcon, () {
                       // Navigator.pushNamed(context, ComingSoon.routeName);
                       //Navigator.pushNamed(context, MyCoursesScreen.routeName);
                     }),
-                    cardWid(AppTags.ptm, AssetsUtils.logoIcon, () {
+                    cardWid(AppTags.ptm, AssetsUtils.ptmIcon, () {
                       //Navigator.pushNamed(context, GMeetClassScreen.routeName);
                     }),
-                    cardWid(AppTags.biometricAttendance, AssetsUtils.logoIcon,
+                    cardWid(AppTags.biometricAttendance, AssetsUtils.biometricAttendanceIcon,
                         () {
                       //Navigator.pushNamed(context, ZoomClassScreen.routeName);
                     }),
-                    cardWid(AppTags.leadSection, AssetsUtils.logoIcon, () {
+                    cardWid(AppTags.leadSection, AssetsUtils.leadIcon, () {
                       //Navigator.pushNamed(context, ZoomClassScreen.routeName);
                     }),
                   ],
