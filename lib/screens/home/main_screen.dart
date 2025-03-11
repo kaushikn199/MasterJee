@@ -5,6 +5,8 @@ import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
+import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
+import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/drawers.dart';
 import 'package:masterjee/widgets/home_app_bar.dart';
@@ -379,6 +381,14 @@ class _MainScreenState extends State<MainScreen> {
                     cardWid(AppTags.homework, AssetsUtils.homeworkIcIcon, () {
                       //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
                       Navigator.pushNamed(context,HomeworkScreen.routeName);
+                    }),
+                    cardWid(AppTags.studentBehavior, AssetsUtils.studentBehaviourIcon, () {
+                      //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
+                      Navigator.pushNamed(context,StudentBehaviourScreen.routeName);
+                    }),
+                    cardWid(AppTags.studentProgress, AssetsUtils.studentProgressIcon, () {
+                      //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
+                      Navigator.pushNamed(context,StudentProgressScreen.routeName);
                     }),
                     cardWid(AppTags.assesment, AssetsUtils.attendanceIcon, () {
                       // Navigator.pushNamed(context, ComingSoon.routeName);

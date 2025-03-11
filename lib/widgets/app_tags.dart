@@ -10,6 +10,7 @@ class AppTags {
   static const String timetable = "Timetable";
   static const String approveleave = "Approve Leave";
   static const String homework = "Homework";
+  static const String studentBehavior = "Student Behavior";
   static const String assesment = "Assesment";
   static const String studentProgress = "Student Progress";
   static const String ptm = "PTM";
@@ -27,6 +28,8 @@ class AppTags {
   static const String pTM = "PTM";
   static const String biometricAttendance = "Biometric Attendance";
   static const String leadSection = "Lead Section";
+  static const String overall = "Overall";
+  static const String markSheet = "MarkSheet";
 
 }
 
@@ -42,5 +45,10 @@ class AssetsUtils {
   static const String ptmIcon = "assets/images/ic_ptm.png";
   static const String timeTableIcon = "assets/images/ic_timetable.png";
   static const String leadIcon = "assets/images/ic_lead.png";
+
+  static const String marksheetIcon = "assets/images/ic_marksheet.png";
+  static const String overallIcon = "assets/images/ic_overall.png";
+  static const String studentBehaviourIcon = "assets/images/ic_student_behavior.png";
+  static const String studentProgressIcon = "assets/images/ic_student_progress.png";
 
 }
