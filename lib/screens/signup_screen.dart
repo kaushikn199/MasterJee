@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/screens/home/main_screen.dart';
+import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
@@ -271,29 +272,11 @@ class _SignupScreenState extends State<SignupScreen> {
                               ? const Center(child: CircularProgressIndicator())
                               : Padding(
                             padding: const EdgeInsets.all(15.0),
-                            child: MaterialButton(
-                              elevation: 0,
-                              color: colorGreen,
-                              onPressed: _submit,
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadiusDirectional.circular(10),
-                                // side: const BorderSide(color: kRedColor),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text(
-                                    'Log In',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            child: CommonButton(
+                              text: "Log In",
+                              onPressed: () {
+                                _submit();
+                              },
                             ),
                           ),
                         ),

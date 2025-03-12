@@ -30,6 +30,8 @@ class AppTags {
   static const String leadSection = "Lead Section";
   static const String overall = "Overall";
   static const String markSheet = "MarkSheet";
+  static const String behaviour = "Behaviour";
+  static const String progress  = "Progress";
 
 }
 

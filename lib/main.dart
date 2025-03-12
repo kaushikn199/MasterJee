@@ -12,6 +12,8 @@ import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/splash_screen.dart';
 import 'package:masterjee/screens/home/main_screen.dart';
 import 'package:masterjee/screens/signup_screen.dart';
+import 'package:masterjee/screens/student_behaviour/behaviour_screen.dart';
+import 'package:masterjee/screens/student_behaviour/progress_screen.dart';
 import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
 import 'package:masterjee/screens/student_progress/marksheet_screen.dart';
 import 'package:masterjee/screens/student_progress/overall_screen.dart';
@@ -104,6 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         StudentProgressScreen.routeName: (ctx) => const StudentProgressScreen(),
                         OverallScreen.routeName: (ctx) => const OverallScreen(),
                         MarkSheetScreen.routeName: (ctx) => const MarkSheetScreen(),
+                        ProgressScreen.routeName: (ctx) => const ProgressScreen(),
+                        BehaviourScreen.routeName: (ctx) => const BehaviourScreen(),
                       },
                       home: const SplashScreen()),
                 );
