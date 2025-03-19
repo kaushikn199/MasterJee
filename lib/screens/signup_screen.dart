@@ -8,6 +8,7 @@ import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:masterjee/widgets/util.dart';
 
 import 'forgot_password_screen.dart';
 
@@ -29,41 +30,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passwordController = TextEditingController();
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  InputDecoration getInputDecoration(String hintext, IconData iconData) {
-    return InputDecoration(
-      enabledBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-        borderSide: BorderSide(color: Colors.white, width: 2),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-        borderSide: BorderSide(color: Colors.white, width: 2),
-      ),
-      border: const OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.white),
-        borderRadius: BorderRadius.all(
-          Radius.circular(12.0),
-        ),
-      ),
-      focusedErrorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-        borderSide: BorderSide(color: Color(0xFFF65054)),
-      ),
-      errorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-        borderSide: BorderSide(color: Color(0xFFF65054)),
-      ),
-      filled: true,
-      prefixIcon: Icon(
-        iconData,
-        color: kTextLowBlackColor,
-      ),
-      hintStyle: const TextStyle(color: Colors.black54, fontSize: 14),
-      hintText: hintext,
-      fillColor: kBackgroundColor,
-      contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 15),
-    );
-  }
+
 
   Future<void> _submit() async {
     if (!globalFormKey.currentState!.validate()) {

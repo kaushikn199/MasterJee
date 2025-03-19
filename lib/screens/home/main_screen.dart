@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
@@ -391,8 +393,7 @@ class _MainScreenState extends State<MainScreen> {
                       Navigator.pushNamed(context,StudentProgressScreen.routeName);
                     }),
                     cardWid(AppTags.assesment, AssetsUtils.attendanceIcon, () {
-                      // Navigator.pushNamed(context, ComingSoon.routeName);
-                      //Navigator.pushNamed(context, MyCoursesScreen.routeName);
+                       Navigator.pushNamed(context, AssesmentScreen.routeName);
                     }),
                     cardWid(AppTags.ptm, AssetsUtils.ptmIcon, () {
                       //Navigator.pushNamed(context, GMeetClassScreen.routeName);
@@ -403,6 +404,10 @@ class _MainScreenState extends State<MainScreen> {
                     }),
                     cardWid(AppTags.leadSection, AssetsUtils.leadIcon, () {
                       //Navigator.pushNamed(context, ZoomClassScreen.routeName);
+                    }),
+                    cardWid(AppTags.gmeetLiveClasses, AssetsUtils.gmeetliveIcon, () {
+                      //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
+                      Navigator.pushNamed(context,GMeetLiveClassesScreen.routeName);
                     }),
                   ],
                 ),

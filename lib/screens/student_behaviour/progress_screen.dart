@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/screens/student_behaviour/view_screen.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
@@ -53,7 +54,10 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   itemCount: resultData.length,
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
-                    return assignmentCard(resultData[index], false);
+                    return InkWell(child: assignmentCard(resultData[index], false),onTap: () {
+                      Navigator.pushNamed(
+                          context, ViewScreen.routeName);
+                    },);
                   }),
             );
           }),

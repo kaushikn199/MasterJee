@@ -15,15 +15,32 @@ class MarkSheetScreen extends StatefulWidget {
 }
 
 class _MarkSheetScreenState extends State<MarkSheetScreen> {
+
   String? _selectedSubject;
+  String? _selectedTemplate;
+  String? _selectedDownload;
+
   List<String> subjectData = [
-    AppTags.overall.toString(),
-    AppTags.markSheet.toString()
+    "abc133 - venkatesh",
+    "1001 - ABC",
+    "1 Raj L",
+    "Savitha",
+    "Mona d"
   ];
-  final List<String> _subject = [
-    AppTags.overall.toString(),
-    AppTags.markSheet.toString()
-  ]; // Option 1
+
+  List<String> template = [
+    "CBSE Examination template",
+    "CBSE Exam template",
+    "Examination",
+    "Performance Profile",
+    "UT Template"
+  ];
+
+  List<String> download = [
+    "Download",
+    "Email/Whatsapp",
+  ];
+
   String? _selectedSubjectId;
   bool _isLoading = false;
 
@@ -70,7 +87,7 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
                     });
                   },
                   isExpanded: true,
-                  items: _subject.map((cd) {
+                  items: subjectData.map((cd) {
                     return DropdownMenuItem(
                       value: cd,
                       onTap: () {
@@ -111,7 +128,7 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
                 child: DropdownButton(
                   hint: const CommonText('Template',
                       size: 14, color: Colors.black54),
-                  value: _selectedSubject,
+                  value: _selectedTemplate,
                   icon: const Card(
                     elevation: 0.1,
                     color: kBackgroundColor,
@@ -120,28 +137,28 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
                   underline: const SizedBox(),
                   onChanged: (value) {
                     setState(() {
-                      _selectedSubject = null;
-                      _selectedSubject = value.toString();
-                      for (int i = 0; i < subjectData.length; i++) {
-                        if (subjectData[i].toString().toLowerCase() ==
+                      _selectedTemplate = null;
+                      _selectedTemplate = value.toString();
+                      for (int i = 0; i < template.length; i++) {
+                        if (template[i].toString().toLowerCase() ==
                             value.toString().toLowerCase()) {
-                          _selectedSubjectId = subjectData[i].toString();
+                          _selectedSubjectId = template[i].toString();
                           break;
                         }
                       }
                     });
                   },
                   isExpanded: true,
-                  items: _subject.map((cd) {
+                  items: template.map((cd) {
                     return DropdownMenuItem(
                       value: cd,
                       onTap: () {
                         setState(() {
-                          _selectedSubject = cd;
-                          for (int i = 0; i < subjectData.length; i++) {
-                            if (subjectData[i].toString().toLowerCase() ==
+                          _selectedTemplate = cd;
+                          for (int i = 0; i < template.length; i++) {
+                            if (template[i].toString().toLowerCase() ==
                                 cd.toString().toLowerCase()) {
-                              _selectedSubjectId = subjectData[i].toString();
+                             // _selectedSubjectId = template[i].toString();
                               break;
                             }
                           }
@@ -173,7 +190,7 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
                 child: DropdownButton(
                   hint: const CommonText('Download',
                       size: 14, color: Colors.black54),
-                  value: _selectedSubject,
+                  value: _selectedDownload,
                   icon: const Card(
                     elevation: 0.1,
                     color: kBackgroundColor,
@@ -182,28 +199,28 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
                   underline: const SizedBox(),
                   onChanged: (value) {
                     setState(() {
-                      _selectedSubject = null;
-                      _selectedSubject = value.toString();
-                      for (int i = 0; i < subjectData.length; i++) {
-                        if (subjectData[i].toString().toLowerCase() ==
+                      _selectedDownload = null;
+                      _selectedDownload = value.toString();
+                      for (int i = 0; i < download.length; i++) {
+                        if (download[i].toString().toLowerCase() ==
                             value.toString().toLowerCase()) {
-                          _selectedSubjectId = subjectData[i].toString();
+                         // _selectedSubjectId = download[i].toString();
                           break;
                         }
                       }
                     });
                   },
                   isExpanded: true,
-                  items: _subject.map((cd) {
+                  items: download.map((cd) {
                     return DropdownMenuItem(
                       value: cd,
                       onTap: () {
                         setState(() {
-                          _selectedSubject = cd;
-                          for (int i = 0; i < subjectData.length; i++) {
-                            if (subjectData[i].toString().toLowerCase() ==
+                          _selectedDownload = cd;
+                          for (int i = 0; i < download.length; i++) {
+                            if (download[i].toString().toLowerCase() ==
                                 cd.toString().toLowerCase()) {
-                              _selectedSubjectId = subjectData[i].toString();
+                             // _selectedSubjectId = download[i].toString();
                               break;
                             }
                           }

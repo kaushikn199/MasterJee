@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
-import 'package:masterjee/screens/student_behaviour/view_screen.dart';
+import 'package:masterjee/screens/student_behaviour/comment_screen.dart';
+import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:masterjee/widgets/util.dart';
 
-class BehaviourScreen extends StatefulWidget {
-  const BehaviourScreen({super.key});
+class ViewScreen extends StatefulWidget {
+  const ViewScreen({super.key});
 
-  static String routeName = 'BehaviourScreen';
+  static String routeName = 'ViewScreen';
 
   @override
-  State<BehaviourScreen> createState() => _BehaviourScreenState();
+  State<ViewScreen> createState() => _ViewScreenState();
 }
 
-class _BehaviourScreenState extends State<BehaviourScreen> {
+class _ViewScreenState extends State<ViewScreen> {
 
   var _isLoading = false;
   List<int> resultData = [1, 2, 3, 4, 5];
+  final commentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarTwo(title: AppTags.behaviour),
+      appBar: AppBarTwo(title: AppTags.view),
       body: Stack(
         children: [
           Builder(builder: (context) {
@@ -55,10 +58,10 @@ class _BehaviourScreenState extends State<BehaviourScreen> {
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
                     return InkWell(child: assignmentCard(resultData[index], false),
-                    onTap: () {
-                      Navigator.pushNamed(
-                          context, ViewScreen.routeName);
-                    },);
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, CommentScreen.routeName);
+                      },);
                   }),
             );
           }),
@@ -67,7 +70,6 @@ class _BehaviourScreenState extends State<BehaviourScreen> {
       ),
     );
   }
-
 
   Widget assignmentCard(int a, bool isClosed) {
     return Container(
@@ -85,43 +87,65 @@ class _BehaviourScreenState extends State<BehaviourScreen> {
       ),
       child: Column(
         children: [
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.all(10.sp),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(10.r), topLeft: Radius.circular(10.r)),
-                  color: kToastTextColor),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      "Abc1234567 - venkatesh",
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-
-                ],
-              ),
-            ),
-          ),
           Padding(
             padding: EdgeInsets.all(20.sp),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                rowValue("rank",  "10"),
-                gap(10.sp),
-                rowValue("student", "20"),
-                gap(10.sp),
-                rowValue("point", "50"),
-                gap(10.sp),
+                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Expanded( child: CommonText.bold("Theft", size: 14.sp, color: Colors.black)),
+                  SizedBox(width: 20.w),
+                  CommonText.medium("Point : 10", size: 13.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+                ]),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  color: colorGaryLine,
+                  width: double.infinity,
+                  height: 1.h,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                CommonText.medium(AppTags.clickHereToViewMoreComments,size: 10.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                  style: const TextStyle(fontSize: 14),
+                  keyboardType: TextInputType.name,
+                  maxLines: 3,
+                  decoration: getInputDecoration(
+                    'Write comment here...',
+                    null,
+                      kSecondBackgroundColor,
+                    Colors.white
+                  ),
+                  validator: (input) {
+                    if (input == null){
+                      return "Please enter name";
+                    }else{
+                      return "";
+                    }
+                  },
+                  onSaved: (value) {
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : CommonButton(
+                    cornersRadius: 30,
+                        text: AppTags.submit,
+                        onPressed: () {
+                        },
+                      ),
+                ),
               ],
             ),
           ),

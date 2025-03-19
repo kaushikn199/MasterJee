@@ -7,6 +7,7 @@ class CommonButton extends StatelessWidget {
   final VoidCallback onPressed;
   final double paddingHorizontal;
   final double paddingVertical;
+  final double cornersRadius;
 
   const CommonButton({
     Key? key,
@@ -15,6 +16,7 @@ class CommonButton extends StatelessWidget {
     required this.onPressed,
     this.paddingHorizontal = 20.0,
     this.paddingVertical = 14.0,
+    this.cornersRadius = 10,
   }) : super(key: key);
 
   @override
@@ -28,7 +30,7 @@ class CommonButton extends StatelessWidget {
         vertical: paddingVertical,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadiusDirectional.circular(10),
+        borderRadius: BorderRadiusDirectional.circular(cornersRadius),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -4,17 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:masterjee/providers/auth.dart';
+import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/forgot_password_screen.dart';
+import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/splash_screen.dart';
 import 'package:masterjee/screens/home/main_screen.dart';
 import 'package:masterjee/screens/signup_screen.dart';
 import 'package:masterjee/screens/student_behaviour/behaviour_screen.dart';
+import 'package:masterjee/screens/student_behaviour/comment_screen.dart';
 import 'package:masterjee/screens/student_behaviour/progress_screen.dart';
 import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
+import 'package:masterjee/screens/student_behaviour/view_screen.dart';
 import 'package:masterjee/screens/student_progress/marksheet_screen.dart';
 import 'package:masterjee/screens/student_progress/overall_screen.dart';
 import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
@@ -108,6 +112,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         MarkSheetScreen.routeName: (ctx) => const MarkSheetScreen(),
                         ProgressScreen.routeName: (ctx) => const ProgressScreen(),
                         BehaviourScreen.routeName: (ctx) => const BehaviourScreen(),
+                        GMeetLiveClassesScreen.routeName: (ctx) => const GMeetLiveClassesScreen(),
+                        ViewScreen.routeName: (ctx) => const ViewScreen(),
+                        CommentScreen.routeName: (ctx) => const CommentScreen(),
+                        AssesmentScreen.routeName: (ctx) => const AssesmentScreen(),
                       },
                       home: const SplashScreen()),
                 );

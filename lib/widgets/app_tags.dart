@@ -32,6 +32,10 @@ class AppTags {
   static const String markSheet = "MarkSheet";
   static const String behaviour = "Behaviour";
   static const String progress  = "Progress";
+  static const String gmeetLiveClasses  = "Gmeet Live Classes";
+  static const String view  = "View";
+  static const String comments  = "Comments";
+  static const String clickHereToViewMoreComments  = "Click here to view more comments";
 
 }
 
@@ -52,5 +56,7 @@ class AssetsUtils {
   static const String overallIcon = "assets/images/ic_overall.png";
   static const String studentBehaviourIcon = "assets/images/ic_student_behavior.png";
   static const String studentProgressIcon = "assets/images/ic_student_progress.png";
+
+  static const String gmeetliveIcon = "assets/images/ic_gmeetlive.png";
 
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/widgets/text.dart';
 
@@ -176,6 +177,54 @@ Widget statusBadge(String status, Color backColor) {
           size: 14.sp,
         ),
       ],
+    ),
+  );
+}
+InputDecoration getInputDecoration(
+    String hintText, [
+      IconData? iconData,
+      Color color = Colors.white,
+      Color fillColor = kBackgroundColor,
+    ]) {
+  return InputDecoration(
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      borderSide: BorderSide(color: color, width: 2),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      borderSide: BorderSide(color: color, width: 2),
+    ),
+    border: OutlineInputBorder(
+      borderSide: BorderSide(color: color),
+      borderRadius: BorderRadius.all(
+        Radius.circular(12.0),
+      ),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      borderSide: BorderSide(color: Color(0xFFF65054)),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      borderSide: BorderSide(color: Color(0xFFF65054)),
+    ),
+    filled: true,
+    prefixIcon: iconData != null
+        ? Icon(
+      iconData,
+      color: kTextLowBlackColor,
+    )
+        : null,
+    hintStyle: TextStyle(
+      color: Colors.black54,
+      fontSize: 14,
+    ),
+    hintText: hintText,
+    fillColor: fillColor,
+    contentPadding: EdgeInsets.symmetric(
+      vertical: 18,
+      horizontal: 15,
     ),
   );
 }
