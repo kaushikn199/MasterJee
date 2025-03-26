@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get/get_common/get_reset.dart';
 import 'package:get/get_navigation/src/bottomsheet/bottomsheet.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/widgets/change_user.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
 
@@ -15,13 +16,16 @@ const padding = EdgeInsets.symmetric(horizontal: 20);
 
 
 class DrawerWidget extends StatefulWidget {
-  const DrawerWidget({super.key});
+  final VoidCallback onPressed; // Define the callback
+
+  const DrawerWidget({super.key, required this.onPressed});
 
   @override
   State<DrawerWidget> createState() => _DrawerWidgetState();
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -32,12 +36,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 18.h),
               width: double.infinity,
-              color: const Color(0xFFFAFAFA),
-              child: buildHeader(context),
+              color: kBackgroundColor,
+              child: InkWell(child: buildHeader(context),onTap: () {
+                Navigator.of(context).pop();
+                widget.onPressed();
+              },),
             ),
             SizedBox(height: 25.sp),
             Expanded(
-              child: Container(child: buildList(items: items)),
+              child: Container(child:
+              buildList(items: items)),
             ),
           ],
         ),
@@ -171,12 +179,6 @@ void selectItem(BuildContext context, int index) {
     case 3:
     //   break;
     // case 4:
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return logOutPopup(context);
-        },
-      );
       break;
   }
 }
@@ -239,18 +241,7 @@ Widget buildHeader(BuildContext context) => Row(
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(34.0),
-              child: /*CachedNetworkImage(
-                imageUrl: LocalDatabase.siteUrl + LocalDatabase.user!.image.toString(),
-                placeholder: (context, url) => const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Image.asset(
-                  LocalDatabase.user!.gender == "Female"
-                      ? AssetsUtils.femaleImage
-                      : AssetsUtils.personImage,
-                  fit: BoxFit.cover,
-                  width: 50,
-                  height: 50,
-                ),
-              )*/
+              child:
               Image.asset(width: 50,height: 50,AssetsUtils.logoIcon,fit: BoxFit.cover),
             ),
           ),
@@ -271,120 +262,6 @@ Widget buildHeader(BuildContext context) => Row(
                 size: 12.sp,
                 color: Colors.blueGrey,
               ),
-              /*LocalDatabase.user?.role == "parent"
-                  ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                CommonText.semiBold(
-                  'Child - ${LocalDatabase.selectedStudent!.name}' ?? "",
-                  size: 12.sp,
-                  color: Colors.blueGrey,
-                ),
-                CommonText.semiBold(
-                  "${LocalDatabase.selectedStudent?.parentChildClass ?? ""} (${LocalDatabase.selectedStudent?.section ?? ""})",
-                  size: 12.sp,
-                  color: Colors.blueGrey,
-                ),
-                gap(3.sp),
-                GestureDetector(
-                  onTap: () async {
-                    Map<String, dynamic> profileData = {};
-                    List extraFields = [];
-                    await Provider.of<Auth>(context, listen: false)
-                        .getStudents()
-                        .then((value) {
-                      profileData = value;
-                      List a = profileData['childs'];
-                      extraFields = a.map((entry) {
-                        return studentWidget(
-                            ParentChild(
-                                classId: entry['class_id'],
-                                name: entry['firstname'] + " " + entry['lastname'],
-                                parentChildClass: entry['class'],
-                                image: entry['image'],
-                                section: entry['section'],
-                                admissionNo: entry['admission_no'],
-                                sectionId: entry['section_id'],
-                                studentId: entry['id']),
-                            context);
-                      }).toList();
-                    });
-                    await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).size.height * 0.38.sp),
-                          child: Wrap(
-                            children: [
-                              Align(
-                                alignment: Alignment.bottomLeft,
-                                child: Container(
-                                  width: double.maxFinite,
-                                  decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                          topRight: Radius.circular(16),
-                                          topLeft: Radius.circular(16)),
-                                      color: kToastTextColor),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 15, horizontal: 12),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Child List',
-                                        style: TextStyle(
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      GestureDetector(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Icon(Icons.close,
-                                              color: Colors.black, size: 24))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                color: kBackgroundColor,
-                                height: MediaQuery.of(context).size.height,
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    children: [...extraFields, SizedBox(height: 350.sp)],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CommonText.medium(
-                          'Switch Child',
-                          size: 12.sp,
-                          color: Colors.black54,
-                        ),
-                        gap(3.sp),
-                        Icon(
-                          Icons.swap_horiz_rounded,
-                          size: 20.sp,
-                          color: Colors.black54,
-                        ),
-                      ]),
-                )
-              ])
-                  : CommonText.semiBold(
-                "${LocalDatabase.user?.recordClass ?? ""} (${LocalDatabase.user?.section ?? ""})",
-                size: 12.sp,
-                color: Colors.blueGrey,
-              ),*/
             ],
           )
         ],
@@ -397,7 +274,6 @@ final items = [
   const DrawerItem(title: AppTags.home, icon: Icons.home, size: 30),
   const DrawerItem(title: AppTags.profile, icon: Icons.account_circle_outlined, size: 30),
   const DrawerItem(title: AppTags.aboutSchool, icon: Icons.account_balance_outlined, size: 30),
-  // const DrawerItem(title: AppTags.settings, icon: Icons.settings, size: 30),
   const DrawerItem(title: AppTags.logout, icon: Icons.logout_rounded, size: 30),
 ];
 
@@ -453,16 +329,7 @@ studentWidget(/*ParentChild child,*/ BuildContext context) {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(34.r),
-                child: /*CachedNetworkImage(
-                  imageUrl: LocalDatabase.siteUrl + child.image.toString(),
-                  placeholder: (context, url) => const CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Image.asset(
-                    AssetsUtils.personImage,
-                    fit: BoxFit.cover,
-                    width: 50,
-                    height: 50,
-                  ),
-                )*/Image.asset(AssetsUtils.logoIcon, fit: BoxFit.cover,
+                child:Image.asset(AssetsUtils.logoIcon, fit: BoxFit.cover,
                     width: 50,
                     height: 50),
               ),
@@ -474,7 +341,7 @@ studentWidget(/*ParentChild child,*/ BuildContext context) {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                CommonText.medium("dsgdg"!,
+                CommonText.medium("dsgdg",
                     size: 14.sp, color: Colors.black, overflow: TextOverflow.fade),
                 CommonText.medium("${"dgfd"} - ${"dgdfgdfg"}",
                     size: 12.sp, color: Colors.black54, overflow: TextOverflow.fade),

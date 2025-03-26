@@ -3,7 +3,6 @@ class AppTags {
   static const String signIn = "Sign In";
   static const String letSignIn = "Let’s Sign In";
   static const String StudentsProgress = "Students Progress";
-
   static const String home = "Home";
   static const String attendance = "Attendance";
   static const String duesReport = "Dues Report";
@@ -36,14 +35,14 @@ class AppTags {
   static const String view  = "View";
   static const String comments  = "Comments";
   static const String clickHereToViewMoreComments  = "Click here to view more comments";
-
+  static const String chooseClassSection  = "Choose Class & Section";
+  static const String applyLeave  = "Apply Leave";
 }
 
 class AssetsUtils {
   static const String homeworkIcon = "assets/images/ic_home_banner.jpg";
   static const String logoIcon = "assets/images/ic_logo.png";
   static const String signOutIcon = "assets/images/signout.png";
-
   static const String attendanceIcon = "assets/images/ic_attendance.png";
   static const String biometricAttendanceIcon = "assets/images/ic_biometric_attendance.png";
   static const String duesReportIcon = "assets/images/ic_dues_report.png";
@@ -51,12 +50,10 @@ class AssetsUtils {
   static const String ptmIcon = "assets/images/ic_ptm.png";
   static const String timeTableIcon = "assets/images/ic_timetable.png";
   static const String leadIcon = "assets/images/ic_lead.png";
-
   static const String marksheetIcon = "assets/images/ic_marksheet.png";
   static const String overallIcon = "assets/images/ic_overall.png";
   static const String studentBehaviourIcon = "assets/images/ic_student_behavior.png";
   static const String studentProgressIcon = "assets/images/ic_student_progress.png";
-
   static const String gmeetliveIcon = "assets/images/ic_gmeetlive.png";
-
+  static const String leaveIcon = "assets/images/ic_leave.png";
 }

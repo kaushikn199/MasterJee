@@ -191,78 +191,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           style: TextStyle(color: kSecondaryColor),
                         ),
                         const SizedBox(height: 20),
-                       /* const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 17.0, bottom: 4),
-                            child: Text(
-                              'I am',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: MaterialButton(
-                                    elevation: 0,
-                                    color: userType == "student" ? kRedColor : kBackgroundColor,
-                                    onPressed: () {
-                                      userTypeSubmit('student');
-                                    },
-                                    padding:
-                                        const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                                    splashColor: Colors.greenAccent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadiusDirectional.circular(10),
-                                      side: const BorderSide(color: kRedColor),
-                                    ),
-                                    child: Text(
-                                      'Student',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: userType != "student" ? kRedColor : kBackgroundColor,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: MaterialButton(
-                                    elevation: 0,
-                                    color: userType == "parent" ? kRedColor : kBackgroundColor,
-                                    onPressed: () {
-                                      userTypeSubmit('parent');
-                                    },
-                                    padding:
-                                        const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                                    splashColor: Colors.greenAccent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadiusDirectional.circular(10),
-                                      side: const BorderSide(color: kRedColor),
-                                    ),
-                                    child: Text(
-                                      'Parent',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: userType != "parent" ? kRedColor : kBackgroundColor,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),*/
                         SizedBox(
                           width: double.infinity,
                           child: _isLoading
@@ -278,7 +206,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                     splashColor: Colors.greenAccent,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadiusDirectional.circular(10),
-                                      // side: const BorderSide(color: kRedColor),
                                     ),
                                     child: const Text(
                                       'Reset Password',
@@ -316,7 +243,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       Navigator.pop(context);
                     },
                     child: const Text(
-                      ' Sign In',
+                      'Sign In',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,

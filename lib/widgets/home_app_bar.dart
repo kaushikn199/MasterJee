@@ -14,7 +14,6 @@ class CustomHomeAppBar extends StatefulWidget implements PreferredSizeWidget {
         super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _CustomHomeAppBarState createState() => _CustomHomeAppBarState();
 }
 
@@ -53,28 +52,8 @@ class _CustomHomeAppBarState extends State<CustomHomeAppBar> with TickerProvider
         icon: const Icon(Icons.menu),
       ),
       centerTitle: true,
-      /*title: Builder(
-        builder: (context) {
-          if (isLoading) {
-            return SizedBox();
-          }
-          // saveImageUrlToSharedPref(snapshot.data.darkLogo);
-          return Image.asset(AssetsUtils.logoIcon,height: 27.sp,)*//*CachedNetworkImage(
-            imageUrl: url!.toStrin.g(),
-            fit: BoxFit.contain,
-            height: 27.sp,
-          )*//*;
-        },
-      ),*/
       backgroundColor: Colors.white,
-      actions: <Widget>[
-        // IconButton(
-        //   icon: const Icon(
-        //     Icons.notifications_none_rounded,
-        //     color: kSecondaryColor,
-        //   ),
-        //   onPressed: () => {},
-        // ),
+      actions: const <Widget>[
       ],
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:masterjee/providers/auth.dart';
+import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
@@ -116,6 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ViewScreen.routeName: (ctx) => const ViewScreen(),
                         CommentScreen.routeName: (ctx) => const CommentScreen(),
                         AssesmentScreen.routeName: (ctx) => const AssesmentScreen(),
+                        ApplyLeaveScreen.routeName: (ctx) => const ApplyLeaveScreen(),
                       },
                       home: const SplashScreen()),
                 );

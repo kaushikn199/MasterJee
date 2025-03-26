@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
@@ -9,6 +10,7 @@ import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
 import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
+import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/drawers.dart';
 import 'package:masterjee/widgets/home_app_bar.dart';
@@ -24,8 +26,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int selectedIndex = 0; // Track the selected item
-
+  int selectedIndex = 0;
   final List<String> menuItems = [
     "Home",
     "Attendance",
@@ -39,7 +40,6 @@ class _MainScreenState extends State<MainScreen> {
     "Leads",
     "Sign Out",
   ];
-
   final List<Map<String, String>> items = [
     {'image': AssetsUtils.logoIcon, 'name': 'Attendance'},
     {'image': AssetsUtils.logoIcon, 'name': 'Dues Report'},
@@ -50,6 +50,21 @@ class _MainScreenState extends State<MainScreen> {
     {'image': AssetsUtils.logoIcon, 'name': 'PTM'},
     {'image': AssetsUtils.logoIcon, 'name': 'Biometric Attendance'},
     {'image': AssetsUtils.logoIcon, 'name': 'Lead Section'},
+  ];
+  String? _selectedClass;
+  String? _selectedSubjectId;
+  List<String> classData = [
+    "Class 5",
+    "Class 6",
+    "Class 7",
+    "Class 8",
+    "Class 9"
+  ];
+
+  String? _selectedSection;
+  List<String> sectionData = [
+    "Section A",
+    "Section B",
   ];
 
   Widget cardWid(String name, image, Function()? onTap) {
@@ -108,165 +123,177 @@ class _MainScreenState extends State<MainScreen> {
     print("Selected Index: $selectedIndex");
   }
 
+  Widget _changeUserPopup(BuildContext context) {
+    var widthSize = MediaQuery.of(context).size.width;
+    return AlertDialog(
+      backgroundColor: kSecondBackgroundColor,
+      surfaceTintColor: kSecondBackgroundColor,
+      insetPadding: EdgeInsets.only(left: 10, right: 10),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      content: SizedBox(
+        width: widthSize,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              "Choose Class Section",
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue),
+            ),
+            gap(10.0),
+            Card(
+              elevation: 0.1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              color: colorWhite,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                child: DropdownButton(
+                  hint: const CommonText('Select class',
+                      size: 14, color: Colors.black54),
+                  value: _selectedClass,
+                  icon: const Card(
+                    elevation: 0.1,
+                    color: colorWhite,
+                    child: Icon(Icons.keyboard_arrow_down_outlined),
+                  ),
+                  underline: const SizedBox(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedClass = null;
+                      _selectedClass = value.toString();
+                      for (int i = 0; i < classData.length; i++) {
+                        if (classData[i].toString().toLowerCase() ==
+                            value.toString().toLowerCase()) {
+                          _selectedSubjectId = classData[i].toString();
+                          break;
+                        }
+                      }
+                    });
+                  },
+                  isExpanded: true,
+                  items: classData.map((cd) {
+                    return DropdownMenuItem(
+                      value: cd,
+                      onTap: () {
+                        setState(() {
+                          _selectedClass = cd;
+                          for (int i = 0; i < classData.length; i++) {
+                            if (classData[i].toString().toLowerCase() ==
+                                cd.toString().toLowerCase()) {
+                              _selectedSubjectId = classData[i].toString();
+                              break;
+                            }
+                          }
+                        });
+                      },
+                      child: Text(
+                        cd.toString(),
+                        style: const TextStyle(
+                          color: colorBlack,
+                          fontSize: 14,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            gap(10.0),
+            Card(
+              elevation: 0.1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              color: colorWhite,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                child: DropdownButton(
+                  hint: const CommonText('Select section',
+                      size: 14, color: Colors.black54),
+                  value: _selectedSection,
+                  icon: const Card(
+                    elevation: 0.1,
+                    color: colorWhite,
+                    child: Icon(Icons.keyboard_arrow_down_outlined),
+                  ),
+                  underline: const SizedBox(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedSection = null;
+                      _selectedSection = value.toString();
+                      for (int i = 0; i < sectionData.length; i++) {
+                        if (sectionData[i].toString().toLowerCase() ==
+                            value.toString().toLowerCase()) {
+                          _selectedSubjectId = sectionData[i].toString();
+                          break;
+                        }
+                      }
+                    });
+                  },
+                  isExpanded: true,
+                  items: sectionData.map((cd) {
+                    return DropdownMenuItem(
+                      value: cd,
+                      onTap: () {
+                        setState(() {
+                          _selectedSection = cd;
+                          for (int i = 0; i < sectionData.length; i++) {
+                            if (sectionData[i].toString().toLowerCase() ==
+                                cd.toString().toLowerCase()) {
+                              _selectedSubjectId = sectionData[i].toString();
+                              break;
+                            }
+                          }
+                        });
+                      },
+                      child: Text(
+                        cd.toString(),
+                        style: const TextStyle(
+                          color: colorBlack,
+                          fontSize: 14,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            gap(20.0),
+            CommonButton(
+              cornersRadius: 30,
+              text: AppTags.submit,
+              onPressed: () {},
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      appBar: /*AppBar(
-        title: Center(
-          child: CommonText.bold(
-            textAlign: TextAlign.center,
-            AppTags.StudentsProgress,
-            size: 16.sp,
-            color: colorWhite,
-          ),
-        ),
-        backgroundColor: colorGreen,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(25),
-            bottomRight: Radius.circular(25),
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.account_circle,
-              color: colorWhite,
-            ),
-            // Add your desired icon
-            onPressed: () {},
-          ),
-        ],
-        iconTheme: const IconThemeData(
-          color: Colors.white, // Change drawer icon color
-        ),
-      )*/
-          CustomHomeAppBar(),
-      drawer: /*Drawer(
-        backgroundColor: colorGaryBG,
-        child: Column(
-          children: [
-            Image.asset(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height / 6,
-              'assets/images/ic_drawer_image.jpg',
-              fit: BoxFit.cover,
-            ).paddingOnly(top: 50,left: 70,right: 70),
-            CommonText.medium(
-              textAlign: TextAlign.center,
-              "Pawan",
-              size: 18.sp,
-              color: colorGaryText,
-            ).paddingOnly(top: 5),
-            CommonText.regular(
-              textAlign: TextAlign.center,
-              "ID: 9001",
-              size: 14.sp,
-              color: colorGaryText,
-            ).paddingOnly(top: 5),
-            CommonText.regular(
-              textAlign: TextAlign.center,
-              "Class: class 12th | Section: Section A",
-              size: 14.sp,
-              color: colorGaryText,
-            ),
-            SizedBox(height: 10.h,),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: menuItems.length,
-                itemBuilder: (context, index) {
-                  bool isSelected = selectedIndex == index;
-                  return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12), // Rounded effect on tap
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                          Future.delayed(Duration(milliseconds: 300), () {
-                            Navigator.pop(context);
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isSelected ? colorGreen: Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(child:  CommonText.regular(
-                                textAlign: TextAlign.start,
-                                menuItems[index],
-                                size: 14.sp,
-                                color:  isSelected ? Colors.white : colorBlueText,
-                              ),),
-                              Icon(Icons.navigate_next,color: isSelected ? Colors.white :colorBlueText),
-                            ],
-                          ).paddingOnly(left: 15,right: 10,top: 8,bottom: 8),
-                        ),
-                      )
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),*/
-          /* NavigationDrawerWidget(
-        selectedIndex: selectedIndex,
-        onClicked: onDrawerItemClicked, // Pass function to handle clicks
-      )*/
-          const DrawerWidget(),
+      appBar: CustomHomeAppBar(),
+      drawer: DrawerWidget(onPressed: () {
+        print("DrawerWidget");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => _changeUserPopup(context),
+        );
+      }),
       body: SingleChildScrollView(
         child: Builder(builder: (context) {
           return Padding(
             padding: const EdgeInsets.all(9.0),
-            child:
-                /*GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, // 3 columns
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0,
-              childAspectRatio: 0.7, // Adjust height
-            ),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  // Handle click event
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Clicked on ${items[index]['name']}')),
-                  );
-                },
-                child: Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Image.asset(items[index]['image']!, fit: BoxFit.fitWidth,height: 80,width: 80,),
-                      ),
-                      SizedBox(height: 8),
-                      CommonText.regular(
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        items[index]['name']!,
-                        size: 14.sp,
-                        color: colorBlack,
-                      ).paddingOnly(top: 10),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),*/
-                Column(
+            child: Column(
               children: [
                 Padding(
                   padding: EdgeInsets.all(20.sp),
@@ -289,25 +316,8 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(34.r),
-                            child: /*CachedNetworkImage(
-                          imageUrl: LocalDatabase.siteUrl +
-                              LocalDatabase.user!.image.toString(),
-                          placeholder: (context, url) =>
-                          const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              Image.asset(
-                                LocalDatabase.user!.gender == "Female"
-                                    ? AssetsUtils.femaleImage
-                                    : AssetsUtils.personImage,
-                                fit: BoxFit.cover,
-                                width: 50.w,
-                                height: 50.h,
-                              ),
-                        ),*/
-                                Image.asset(AssetsUtils.logoIcon,
-                                    fit: BoxFit.cover,
-                                    width: 50.w,
-                                    height: 50.h)),
+                            child: Image.asset(AssetsUtils.logoIcon,
+                                fit: BoxFit.cover, width: 50.w, height: 50.h)),
                       ),
                       SizedBox(
                         width: 20.w,
@@ -330,7 +340,6 @@ class _MainScreenState extends State<MainScreen> {
                             width: MediaQuery.of(context).size.width * 0.50.sp,
                             child: CommonText.medium(
                               "Admission No. 123 \nClass 5",
-                              // ? "${LocalDatabase.user!.currencySymbol}"
                               size: 12.sp,
                               color: Colors.blueGrey,
                             ),
@@ -344,7 +353,7 @@ class _MainScreenState extends State<MainScreen> {
                   color: colorBlack,
                   thickness: 0.2,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
                 GridView.count(
@@ -357,57 +366,51 @@ class _MainScreenState extends State<MainScreen> {
                   crossAxisSpacing: 8,
                   children: <Widget>[
                     cardWid(AppTags.attendance, AssetsUtils.attendanceIcon, () {
-                       //Navigator.pushNamed(context, AttendanceScreen.routeName);
-                       Navigator.pushNamed(
-                         context,
-                         AttendanceScreen.routeName,
-                         arguments: {'header': AppTags.attendance},
-                       );
+                      Navigator.pushNamed(
+                        context,
+                        AttendanceScreen.routeName,
+                        arguments: {'header': AppTags.attendance},
+                      );
                     }),
-
                     cardWid(AppTags.duesReport, AssetsUtils.duesReportIcon, () {
-                      //Navigator.pushNamed(context, DailyAssignmentScreen.routeName);
                       Navigator.pushNamed(context, DuesReportScreen.routeName);
                     }),
                     cardWid(AppTags.timetable, AssetsUtils.timeTableIcon, () {
-                       //Navigator.pushNamed(context, AttendanceScreen.routeName);
-                       Navigator.pushNamed(
-                         context,
-                         AttendanceScreen.routeName,
-                         arguments: {'header': AppTags.timetable},
-                       );
+                      Navigator.pushNamed(
+                        context,
+                        AttendanceScreen.routeName,
+                        arguments: {'header': AppTags.timetable},
+                      );
                     }),
                     cardWid(AppTags.leads, AssetsUtils.leadIcon, () {
-                      Navigator.pushNamed(context,LeadsScreen.routeName);
+                      Navigator.pushNamed(context, LeadsScreen.routeName);
                     }),
                     cardWid(AppTags.homework, AssetsUtils.homeworkIcIcon, () {
-                      //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
-                      Navigator.pushNamed(context,HomeworkScreen.routeName);
+                      Navigator.pushNamed(context, HomeworkScreen.routeName);
                     }),
-                    cardWid(AppTags.studentBehavior, AssetsUtils.studentBehaviourIcon, () {
-                      //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
-                      Navigator.pushNamed(context,StudentBehaviourScreen.routeName);
+                    cardWid(AppTags.studentBehavior,
+                        AssetsUtils.studentBehaviourIcon, () {
+                      Navigator.pushNamed(
+                          context, StudentBehaviourScreen.routeName);
                     }),
-                    cardWid(AppTags.studentProgress, AssetsUtils.studentProgressIcon, () {
-                      //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
-                      Navigator.pushNamed(context,StudentProgressScreen.routeName);
+                    cardWid(AppTags.studentProgress,
+                        AssetsUtils.studentProgressIcon, () {
+                      Navigator.pushNamed(
+                          context, StudentProgressScreen.routeName);
                     }),
                     cardWid(AppTags.assesment, AssetsUtils.attendanceIcon, () {
-                       Navigator.pushNamed(context, AssesmentScreen.routeName);
+                      Navigator.pushNamed(context, AssesmentScreen.routeName);
                     }),
-                    cardWid(AppTags.ptm, AssetsUtils.ptmIcon, () {
-                      //Navigator.pushNamed(context, GMeetClassScreen.routeName);
+                    cardWid(AppTags.ptm, AssetsUtils.ptmIcon, () {}),
+                    cardWid(AppTags.biometricAttendance,
+                        AssetsUtils.biometricAttendanceIcon, () {}),
+                    cardWid(AppTags.applyLeave, AssetsUtils.leaveIcon, () {
+                      Navigator.pushNamed(context, ApplyLeaveScreen.routeName);
                     }),
-                    cardWid(AppTags.biometricAttendance, AssetsUtils.biometricAttendanceIcon,
+                    cardWid(AppTags.gmeetLiveClasses, AssetsUtils.gmeetliveIcon,
                         () {
-                      //Navigator.pushNamed(context, ZoomClassScreen.routeName);
-                    }),
-                    cardWid(AppTags.leadSection, AssetsUtils.leadIcon, () {
-                      //Navigator.pushNamed(context, ZoomClassScreen.routeName);
-                    }),
-                    cardWid(AppTags.gmeetLiveClasses, AssetsUtils.gmeetliveIcon, () {
-                      //Navigator.pushNamed(context, DownloadCenterScreen.routeName);
-                      Navigator.pushNamed(context,GMeetLiveClassesScreen.routeName);
+                      Navigator.pushNamed(
+                          context, GMeetLiveClassesScreen.routeName);
                     }),
                   ],
                 ),
