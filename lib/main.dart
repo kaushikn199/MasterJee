@@ -12,6 +12,11 @@ import 'package:masterjee/screens/forgot_password_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
+import 'package:masterjee/screens/ptm/add/add_screen.dart';
+import 'package:masterjee/screens/ptm/minutebook/minutebook_screen.dart';
+import 'package:masterjee/screens/ptm/ptm.dart';
+import 'package:masterjee/screens/ptm/schedule/schedule_screen.dart';
+import 'package:masterjee/screens/ptm/upcoming/upcoming_screen.dart';
 import 'package:masterjee/screens/splash_screen.dart';
 import 'package:masterjee/screens/home/main_screen.dart';
 import 'package:masterjee/screens/signup_screen.dart';
@@ -118,6 +123,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         CommentScreen.routeName: (ctx) => const CommentScreen(),
                         AssesmentScreen.routeName: (ctx) => const AssesmentScreen(),
                         ApplyLeaveScreen.routeName: (ctx) => const ApplyLeaveScreen(),
+                        PTMScreen.routeName: (ctx) => const PTMScreen(),
+                        AddScreen.routeName: (ctx) => const AddScreen(),
+                        MinutebookScreen.routeName: (ctx) => const MinutebookScreen(),
+                        ScheduleScreen.routeName: (ctx) => const ScheduleScreen(),
+                        UpcomingScreen.routeName: (ctx) => const UpcomingScreen(),
                       },
                       home: const SplashScreen()),
                 );

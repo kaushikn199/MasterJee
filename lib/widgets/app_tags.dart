@@ -37,6 +37,11 @@ class AppTags {
   static const String clickHereToViewMoreComments  = "Click here to view more comments";
   static const String chooseClassSection  = "Choose Class & Section";
   static const String applyLeave  = "Apply Leave";
+  static const String upcoming  = "Upcoming";
+  static const String add  = "Add";
+  static const String schedule  = "Schedule";
+  static const String minutebook  = "Minutebook";
+  static const String addMoreSlot  = "Add More slot";
 }
 
 class AssetsUtils {
@@ -56,4 +61,8 @@ class AssetsUtils {
   static const String studentProgressIcon = "assets/images/ic_student_progress.png";
   static const String gmeetliveIcon = "assets/images/ic_gmeetlive.png";
   static const String leaveIcon = "assets/images/ic_leave.png";
+  static const String upcomingIcon = "assets/images/ic_upcoming.png";
+  static const String minutebookIcon = "assets/images/ic_minutebook.png";
+  static const String addPtmIcon = "assets/images/ic_ptm_add.png";
+  static const String sheduleIcon = "assets/images/ic_shedule.png";
 }

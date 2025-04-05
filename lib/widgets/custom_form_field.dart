@@ -25,6 +25,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final double? height;
   final Border? border;
+  final double? borderRadius;
   final List<BoxShadow>? boxShadow;
   final EdgeInsetsGeometry? contentPadding;
   final List<TextInputFormatter>? inputFormatters;
@@ -53,6 +54,7 @@ class CustomTextField extends StatelessWidget {
     this.inputFormatters,
     this.contentPadding,
     this.title,
+    this.borderRadius = 50.0,
   }) : super(key: key);
 
   @override
@@ -62,33 +64,33 @@ class CustomTextField extends StatelessWidget {
       children: [
         title != null
             ? Padding(
-                padding: EdgeInsets.only(top: 10.sp, bottom: 10.sp),
-                child: Row(
-                  children: [
-                    CommonText.semiBold(
-                      title!,
-                      size: 14.sp,
-                      color: colorBlack,
-                    ),
-                    isRequired
-                        ? CommonText.semiBold(
-                            " *",
-                            size: 14.sp,
-                            color: Colors.red,
-                          )
-                        : const CommonText.medium(""),
-                  ],
-                ),
-              )
-            : SizedBox(
-                height: 0.sp,
+          padding: EdgeInsets.only(top: 10.sp, bottom: 10.sp),
+          child: Row(
+            children: [
+              CommonText.semiBold(
+                title!,
+                size: 14.sp,
+                color: colorBlack,
               ),
+              isRequired
+                  ? CommonText.semiBold(
+                " *",
+                size: 14.sp,
+                color: Colors.red,
+              )
+                  : const CommonText.medium(""),
+            ],
+          ),
+        )
+            : SizedBox(
+          height: 0.sp,
+        ),
         Container(
           width: MediaQuery.of(context).size.width,
           alignment: Alignment.center,
           decoration: BoxDecoration(
               color: isReadonly ? colorWhite : Colors.white,
-              borderRadius: BorderRadius.circular(50.r),
+              borderRadius: BorderRadius.circular(borderRadius!.r),
               border: border,
               boxShadow: boxShadow),
           child: TextFormField(
@@ -105,26 +107,26 @@ class CustomTextField extends StatelessWidget {
             keyboardType: keyboardType,
             inputFormatters: inputFormatters,
             decoration: InputDecoration(
-              enabledBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50.0)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(borderRadius!)),
                 borderSide: BorderSide(color: Colors.white, width: 2),
               ),
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50.0)),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(borderRadius!)),
                 borderSide: BorderSide(color: Colors.white, width: 2),
               ),
-              border: const OutlineInputBorder(
+              border: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
                 borderRadius: BorderRadius.all(
-                  Radius.circular(12.0),
+                  Radius.circular(borderRadius!),
                 ),
               ),
-              focusedErrorBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50.0)),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(borderRadius!)),
                 borderSide: BorderSide(color: Color(0xFFF65054)),
               ),
-              errorBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50.0)),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(borderRadius!)),
                 borderSide: BorderSide(color: Color(0xFFF65054)),
               ),
               filled: true,

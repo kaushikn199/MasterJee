@@ -8,10 +8,12 @@ import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
+import 'package:masterjee/screens/ptm/ptm.dart';
 import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
 import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
+import 'package:masterjee/widgets/cardHomeWidget.dart';
 import 'package:masterjee/widgets/drawers.dart';
 import 'package:masterjee/widgets/home_app_bar.dart';
 import 'package:masterjee/widgets/text.dart';
@@ -66,55 +68,6 @@ class _MainScreenState extends State<MainScreen> {
     "Section A",
     "Section B",
   ];
-
-  Widget cardWid(String name, image, Function()? onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10.r), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 3,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: 15.h),
-            Expanded(
-              child: Image.asset(
-                image, // Replace with your image asset
-                width: 50.sp,
-                height: 50.sp,
-              ),
-            ),
-            SizedBox(height: 5.h),
-            Padding(
-              padding: const EdgeInsets.all(3),
-              child: Text(
-                name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            SizedBox(height: 5.h),
-          ],
-        ),
-      ),
-    );
-  }
 
   void onDrawerItemClicked(int index) {
     setState(() {
@@ -365,49 +318,56 @@ class _MainScreenState extends State<MainScreen> {
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
                   children: <Widget>[
-                    cardWid(AppTags.attendance, AssetsUtils.attendanceIcon, () {
-                      Navigator.pushNamed(
-                        context,
-                        AttendanceScreen.routeName,
-                        arguments: {'header': AppTags.attendance},
-                      );
-                    }),
-                    cardWid(AppTags.duesReport, AssetsUtils.duesReportIcon, () {
+                    cardHomeWidget(
+                      name: AppTags.attendance,
+                      image: AssetsUtils.attendanceIcon,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AttendanceScreen.routeName,
+                          arguments: {'header': AppTags.attendance},
+                        );
+                      },
+                    ),
+                    cardHomeWidget( name:AppTags.duesReport, image:AssetsUtils.duesReportIcon, onTap: () {
                       Navigator.pushNamed(context, DuesReportScreen.routeName);
                     }),
-                    cardWid(AppTags.timetable, AssetsUtils.timeTableIcon, () {
+                    cardHomeWidget( name:AppTags.timetable, image:AssetsUtils.timeTableIcon, onTap: () {
                       Navigator.pushNamed(
                         context,
                         AttendanceScreen.routeName,
                         arguments: {'header': AppTags.timetable},
                       );
                     }),
-                    cardWid(AppTags.leads, AssetsUtils.leadIcon, () {
+                    cardHomeWidget( name:AppTags.leads, image:AssetsUtils.leadIcon, onTap: () {
                       Navigator.pushNamed(context, LeadsScreen.routeName);
                     }),
-                    cardWid(AppTags.homework, AssetsUtils.homeworkIcIcon, () {
+                    cardHomeWidget( name:AppTags.homework,image: AssetsUtils.homeworkIcIcon, onTap: () {
                       Navigator.pushNamed(context, HomeworkScreen.routeName);
                     }),
-                    cardWid(AppTags.studentBehavior,
-                        AssetsUtils.studentBehaviourIcon, () {
+                    cardHomeWidget( name:AppTags.studentBehavior,
+                        image:AssetsUtils.studentBehaviourIcon, onTap: () {
                       Navigator.pushNamed(
                           context, StudentBehaviourScreen.routeName);
                     }),
-                    cardWid(AppTags.studentProgress,
-                        AssetsUtils.studentProgressIcon, () {
+                    cardHomeWidget( name:AppTags.studentProgress,
+                        image:AssetsUtils.studentProgressIcon, onTap: () {
                       Navigator.pushNamed(
                           context, StudentProgressScreen.routeName);
                     }),
-                    cardWid(AppTags.assesment, AssetsUtils.attendanceIcon, () {
+                    cardHomeWidget( name:AppTags.assesment,image: AssetsUtils.attendanceIcon, onTap: () {
                       Navigator.pushNamed(context, AssesmentScreen.routeName);
                     }),
-                    cardWid(AppTags.ptm, AssetsUtils.ptmIcon, () {}),
-                    cardWid(AppTags.biometricAttendance,
-                        AssetsUtils.biometricAttendanceIcon, () {}),
-                    cardWid(AppTags.applyLeave, AssetsUtils.leaveIcon, () {
+                    cardHomeWidget( name:AppTags.ptm, image:AssetsUtils.ptmIcon,  onTap:() {
+                      Navigator.pushNamed(context, PTMScreen.routeName);
+
+                    }),
+                    cardHomeWidget( name:AppTags.biometricAttendance,
+                        image:AssetsUtils.biometricAttendanceIcon,  onTap:() {}),
+                    cardHomeWidget( name:AppTags.applyLeave,image: AssetsUtils.leaveIcon, onTap: () {
                       Navigator.pushNamed(context, ApplyLeaveScreen.routeName);
                     }),
-                    cardWid(AppTags.gmeetLiveClasses, AssetsUtils.gmeetliveIcon,
+                    cardHomeWidget( name:AppTags.gmeetLiveClasses, image:AssetsUtils.gmeetliveIcon, onTap:
                         () {
                       Navigator.pushNamed(
                           context, GMeetLiveClassesScreen.routeName);
