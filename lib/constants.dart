@@ -4,7 +4,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-const BASE_URL = 'https://pu.sjres.edu.in';
+const BASE_URL = 'https://one2.in/cycode/cincharge/api/';
 
 // list of colors that we use in our app
 const colorWhite = Color(0xFFFFFFFF);

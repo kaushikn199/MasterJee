@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/screens/home/main_screen.dart';
 import 'package:masterjee/screens/signup_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 
@@ -17,9 +19,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Future.delayed(const Duration(milliseconds: 3000), () {
-      setState(() {
+      setState(() async {
        // Navigator.of(context).pushNamed(SignupScreen.routeName);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignupScreen()));
+        if(await StorageHelper.isLoggedIn()){
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const MainScreen()));
+        }else{
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignupScreen()));
+        }
       });
     });
     super.initState();

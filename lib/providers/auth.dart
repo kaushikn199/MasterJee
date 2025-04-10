@@ -1,28 +1,36 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/login/login_data.dart';
+import 'package:http/http.dart' as http;
+import 'package:masterjee/others/ApiHelper.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/screens/signup_screen.dart';
 
 class Auth with ChangeNotifier {
-  /*Future<User> login(String username, String password) async {
-    var url = Uri.parse('${LocalDatabase.baseAPIUrl}auth/login');
-    try {
-      Map<String, String> body = {
-        'username': username.trim(),
-        'password': password.trim(),
-        'device_token': Platform.isAndroid
-            ? OneSignal.User.pushSubscription.id.toString()
-            : "",
-      };
-      print(url);
 
-      final response = await http.post(url, body: jsonEncode(body));
-      print(response.statusCode);
-      print(response.body);
-      final responseData = json.decode(response.body);
-      final userData = User.fromJson(responseData);
-      return userData;
-      // print(userData);
-    } catch (error) {
-      rethrow;
+  Future<LoginData> login(String username, String password) async {
+    Map<String, dynamic> body = {
+      'email': username.trim(),
+      'password': password.trim(),
+    };
+
+    final responseData = await ApiHelper.post(ApiHelper.login, body);
+
+    if (responseData['data'] != null) {
+      return LoginData.fromJson(responseData);
+    } else {
+      throw Exception(responseData['message'] ?? 'Login failed');
     }
-  }*/
+  }
+
+  Future<void> logout(cntx) async {
+    await StorageHelper.clearUserData();
+    //Navigator.pop(cntx);
+    Get.offAllNamed(SignupScreen.routeName);
+  }
 
 }

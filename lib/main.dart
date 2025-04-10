@@ -73,7 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         child: Consumer<Auth>(
-          builder: (ctx, auth, _) => ScreenUtilInit(
+          builder: (ctx, auth, _) =>
+              ScreenUtilInit(
               designSize: designSize(context),
               minTextAdapt: true,
               useInheritedMediaQuery: true,

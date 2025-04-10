@@ -1,14 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/models/login/login_data.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/screens/home/main_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:masterjee/widgets/util.dart';
+import 'package:provider/provider.dart';
 
 import 'forgot_password_screen.dart';
 
@@ -30,42 +37,41 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passwordController = TextEditingController();
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-
-
   Future<void> _submit() async {
     if (!globalFormKey.currentState!.validate()) {
-      // Invalid!
       return;
     }
     globalFormKey.currentState!.save();
-    Navigator.pushNamedAndRemoveUntil(context, '/Main', (r) => false);
-
-   /* setState(() {
+    setState(() {
       _isLoading = true;
-    });*/
-   /* try {
+    });
+    try {
       // Log user in
-      await Provider.of<Auth>(context, listen: false).login(
-        _authData['username'].toString(),
-        _authData['password'].toString(),
+      LoginData userData = await Provider.of<Auth>(context, listen: false).login(
+        _emailController.text,
+        _passwordController.text,
       );
-
-      // ignore: use_build_context_synchronously
-      Navigator.pushNamedAndRemoveUntil(context, '/home', (r) => false);
-      CommonFunctions.showSuccessToast('Login Successful');
+      if (userData.result && userData.data != null) {
+        await StorageHelper.saveUserData(userData.data!);
+        CommonFunctions.showWarningToast(userData.message.toString());
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.pushNamedAndRemoveUntil(context, '/Main', (r) => false);
+        return;
+      }
     } on HttpException {
-      var errorMsg = 'Auth failed';
+      var errorMsg = 'Auth failed  here';
       CommonFunctions.showErrorDialog(errorMsg, context);
     } catch (error) {
-      // print(error);
+      print(error);
       const errorMsg = 'Could not authenticate!';
       CommonFunctions.showErrorDialog(errorMsg, context);
     }
     setState(() {
       _isLoading = false;
-    });*/
+    });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -286,113 +292,5 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
-
-
-    /*Scaffold(
-        backgroundColor: colorGaryBG,
-        body: SingleChildScrollView(
-          child: Form(
-            key: globalFormKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(25),
-                          bottomRight: Radius.circular(25)),
-                      color: colorGreen),
-                  child: CommonText.bold(
-                    textAlign: TextAlign.center,
-                    AppTags.signIn,
-                    size: 16.sp,
-                    color: colorWhite,
-                  ).paddingOnly(top: 70, bottom: 20),
-                ),
-                SvgPicture.asset(
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height / 3,
-                  'assets/images/ic_signup_image.svg',
-                  fit: BoxFit.cover,
-                ).paddingOnly(top: 10),
-                CommonText.semiBold(
-                  textAlign: TextAlign.center,
-                  AppTags.letSignIn,
-                  size: 24.sp,
-                  color: colorBlack,
-                ).paddingOnly(top: 10),
-                const SizedBox(
-                  width: double.infinity,
-                  height: 1,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(color: colorGaryLine),
-                  ),
-                ).paddingOnly(left: 20, right: 20, top: 20),
-                CustomTextField(
-                  hintText: 'User email',
-                  isRequired: true,
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validate: (input) =>
-                      !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-                              .hasMatch(input!)
-                          ? "Email Id should be valid"
-                          : null,
-                  onSave: (value) {
-                    // _authData['email'] = value.toString();
-                    _emailController.text = value as String;
-                  },
-                ).paddingOnly(left: 20, right: 20, top: 25),
-                CustomTextField(
-                  obscureText: true,
-                  maxLines: 1,
-                  hintText: 'Password',
-                  isRequired: true,
-                  controller: _passwordController,
-                  keyboardType: TextInputType.text,
-                  validate: (input) {
-                    if (input!.isEmpty) {
-                      return 'Password cannot be empty';
-                    }
-                    return null;
-                  },
-                  onSave: (value) {
-                    // _authData['email'] = value.toString();
-                    _passwordController.text = value as String;
-                  },
-                ).paddingOnly(left: 20, right: 20, top: 10),
-                SizedBox(
-                  height: 30.h,
-                ),
-                MaterialButton(
-                  onPressed: () {
-                    if (globalFormKey.currentState!.validate()) {
-                      Navigator.of(context).pushNamed(MainScreen.routeName);
-                    }
-                  },
-                  color: colorGreen,
-                  textColor: Colors.black,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 135, vertical: 13),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                    // side: const BorderSide(color: kRedColor),
-                  ),
-                  child: CommonText.bold(
-                    textAlign: TextAlign.center,
-                    AppTags.signIn,
-                    size: 16.sp,
-                    color: colorWhite,
-                  ),
-                ),
-                SizedBox(
-                  height: 12.h,
-                ),
-              ],
-            ),
-          ),
-        ));*/
   }
 }

@@ -6,6 +6,9 @@ import 'package:get/get.dart';
 import 'package:get/get_common/get_reset.dart';
 import 'package:get/get_navigation/src/bottomsheet/bottomsheet.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/auth.dart';
+import 'package:masterjee/screens/signup_screen.dart';
 import 'package:masterjee/widgets/change_user.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
@@ -97,7 +100,7 @@ Widget logOutPopup(BuildContext context) {
                 Expanded(
                   child: MaterialButton(
                     onPressed: () async {
-                      //await Provider.of<Auth>(context, listen: false).logout(context);
+                      await Provider.of<Auth>(context, listen: false).logout(context);
                     },
                     color: colorGreen,
                     textColor: Colors.white,
@@ -160,7 +163,12 @@ Widget buildList({
           text: item.title,
           icon: item.icon,
           size: item.size,
-          onClicked: () => selectItem(context, indexOffset + index),
+          onClicked: () {
+
+            selectItem(context, indexOffset + index);
+            print("index : "+"${indexOffset}"+" , ${index}" );
+          },
+
         );
       },
     );
@@ -177,6 +185,12 @@ void selectItem(BuildContext context, int index) {
       //Navigator.of(context).pushNamed(AboutSchoolScreen.routeName,);
       break;
     case 3:
+      print("indexOffset + index");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => logOutPopup(context),
+      );
+      break;
     //   break;
     // case 4:
       break;
