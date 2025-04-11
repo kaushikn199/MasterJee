@@ -1,19 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/login/login_data.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/auth.dart';
-import 'package:masterjee/screens/home/main_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
-import 'package:masterjee/widgets/custom_form_field.dart';
-import 'package:masterjee/widgets/text.dart';
 import 'package:masterjee/widgets/util.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +41,8 @@ class _SignupScreenState extends State<SignupScreen> {
     });
     try {
       // Log user in
-      LoginData userData = await Provider.of<Auth>(context, listen: false).login(
+      LoginData userData =
+          await Provider.of<Auth>(context, listen: false).login(
         _emailController.text,
         _passwordController.text,
       );
@@ -75,7 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: colorGaryBG,
       appBar: AppBar(
         key: scaffoldKey,
@@ -135,8 +130,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                         Padding(
-                          padding:
-                          const EdgeInsets.only(left: 15.0, top: 0.0, right: 15.0, bottom: 8.0),
+                          padding: const EdgeInsets.only(
+                              left: 15.0, top: 0.0, right: 15.0, bottom: 8.0),
                           child: TextFormField(
                             style: const TextStyle(fontSize: 14),
                             decoration: getInputDecoration(
@@ -146,13 +141,13 @@ class _SignupScreenState extends State<SignupScreen> {
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             validator: (input) =>
-                            !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-                                .hasMatch(input!)
-                                ? "Email Id should be valid"
-                                : null,
+                                !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                                        .hasMatch(input!)
+                                    ? "Email Id should be valid"
+                                    : null,
                             onSaved: (value) {
-                             // _authData['email'] = value.toString();
-                             // _emailController.text = value as String;
+                              // _authData['email'] = value.toString();
+                              // _emailController.text = value as String;
                             },
                           ),
                         ),
@@ -171,15 +166,15 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                         Padding(
-                          padding:
-                          const EdgeInsets.only(left: 15.0, top: 0.0, right: 15.0, bottom: 4.0),
+                          padding: const EdgeInsets.only(
+                              left: 15.0, top: 0.0, right: 15.0, bottom: 4.0),
                           child: TextFormField(
                             style: const TextStyle(color: Colors.black),
                             keyboardType: TextInputType.text,
                             controller: _passwordController,
                             onSaved: (input) {
-                             // _authData['password'] = input.toString();
-                             // _passwordController.text = input as String;
+                              // _authData['password'] = input.toString();
+                              // _passwordController.text = input as String;
                             },
                             validator: (input) => input!.length < 3
                                 ? "Password should be more than 3 characters"
@@ -187,12 +182,16 @@ class _SignupScreenState extends State<SignupScreen> {
                             obscureText: hidePassword,
                             decoration: InputDecoration(
                               enabledBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                                borderSide: BorderSide(color: Colors.white, width: 2),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.white, width: 2),
                               ),
                               focusedBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                                borderSide: BorderSide(color: Colors.white, width: 2),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.white, width: 2),
                               ),
                               border: const OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.white),
@@ -201,11 +200,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                 ),
                               ),
                               filled: true,
-                              hintStyle: const TextStyle(color: Colors.black54, fontSize: 14),
+                              hintStyle: const TextStyle(
+                                  color: Colors.black54, fontSize: 14),
                               hintText: "password",
                               fillColor: kBackgroundColor,
-                              contentPadding:
-                              const EdgeInsets.symmetric(vertical: 18, horizontal: 15),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 18, horizontal: 15),
                               prefixIcon: const Icon(
                                 Icons.lock_outlined,
                                 color: kTextLowBlackColor,
@@ -226,10 +226,12 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         InkWell(
                           onTap: () {
-                            Navigator.of(context).pushNamed(ForgotPassword.routeName);
+                            Navigator.of(context)
+                                .pushNamed(ForgotPassword.routeName);
                           },
                           child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 5),
                             child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
@@ -244,14 +246,14 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: _isLoading
                               ? const Center(child: CircularProgressIndicator())
                               : Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: CommonButton(
-                              text: "Log In",
-                              onPressed: () {
-                                _submit();
-                              },
-                            ),
-                          ),
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: CommonButton(
+                                    text: "Log In",
+                                    onPressed: () {
+                                      _submit();
+                                    },
+                                  ),
+                                ),
                         ),
                         const SizedBox(height: 20),
                       ],

@@ -21,6 +21,8 @@ class ApiHelper {
       }) async {
     var url = Uri.parse('$BASE_URL$endpoint');
 
+    print("url : ${url}");
+
     try {
       final response = await http.post(
         url,
@@ -32,6 +34,7 @@ class ApiHelper {
       print('Response: ${response.body}');
 
       final responseData = json.decode(response.body);
+      print('responseData: ${responseData}');
 
       if (response.statusCode == 200) {
         return responseData;
@@ -43,4 +46,7 @@ class ApiHelper {
       rethrow;
     }
   }
+
+
+
 }

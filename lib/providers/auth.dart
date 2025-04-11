@@ -18,7 +18,9 @@ class Auth with ChangeNotifier {
       'password': password.trim(),
     };
 
+    print("body : ${body}");
     final responseData = await ApiHelper.post(ApiHelper.login, body);
+    print("responseData : ${responseData}");
 
     if (responseData['data'] != null) {
       return LoginData.fromJson(responseData);
@@ -29,8 +31,8 @@ class Auth with ChangeNotifier {
 
   Future<void> logout(cntx) async {
     await StorageHelper.clearUserData();
-    //Navigator.pop(cntx);
     Get.offAllNamed(SignupScreen.routeName);
+   //Navigator.of(cntx).pushNamed(SignupScreen.routeName,);
   }
 
 }

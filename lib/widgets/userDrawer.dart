@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
 
 import 'app_tags.dart';
 
-const padding = EdgeInsets.symmetric(horizontal: 10);
+/*const padding = EdgeInsets.symmetric(horizontal: 10);
 
 class NavigationDrawerWidget extends StatefulWidget {
   final int selectedIndex;
@@ -120,7 +121,7 @@ Widget logOutPopup(BuildContext context) {
                 Expanded(
                   child: MaterialButton(
                     onPressed: () async {
-                      //await Provider.of<Auth>(context, listen: false).logout(context);
+                      await Provider.of<Auth>(context, listen: false).logout(context);
                     },
                     color: colorGreen,
                     textColor: Colors.white,
@@ -232,7 +233,7 @@ Widget buildMenuItem(
   if (itemIndex == 0) {
     f = false;
   }
-   /*Wrap(
+   *//*Wrap(
     spacing: 0.sp,
     children: [
       ListTile(
@@ -246,16 +247,16 @@ Widget buildMenuItem(
         onTap: onClicked,
       ),
     ],
-  );*/bool isSelected = selectedIndex == itemIndex;
+  );*//*bool isSelected = selectedIndex == itemIndex;
   return  InkWell(
         borderRadius: BorderRadius.circular(12), // Rounded effect on tap
         onTap: () {
-          /*setState(() {
+          *//*setState(() {
             selectedIndex = index;
           });
           Future.delayed(Duration(milliseconds: 300), () {
             Navigator.pop(context);
-          });*/
+          });*//*
           onClicked!();
         },
         child: Container(
@@ -306,7 +307,7 @@ Widget buildHeader(BuildContext context) => Row(
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(34.0),
-                  child: /*CachedNetworkImage(
+                  child: *//*CachedNetworkImage(
                     imageUrl: LocalDatabase.siteUrl + LocalDatabase.user!.image.toString(),
                     placeholder: (context, url) => const CircularProgressIndicator(),
                     errorWidget: (context, url, error) => Image.asset(
@@ -317,7 +318,7 @@ Widget buildHeader(BuildContext context) => Row(
                       width: 50,
                       height: 50,
                     ),
-                  )*/Image.asset(AssetsUtils.logoIcon,width: 50,
+                  )*//*Image.asset(AssetsUtils.logoIcon,width: 50,
                       height: 50),
                 ),
               ),
@@ -333,7 +334,7 @@ Widget buildHeader(BuildContext context) => Row(
                     color: const Color(0XFF343E87),
                   ),
                   gap(3.sp),
-                  /*LocalDatabase.user?.role == "parent"
+                  *//*LocalDatabase.user?.role == "parent"
                       ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           CommonText.semiBold(
                             'Child - ${LocalDatabase.selectedStudent!.name}' ?? "",
@@ -446,7 +447,7 @@ Widget buildHeader(BuildContext context) => Row(
                           "${LocalDatabase.user?.recordClass ?? ""} (${LocalDatabase.user?.section ?? ""})",
                           size: 12.sp,
                           color: Colors.blueGrey,
-                        ),*/
+                        ),*//*
                 ],
               )
             ],
@@ -479,76 +480,5 @@ class DrawerItem {
     required this.title,
     required this.icon,
   });
-}
-
-/*studentWidget(ParentChild child, BuildContext context) {
-  return GestureDetector(
-    onTap: () {
-      // setState(() {
-     *//* LocalDatabase.studentId = child.studentId;
-      LocalDatabase.selectedStudent = child;
-      LocalDatabase.classId = child.classId;
-      LocalDatabase.sectionId = child.sectionId;
-      // });
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/home',
-        (route) => false,
-      );*//*
-    },
-    child: Card(
-      margin: EdgeInsets.symmetric(vertical: 10.sp, horizontal: 20.sp),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.sp, horizontal: 20.sp),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              width: 70.sp,
-              height: 70.sp,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100.r),
-                border: Border.all(width: 1, color: Colors.white),
-                color: Colors.grey,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blueGrey.withOpacity(0.2),
-                    blurRadius: 12.r,
-                    spreadRadius: 8.r,
-                  )
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(34.r),
-                child: CachedNetworkImage(
-                  imageUrl: "",
-                  placeholder: (context, url) => const CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Image.asset(
-                    AssetsUtils.logoIcon,
-                    fit: BoxFit.cover,
-                    width: 50,
-                    height: 50,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                CommonText.medium(child.name!,
-                    size: 14.sp, color: Colors.black, overflow: TextOverflow.fade),
-                CommonText.medium("${child.parentChildClass} - ${child.section}",
-                    size: 12.sp, color: Colors.black54, overflow: TextOverflow.fade),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
 }*/
+

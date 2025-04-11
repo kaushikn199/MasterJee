@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       initialRoute: SplashScreen.routeName,
                       routes: {
                         SignupScreen.routeName: (ctx) =>  SignupScreen(),
-                        MainScreen.routeName: (ctx) =>  MainScreen(),
+                        MainScreen.routeName: (ctx) =>  const MainScreen(),
                         ForgotPassword.routeName: (ctx) =>  ForgotPassword(),
                         AttendanceScreen.routeName: (ctx) =>  AttendanceScreen(),
                         DuesReportScreen.routeName: (ctx) =>  DuesReportScreen(),

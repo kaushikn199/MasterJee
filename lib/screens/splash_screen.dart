@@ -18,17 +18,17 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      setState(() async {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 3000), () async {
        // Navigator.of(context).pushNamed(SignupScreen.routeName);
         if(await StorageHelper.isLoggedIn()){
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const MainScreen()));
         }else{
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignupScreen()));
         }
-      });
+
     });
-    super.initState();
+
   }
 
   @override

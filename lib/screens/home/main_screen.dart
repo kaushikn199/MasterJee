@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
@@ -9,6 +11,7 @@ import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.d
 import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/ptm/ptm.dart';
+import 'package:masterjee/screens/signup_screen.dart';
 import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
 import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
@@ -17,6 +20,8 @@ import 'package:masterjee/widgets/cardHomeWidget.dart';
 import 'package:masterjee/widgets/drawers.dart';
 import 'package:masterjee/widgets/home_app_bar.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:masterjee/widgets/userDrawer.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -235,13 +240,41 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: CustomHomeAppBar(),
-      drawer: DrawerWidget(onPressed: () {
-        print("DrawerWidget");
-        showDialog(
-          context: context,
-          builder: (BuildContext context) => _changeUserPopup(context),
-        );
-      }),
+      drawer: DrawerWidget(onPressed: (p0) {
+        print("DrawerWidget ; ${p0}");
+
+        switch (p0) {
+        case -1:
+            print("DrawerWidget");
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => _changeUserPopup(context),
+            );
+            break;
+          case 0:
+            break;
+          case 1:
+          // Navigator.of(context).pushNamed(MyProfileScreen.routeName,);
+            break;
+          case 2:
+          //Navigator.of(context).pushNamed(AboutSchoolScreen.routeName,);
+            break;
+          case 3:
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return logOutPopup(this.context,() async {
+                  await StorageHelper.clearUserData();
+                  Navigator.pushNamedAndRemoveUntil(this.context, SignupScreen.routeName, (r) => false);
+                } );
+              },
+            );
+            break;
+            //   break;
+            // case 4:
+            break;
+        }
+      }, ),
       body: SingleChildScrollView(
         child: Builder(builder: (context) {
           return Padding(
