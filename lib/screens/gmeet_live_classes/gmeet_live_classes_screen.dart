@@ -3,10 +3,14 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/gmeet_response/GMeetResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/g_meet.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:masterjee/widgets/util.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -15,15 +19,43 @@ class GMeetLiveClassesScreen extends StatefulWidget {
 
   static String routeName = 'GMeetLiveClassesScreen';
 
-
   @override
   State<GMeetLiveClassesScreen> createState() => _GMeetLiveClassesScreenState();
 }
 
 class _GMeetLiveClassesScreenState extends State<GMeetLiveClassesScreen> {
 
-  var _isLoading = false;
-  List<int> list =  [0,1,2,3];
+  var _isLoading = true;
+  late List<GMeetData> gMeetList = [];
+
+  @override
+  void initState() {
+    callApiGMeet();
+    super.initState();
+  }
+
+  Future<void> callApiGMeet() async {
+    try {
+      GMeetResponse data =
+      await Provider.of<GMeetApi>(context, listen: false).getAllGMeet(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString()
+      );
+      if (data.result) {
+        setState(() {
+          gMeetList = data.data;
+          print("gMeetList : ${gMeetList.length}");
+          _isLoading = false;
+        });
+        return;
+      }else{
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +70,7 @@ class _GMeetLiveClassesScreenState extends State<GMeetLiveClassesScreen> {
             ),
           );
         }
-        if (list == null || list.isEmpty) {
+        if (gMeetList == null || gMeetList.isEmpty) {
           return Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -54,7 +86,7 @@ class _GMeetLiveClassesScreenState extends State<GMeetLiveClassesScreen> {
           padding: EdgeInsets.symmetric(horizontal: 10.sp),
           child: ListView.builder(
               shrinkWrap: true,
-              itemCount: list.length,
+              itemCount: gMeetList.length,
               padding: EdgeInsets.only(top: 10.sp),
               itemBuilder: (BuildContext context, int index) {
                 return Container(
@@ -86,16 +118,16 @@ class _GMeetLiveClassesScreenState extends State<GMeetLiveClassesScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                 "TestKl",
+                                gMeetList[index].title,
                                 style: TextStyle(
                                   fontSize: 18.sp,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              if (list[index].toString() == "0")
+                              //if (gMeetList[index].toString() == "0")
                                 GestureDetector(
                                   onTap: () {
-                                    _launch(Uri.parse("https://www.google.co.in/"));
+                                    _launch(Uri.parse(gMeetList[index].url));
                                   },
                                   child: Container(
                                     padding: EdgeInsets.symmetric(vertical: 4.sp, horizontal: 8.sp),
@@ -132,23 +164,23 @@ class _GMeetLiveClassesScreenState extends State<GMeetLiveClassesScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                rowValue("Class Duration (Minutes)",  "30"),
-                                if (list[index].toString() == "0")
+                                rowValue("Class Duration (Minutes)",  gMeetList[index].duration),
+                                if (gMeetList[index].status == "0")
                                   statusBadge("Awaited", Colors.yellow),
-                                if (list[index].toString() == "1")
+                                if (gMeetList[index].toString() == "1")
                                   statusBadge("Cancelled", kRedColor),
-                                if (list[index].toString() == "2")
+                                if (gMeetList[index].toString() == "2")
                                   statusBadge("Finished", Colors.green)
                               ],
                             ),
+                            //gap(10.sp),
+                           // rowValue("Class", "${gMeetList[index].} (Section B)"),
                             gap(10.sp),
-                            rowValue("Class", "Class 5 (Section B)"),
+                            rowValue("Date Time", gMeetList[index].date ?? ""),
                             gap(10.sp),
-                            rowValue("Date Time", "10/20/2024 07:46 PM"),
+                            rowValue("Class Host", gMeetList[index].forCreateName),
                             gap(10.sp),
-                            rowValue("Class Host", "Pawan"),
-                            gap(10.sp),
-                            rowValue("Description",  "Test"),
+                            rowValue("Description",  gMeetList[index].description),
                             gap(10.sp),
                           ],
                         ),
@@ -179,4 +211,3 @@ rowValue(String key, value) {
     CommonText.medium(value, size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
   ]);
 }
-

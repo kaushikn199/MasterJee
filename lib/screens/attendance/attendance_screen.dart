@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/attendance/class_attendance_model.dart';
+import 'package:masterjee/models/class_timetable/class_time_table_response.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/class_timetable.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
@@ -78,6 +82,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     ),
     status: "success",
   );
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

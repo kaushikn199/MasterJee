@@ -3,9 +3,13 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/dues_report_response/DuesReportResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/dues_report.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class DuesReportScreen extends StatefulWidget {
   const DuesReportScreen({super.key});
@@ -17,13 +21,37 @@ class DuesReportScreen extends StatefulWidget {
 
 class _DuesReportScreenState extends State<DuesReportScreen> {
 
-  var _isLoading = false;
-  List<int> resultData = [1, 2, 3, 4, 5];
+  var _isLoading = true;
+  late List<DuesReportData> duesReportList = [];
 
   @override
   void initState() {
+    callApiDuesReport();
     super.initState();
   }
+
+  Future<void> callApiDuesReport() async {
+    try {
+      DuesReportResponse data =
+      await Provider.of<DuesReport>(context, listen: false).getDuesReport(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString()
+      );
+      if (data.result) {
+        setState(() {
+          duesReportList = data.data;
+          _isLoading = false;
+        });
+        return;
+      }else{
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {}
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +68,7 @@ class _DuesReportScreenState extends State<DuesReportScreen> {
                 ),
               );
             }
-            if (resultData.isEmpty) {
+            if (duesReportList.isEmpty) {
               return Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -56,10 +84,10 @@ class _DuesReportScreenState extends State<DuesReportScreen> {
               padding: EdgeInsets.symmetric(horizontal: 10.sp),
               child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: resultData.length,
+                  itemCount: duesReportList.length,
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
-                    return assignmentCard(resultData[index], false);
+                    return assignmentCard(duesReportList[index], false);
                   }),
             );
           }),
@@ -69,7 +97,7 @@ class _DuesReportScreenState extends State<DuesReportScreen> {
     );
   }
 
-  Widget assignmentCard(int a, bool isClosed) {
+  Widget assignmentCard(DuesReportData data, bool isClosed) {
     return Container(
       margin: EdgeInsets.only(bottom: 20.sp),
       decoration: BoxDecoration(
@@ -99,14 +127,13 @@ class _DuesReportScreenState extends State<DuesReportScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      "Abc1234567 - venkatesh",
+                     "${data.studentId} ${data.firstname}",
                       style: TextStyle(
-                        fontSize: 18.sp,
+                        fontSize: 15.sp,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -116,14 +143,14 @@ class _DuesReportScreenState extends State<DuesReportScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                rowValue("Payble",  "0"),
+                rowValue("Payble", data.payble.toString()),
                 gap(10.sp),
-                rowValue("Paid", "0"),
+                rowValue("Paid", data.payble.toString()),
                 gap(10.sp),
-                rowValue("Discount", "0"),
+                rowValue("Discount", data.discount.toString()),
                 gap(10.sp),
-                rowValue("Dues", "0"),
-                gap(10.sp),
+                rowValue("Dues", data.dues.toString()),
+                gap(5.sp),
               ],
             ),
           ),

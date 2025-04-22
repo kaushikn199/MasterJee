@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/class_section/class_section_response.dart';
 import 'package:masterjee/models/login/login_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:masterjee/others/ApiHelper.dart';
@@ -33,6 +34,22 @@ class Auth with ChangeNotifier {
     await StorageHelper.clearUserData();
     Get.offAllNamed(SignupScreen.routeName);
    //Navigator.of(cntx).pushNamed(SignupScreen.routeName,);
+  }
+
+  Future<ClassSectionResponse> getClassSection(String userId) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+    };
+
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.getClassSection, body);
+    print("responseData : ${responseData}");
+
+    if (responseData['data'] != null) {
+      return ClassSectionResponse.fromJson(responseData);
+    } else {
+      throw Exception(responseData['message'] ?? 'getClassSection failed');
+    }
   }
 
 }

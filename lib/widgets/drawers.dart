@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/login/login_data.dart';
 import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +12,11 @@ import 'app_tags.dart';
 const padding = EdgeInsets.symmetric(horizontal: 20);
 
 class DrawerWidget extends StatefulWidget {
-  final Function(int) onPressed;
 
-  const DrawerWidget({super.key, required this.onPressed});
+  final Function(int) onPressed;
+  final UserData data;
+
+  const DrawerWidget({super.key, required this.onPressed,required this.data});
 
   @override
   State<DrawerWidget> createState() => _DrawerWidgetState();
@@ -32,7 +35,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               width: double.infinity,
               color: kBackgroundColor,
               child: InkWell(
-                child: buildHeader(context),
+                child: buildHeader(context,widget.data),
                 onTap: () {
                   Navigator.of(context).pop();
                   widget.onPressed(-1);
@@ -108,7 +111,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     );
   }
 
-  Widget buildHeader(BuildContext context) => Row(
+  Widget buildHeader(BuildContext context, UserData data) => Row(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
@@ -148,13 +151,13 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CommonText.extraBold(
-                  "Mina Patel",
+                  "${data.firstName ?? ""} ${data.lastName ?? ""}",
                   size: 22.sp,
                   color: const Color(0XFF343E87),
                 ),
                 gap(3.sp),
                 CommonText.semiBold(
-                  "Class 5 (Section B)",
+                  "${data.email}",
                   size: 12.sp,
                   color: Colors.blueGrey,
                 ),

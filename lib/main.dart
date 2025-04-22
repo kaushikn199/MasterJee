@@ -3,7 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:masterjee/models/class_section/class_section_response.dart';
 import 'package:masterjee/providers/auth.dart';
+import 'package:masterjee/providers/class_timetable.dart';
+import 'package:masterjee/providers/dues_report.dart';
+import 'package:masterjee/providers/g_meet.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
@@ -28,13 +32,17 @@ import 'package:masterjee/screens/student_behaviour/view_screen.dart';
 import 'package:masterjee/screens/student_progress/marksheet_screen.dart';
 import 'package:masterjee/screens/student_progress/overall_screen.dart';
 import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
+import 'package:masterjee/screens/timetable/timetable_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:provider/provider.dart';
 
 import 'constants.dart';
+import 'others/StorageHelper.dart';
 import 'others/http_overrides.dart';
 
-void main() {
+main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await StorageHelper.init(); // 🔐 initialize prefs
   HttpOverrides.global = PostHttpOverrides();
   runApp(const MyApp());
 }
@@ -63,14 +71,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+
   @override
   Widget build(BuildContext context) {
 
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(
-            create: (ctx) => Auth(),
-          ),
+          ChangeNotifierProvider(create: (ctx) => Auth(),),
+          ChangeNotifierProvider(create: (ctx) => DuesReport(),),
+          ChangeNotifierProvider(create: (ctx) => GMeetApi()),
+          ChangeNotifierProvider(create: (ctx) => ClassTimetable()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>
@@ -129,6 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MinutebookScreen.routeName: (ctx) => const MinutebookScreen(),
                         ScheduleScreen.routeName: (ctx) => const ScheduleScreen(),
                         UpcomingScreen.routeName: (ctx) => const UpcomingScreen(),
+                        TimetableScreen.routeName: (ctx) => const TimetableScreen(),
                       },
                       home: const SplashScreen()),
                 );

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/login/login_data.dart';
@@ -224,7 +225,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                           ),
                         ),
-                        InkWell(
+                        gap(20.h),
+                        /*InkWell(
                           onTap: () {
                             Navigator.of(context)
                                 .pushNamed(ForgotPassword.routeName);
@@ -240,7 +242,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                             ),
                           ),
-                        ),
+                        ),*/
                         SizedBox(
                           width: double.infinity,
                           child: _isLoading
@@ -261,8 +263,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
               ),
-            ),
-            Padding(
+            )
+            /*Padding(
               padding: const EdgeInsets.only(left: 15, right: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -289,7 +291,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ],
               ),
-            ),
+            )*/,
           ],
         ),
       ),
