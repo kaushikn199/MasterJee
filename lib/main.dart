@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:masterjee/models/class_section/class_section_response.dart';
+import 'package:masterjee/providers/apply_leave_api.dart';
 import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/providers/class_timetable.dart';
 import 'package:masterjee/providers/dues_report.dart';
@@ -42,7 +43,7 @@ import 'others/http_overrides.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await StorageHelper.init(); // 🔐 initialize prefs
+  await StorageHelper.init();
   HttpOverrides.global = PostHttpOverrides();
   runApp(const MyApp());
 }
@@ -81,6 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => DuesReport(),),
           ChangeNotifierProvider(create: (ctx) => GMeetApi()),
           ChangeNotifierProvider(create: (ctx) => ClassTimetable()),
+          ChangeNotifierProvider(create: (ctx) => ApplyLeaveApi()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>

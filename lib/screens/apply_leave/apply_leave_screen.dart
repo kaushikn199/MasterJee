@@ -1,14 +1,19 @@
 import 'package:file_picker_pro/file_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/models/leave_application_list_response/leave_application_list_response.dart';
+import 'package:masterjee/models/subordinate_staff/subordinate_staff.dart';
+import 'package:masterjee/models/user_leave_applications_info_response/leave_application_list_response.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/apply_leave_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
-import 'package:masterjee/widgets/util.dart';
+import 'package:provider/provider.dart';
 
 class ApplyLeaveScreen extends StatefulWidget {
   const ApplyLeaveScreen({super.key});
@@ -20,10 +25,9 @@ class ApplyLeaveScreen extends StatefulWidget {
 }
 
 class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
-
   bool _isEditLoading = false;
   var _isLoading = false;
-  List<int> resultData = [1,1,1,1,1,1,1,1];
+
   FileData imageFile = FileData();
   DateTime _selectedDate = DateTime.now();
   DateTime? _selectedFromDate;
@@ -33,32 +37,169 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
   final _applyDateController = TextEditingController();
   final _fromDateController = TextEditingController();
   final _toDateController = TextEditingController();
+  late List<StfLeave> stfLeaveList = [];
+  late List<StuLeave> stuLeaveList = [];
+  late List<Lt> leaveTypeList = [];
+  late List<SubordinateStaffData> applyList = [];
 
+  String? _selectedApplyUser;
+  String? _selectedApplyUserId;
 
   String? _selectedLeaveType;
   String? _selectedLeaveTypeId;
 
-  List<String> leaveTypeData = [
-    "self",
-    "9 - Pavani",
-  ];
+  String selectedStaffValue = '';
 
-  String? _selectedApplyingFor;
-  String? _selectedApplyingForId;
+  @override
+  void initState() {
+    print("initState");
+    callAPiUserLeaveApplicationsInfo().then(
+      (value) {
+        callAPiLeaveApplicationForApproval();
+      },
+    );
+    callAPiSubordinateStaff();
+    super.initState();
+  }
 
-  List<String> applyingForData = [
-    "Sick leave",
-    "Casual leave",
-    "Marriage leave",
-    "Paid leave",
-  ];
+  Future<void> callAPiLeaveApplicationForApproval() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      LeaveApplicationListResponse data = await Provider.of<ApplyLeaveApi>(
+              context,
+              listen: false)
+          .getLeaveApplicationForApproval(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+              StorageHelper.getStringData(StorageHelper.sectionIdKey)
+                  .toString());
+      if (data.data != null) {
+        setState(() {
+          stfLeaveList = data.data?.stfLeave ?? [];
+          stuLeaveList = data.data?.stuLeave ?? [];
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+    }
+  }
+
+  Future<void> callAPiUserLeaveApplicationsInfo() async {
+    try {
+      UserLeaveApplicationsInfoResponse data = await Provider.of<ApplyLeaveApi>(
+              context,
+              listen: false)
+          .getUserLeaveApplicationsInfo(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString());
+      if (data.data != null) {
+        setState(() {
+          leaveTypeList = data.data?.lt ?? [];
+        });
+        return;
+      }
+    } catch (error) {
+      print("error : ${error}");
+    }
+  }
+
+  Future<UserLeaveApplicationsInfoResponse?> updateStaffLeaveStaus(
+      String staffLeaveId, String staffLeaveAction) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      UserLeaveApplicationsInfoResponse data =
+          await Provider.of<ApplyLeaveApi>(context, listen: false)
+              .updateStaffLeaveStaus(
+                  StorageHelper.getStringData(StorageHelper.userIdKey)
+                      .toString(),
+                  staffLeaveId,
+                  staffLeaveAction);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (data.result) {
+        return data;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      print("error : $error");
+      setState(() {
+        _isLoading = false;
+      });
+      return null;
+    }
+  }
+
+  Future<UserLeaveApplicationsInfoResponse?> updateStudentLeaveStaus(
+      String leaveId, String leaveAction) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      UserLeaveApplicationsInfoResponse data =
+          await Provider.of<ApplyLeaveApi>(context, listen: false)
+              .updateStudentLeaveStaus(
+                  StorageHelper.getStringData(StorageHelper.userIdKey)
+                      .toString(),
+                  leaveId,
+                  leaveAction);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (data.result) {
+        return data;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      print("error : $error");
+      setState(() {
+        _isLoading = false;
+      });
+      return null;
+    }
+  }
+
+  Future<void> callAPiSubordinateStaff() async {
+    try {
+      SubordinateStaffResponse data = await Provider.of<ApplyLeaveApi>(
+          context,
+          listen: false)
+          .getSubordinateStaff(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString());
+      if (data.data != null) {
+        setState(() {
+          applyList = data.data ?? [];
+        });
+        return;
+      }
+    } catch (error) {
+      print("error : ${error}");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarTwo(title: AppTags.applyLeave),
       floatingActionButton: FloatingActionButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.sp)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.sp)),
         backgroundColor: colorGreen,
         tooltip: AppTags.applyLeave,
         onPressed: () {
@@ -75,192 +216,367 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
             ),
           );
         }
-        if (resultData.isEmpty) {
+        if (stfLeaveList.isEmpty) {
           return Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-                CommonText.medium('No Record Found', size: 16.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+                CommonText.medium('No Record Found',
+                    size: 16.sp,
+                    color: kDarkGreyColor,
+                    overflow: TextOverflow.fade),
               ],
             ),
           );
         }
-        return Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.sp),
-              child: ListView.builder(
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              ListView.builder(
                   shrinkWrap: true,
-                  itemCount: resultData.length,
+                  itemCount: stuLeaveList.length,
+                  physics: NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      margin: EdgeInsets.all(10.sp),
-                      decoration: BoxDecoration(
-                        color: kSecondBackgroundColor,
-                        borderRadius: BorderRadius.circular(10.r),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.grey,
-                            spreadRadius: -2.0,
-                            blurRadius: 5.0,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: double.maxFinite,
-                            padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 10.sp),
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                BorderRadius.only(topRight: Radius.circular(10.r), topLeft: Radius.circular(10.r)),
-                                color: kToastTextColor),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Apply data",
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(0),
-                                        margin: const EdgeInsets.all(0),
-                                        height: 25.sp,
-                                        width: 25.sp,
-                                        decoration: BoxDecoration(
-                                          color: kDarkGreyColor,
-                                          borderRadius: BorderRadius.circular(5.r),
-                                        ),
-                                        child: IconButton(
-                                          color: Colors.white,
-                                          iconSize: 12.sp,
-                                          icon: const Icon(Icons.download),
-                                          onPressed: () {
-                                          },
-                                        ),
-                                      ),
-                                    gap(10.sp),
-                                      Container(
-                                        padding: const EdgeInsets.all(0),
-                                        margin: const EdgeInsets.all(0),
-                                        height: 25.sp,
-                                        width: 25.sp,
-                                        decoration: BoxDecoration(
-                                          color: kDarkButtonBg,
-                                          borderRadius: BorderRadius.circular(5.r),
-                                        ),
-                                        child: IconButton(
-                                          color: Colors.white,
-                                          iconSize: 12.sp,
-                                          icon: const Icon(Icons.edit),
-                                          onPressed: () {
-                                            _showBottomSheet(context, true);
-                                          },
-                                        ),
-                                      ),
-                                    gap(10.sp),
-                                      Container(
-                                        padding: const EdgeInsets.all(0),
-                                        margin: const EdgeInsets.all(0),
-                                        height: 25.sp,
-                                        width: 25.sp,
-                                        decoration: BoxDecoration(
-                                          color: kRedColor,
-                                          borderRadius: BorderRadius.circular(5),
-                                        ),
-                                        child: IconButton(
-                                          color: Colors.white,
-                                          iconSize: 12.sp,
-                                          icon: const Icon(Icons.delete),
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) => deletePopupDialog(context, "Leave"),
-                                            ).then((v) {
-
-                                            });
-                                            // print('Clicked on delete icon');
-                                          },
-                                        ),
-                                      ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(14.sp),
-                            child: Column(
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          rowValue(
-                                              "Applying","Self"),
-                                          gap(5.sp),
-                                          rowValue(
-                                              "Leave type","Sick leave"),
-                                          gap(5.sp),
-                                          rowValue(
-                                              "From Date","10/28/2024"),
-                                          gap(5.sp),
-                                          rowValue(
-                                              "To Date","10/28/2024"),
-                                        ],
-                                      ),
-                                    ),
-                                    gap(5.sp),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                         Container(
-                                            padding: EdgeInsets.symmetric(vertical: 4.sp, horizontal: 8.sp),
-                                            decoration: BoxDecoration(
-                                                color: colorGreen,
-                                                borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                                            child: CommonText.semiBold(
-                                               "Approved",
-                                                color: Colors.white,
-                                                size: 12.sp)),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                gap(5.sp),
-                                rowValue("Reason", "Not well"),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                    return Column(
+                      children: [studentLeaveContainer(stuLeaveList[index])],
                     );
                   }),
-            ),
-          ],
+              ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: stfLeaveList.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(top: 10.sp),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Column(
+                      children: [stafLeaveContainer(stfLeaveList[index])],
+                    );
+                  }),
+            ],
+          ),
         );
       }),
     );
   }
 
+  studentLeaveContainer(StuLeave data) {
+    return Container(
+      margin: EdgeInsets.all(10.sp),
+      decoration: BoxDecoration(
+        color: kSecondBackgroundColor,
+        borderRadius: BorderRadius.circular(10.r),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.grey,
+            spreadRadius: -2.0,
+            blurRadius: 5.0,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: double.maxFinite,
+            padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 10.sp),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(10.r),
+                    topLeft: Radius.circular(10.r)),
+                color: kToastTextColor),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Student Leave",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(14.sp),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CommonText.semiBold(
+                    "${data.firstname ?? ""} ${data.lastname ?? ""}",
+                    color: colorBlack,
+                    size: 12.sp),
+                ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: data.studentsLeave.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.only(top: 10.sp),
+                    itemBuilder: (BuildContext context, int index) {
+                      return Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: rowValue("Leave type",
+                                      data.studentsLeave[index].reason)),
+                              InkWell(
+                                child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 4.sp, horizontal: 8.sp),
+                                    decoration: BoxDecoration(
+                                        color:
+                                            (data.studentsLeave[index].status ==
+                                                    "")
+                                                ? colorGaryText
+                                                : (data.studentsLeave[index]
+                                                            .status ==
+                                                        "1")
+                                                    ? colorGreen
+                                                    : (data.studentsLeave[index]
+                                                                .status ==
+                                                            "2")
+                                                        ? Colors.red
+                                                        : colorGaryText,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(4.r))),
+                                    child: CommonText.semiBold(
+                                        (data.studentsLeave[index].status == "")
+                                            ? "Pending"
+                                            : (data.studentsLeave[index]
+                                                        .status ==
+                                                    "1")
+                                                ? "Approve"
+                                                : (data.studentsLeave[index]
+                                                            .status ==
+                                                        "2")
+                                                    ? "Denied"
+                                                    : "",
+                                        color: Colors.white,
+                                        size: 12.sp)),
+                                onTap: () {
+                                  selectedStaffValue = "";
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        selectStatusPopup(
+                                      context,
+                                      () {
+                                        //approved
+                                        //disapproved
+
+                                        print(
+                                            "studentLeaveContainer : ${selectedStaffValue}");
+                                        updateStudentLeaveStaus(
+                                                data.studentsLeave[index].id,
+                                                selectedStaffValue == "approved"
+                                                    ? "1"
+                                                    : selectedStaffValue ==
+                                                            "disapproved"
+                                                        ? "2"
+                                                        : "0")
+                                            .then(
+                                          (value) {
+                                            if (value?.result ?? false) {
+                                              setState(() {
+                                                data.studentsLeave[index]
+                                                        .status =
+                                                    selectedStaffValue ==
+                                                            "approved"
+                                                        ? "1"
+                                                        : selectedStaffValue ==
+                                                                "disapproved"
+                                                            ? "2"
+                                                            : "0";
+                                              });
+                                            }
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          gap(5.sp),
+                          rowValue("From Date",
+                              data.studentsLeave[index].fromDate.toString()),
+                          gap(5.sp),
+                          rowValue("To Date",
+                              data.studentsLeave[index].toDate.toString()),
+                          gap(5.sp),
+                          rowValue("Reason", data.studentsLeave[index].reason),
+                          gap(20.sp),
+                        ],
+                      );
+                    }),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  stafLeaveContainer(StfLeave data) {
+    return Container(
+      margin: EdgeInsets.all(10.sp),
+      decoration: BoxDecoration(
+        color: kSecondBackgroundColor,
+        borderRadius: BorderRadius.circular(10.r),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.grey,
+            spreadRadius: -2.0,
+            blurRadius: 5.0,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: double.maxFinite,
+            padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 10.sp),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(10.r),
+                    topLeft: Radius.circular(10.r)),
+                color: kToastTextColor),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Staff Leave",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(14.sp),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CommonText.semiBold(data.name, color: colorBlack, size: 12.sp),
+                ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: data.staffLeave.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.only(top: 10.sp),
+                    itemBuilder: (BuildContext context, int index) {
+                      return Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: rowValue(
+                                      "Leave type",
+                                      getLeaveType(
+                                          data.staffLeave[index].leaveTypeId ??
+                                              ""))),
+                              InkWell(
+                                child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 4.sp, horizontal: 8.sp),
+                                    decoration: BoxDecoration(
+                                        color: (data.staffLeave[index].status ==
+                                                "")
+                                            ? colorGaryText
+                                            : (data.staffLeave[index].status ==
+                                                    "approved")
+                                                ? colorGreen
+                                                : (data.staffLeave[index]
+                                                            .status ==
+                                                        "disapproved")
+                                                    ? Colors.red
+                                                    : colorGaryText,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(4.r))),
+                                    child: CommonText.semiBold(
+                                        //disapproved
+                                        (data.staffLeave[index].status == "")
+                                            ? "Pending"
+                                            : (data.staffLeave[index].status ==
+                                                    "approved")
+                                                ? "Approve"
+                                                : (data.staffLeave[index]
+                                                            .status ==
+                                                        "disapproved")
+                                                    ? "Denied"
+                                                    : "",
+                                        color: Colors.white,
+                                        size: 12.sp)),
+                                onTap: () {
+                                  selectedStaffValue = "";
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        selectStatusPopup(
+                                      context,
+                                      () {
+                                        updateStaffLeaveStaus(
+                                                data.staffLeave[index].id,
+                                                selectedStaffValue)
+                                            .then(
+                                          (value) {
+                                            print("value : ${value}");
+                                            if (value?.result ?? false) {
+                                              setState(() {
+                                                print(
+                                                    "selectedValue : $selectedStaffValue");
+                                                data.staffLeave[index].status =
+                                                    selectedStaffValue;
+                                              });
+                                            }
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          gap(5.sp),
+                          rowValue("From Date",
+                              data.staffLeave[index].leaveFrom.toString()),
+                          gap(5.sp),
+                          rowValue("To Date",
+                              data.staffLeave[index].leaveTo.toString()),
+                          gap(5.sp),
+                          rowValue(
+                              "Remark", data.staffLeave[index].employeeRemark),
+                          gap(20.sp),
+                        ],
+                      );
+                    }),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   rowValue(String key, value) {
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      SizedBox(width: 80.sp, child: CommonText.medium(key, size: 14.sp, color: Colors.black)),
+      SizedBox(
+          width: 80.sp,
+          child: CommonText.medium(key, size: 14.sp, color: Colors.black)),
       SizedBox(width: 20.w),
-      CommonText.medium(value, size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+      
+      Flexible(
+        child: CommonText.medium(value,
+            size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+      ),
     ]);
   }
 
@@ -277,6 +593,15 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         _fromDateController.text = pickedDate.toLocalDMYDateString();
       });
     }
+  }
+
+  String? getLeaveType(String leaveTypeId) {
+    for (int i = 0; i < leaveTypeList.length; i++) {
+      if (leaveTypeList[i].leaveTypeId == leaveTypeId) {
+        return leaveTypeList[i].type;
+      }
+    }
+    return null;
   }
 
   Future<void> _selectToDate(BuildContext context) async {
@@ -301,9 +626,9 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(12.r),
-            bottom: Radius.circular(12.r),
-          )),
+        top: Radius.circular(12.r),
+        bottom: Radius.circular(12.r),
+      )),
       builder: (BuildContext context) {
         return SingleChildScrollView(
           child: StatefulBuilder(builder: (context, setState) {
@@ -322,11 +647,13 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                        CommonText.bold("Add Leave",size:18.sp ),
-                          GestureDetector(onTap: () {
+                          CommonText.bold("Add Leave", size: 18.sp),
+                          GestureDetector(
+                              onTap: () {
                                 Navigator.pop(context);
                               },
-                              child: const Icon(Icons.close, color: Colors.black, size: 24))
+                              child: const Icon(Icons.close,
+                                  color: Colors.black, size: 24))
                         ],
                       ),
                       gap(10.sp),
@@ -337,12 +664,12 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                         ),
                         color: colorWhite,
                         child: Padding(
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 2),
                           child: DropdownButton(
                             hint: const CommonText('Applying for',
                                 size: 14, color: Colors.black54),
-                            value: _selectedLeaveType,
+                            value: _selectedApplyUser,
                             icon: const Card(
                               elevation: 0.1,
                               color: colorWhite,
@@ -351,35 +678,45 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                             underline: const SizedBox(),
                             onChanged: (value) {
                               setState(() {
-                                _selectedLeaveType = null;
-                                _selectedLeaveType = value.toString();
-                                for (int i = 0; i < leaveTypeData.length; i++) {
-                                  if (leaveTypeData[i].toString().toLowerCase() ==
+                                _selectedApplyUser = null;
+                                _selectedApplyUser = value.toString();
+                                for (int i = 0; i < applyList.length; i++) {
+                                  if (applyList[i]
+                                          .name
+                                          .toString()
+                                          .toLowerCase() ==
                                       value.toString().toLowerCase()) {
-                                    _selectedLeaveTypeId = leaveTypeData[i].toString();
+                                    _selectedApplyUserId =
+                                        applyList[i].name.toString();
                                     break;
                                   }
                                 }
                               });
                             },
                             isExpanded: true,
-                            items: leaveTypeData.map((cd) {
+                            items: applyList.map((cd) {
                               return DropdownMenuItem(
-                                value: cd,
+                                value: cd.name,
                                 onTap: () {
                                   setState(() {
-                                    _selectedLeaveType = cd;
-                                    for (int i = 0; i < leaveTypeData.length; i++) {
-                                      if (leaveTypeData[i].toString().toLowerCase() ==
+                                    _selectedApplyUser = cd.name;
+                                    for (int i = 0;
+                                        i < applyList.length;
+                                        i++) {
+                                      if (applyList[i]
+                                              .name
+                                              .toString()
+                                              .toLowerCase() ==
                                           cd.toString().toLowerCase()) {
-                                        _selectedLeaveTypeId = leaveTypeData[i].toString();
+                                        _selectedApplyUserId =
+                                            applyList[i].name.toString();
                                         break;
                                       }
                                     }
                                   });
                                 },
                                 child: Text(
-                                  cd.toString(),
+                                  cd.name.toString(),
                                   style: const TextStyle(
                                     color: colorBlack,
                                     fontSize: 14,
@@ -398,12 +735,12 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                         ),
                         color: colorWhite,
                         child: Padding(
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 2),
                           child: DropdownButton(
                             hint: const CommonText('Select leave type...',
                                 size: 14, color: Colors.black54),
-                            value: _selectedApplyingFor,
+                            value: _selectedLeaveType,
                             icon: const Card(
                               elevation: 0.1,
                               color: colorWhite,
@@ -412,35 +749,41 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                             underline: const SizedBox(),
                             onChanged: (value) {
                               setState(() {
-                                _selectedApplyingFor = null;
-                                _selectedApplyingFor = value.toString();
-                                for (int i = 0; i < applyingForData.length; i++) {
-                                  if (applyingForData[i].toString().toLowerCase() ==
+                                _selectedLeaveType = null;
+                                _selectedLeaveType = value.toString();
+                                for (int i = 0; i < leaveTypeList.length;
+                                    i++) {
+                                  if (leaveTypeList[i].type.toString().toLowerCase() ==
                                       value.toString().toLowerCase()) {
-                                    _selectedApplyingForId = applyingForData[i].toString();
+                                    _selectedLeaveTypeId = leaveTypeList[i].id.toString();
                                     break;
                                   }
                                 }
                               });
                             },
                             isExpanded: true,
-                            items: applyingForData.map((cd) {
+                            items: leaveTypeList.map((cd) {
                               return DropdownMenuItem(
-                                value: cd,
+                                value: cd.type,
                                 onTap: () {
                                   setState(() {
-                                    _selectedApplyingForId = cd;
-                                    for (int i = 0; i < applyingForData.length; i++) {
-                                      if (applyingForData[i].toString().toLowerCase() ==
-                                          cd.toString().toLowerCase()) {
-                                        _selectedApplyingForId = applyingForData[i].toString();
+                                    _selectedLeaveTypeId = cd.id;
+                                    for (int i = 0;
+                                        i < leaveTypeList.length;
+                                        i++) {
+                                      if (leaveTypeList[i].type
+                                              .toString()
+                                              .toLowerCase() ==
+                                          cd.type.toString().toLowerCase()) {
+                                        _selectedLeaveTypeId =
+                                            leaveTypeList[i].id.toString();
                                         break;
                                       }
                                     }
                                   });
                                 },
                                 child: Text(
-                                  cd.toString(),
+                                  cd.type.toString(),
                                   style: const TextStyle(
                                     color: colorBlack,
                                     fontSize: 14,
@@ -535,11 +878,10 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                         child: _isEditLoading
                             ? const Center(child: CircularProgressIndicator())
                             : CommonButton(
-                          cornersRadius: 30,
-                          text: AppTags.submit,
-                          onPressed: () {
-                          },
-                        ),
+                                cornersRadius: 30,
+                                text: AppTags.submit,
+                                onPressed: () {},
+                              ),
                       ),
                     ],
                   ),
@@ -552,4 +894,63 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     );
   }
 
+  Widget selectStatusPopup(BuildContext context, VoidCallback? onTap) {
+    var widthSize = MediaQuery.of(context).size.width;
+    return AlertDialog(
+      backgroundColor: kSecondBackgroundColor,
+      surfaceTintColor: kSecondBackgroundColor,
+      insetPadding: const EdgeInsets.only(left: 10, right: 10),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      content: StatefulBuilder(
+        builder: (context, setState) {
+          return SizedBox(
+            width: widthSize,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                gap(20.0),
+                RadioListTile<String>(
+                  activeColor: colorGreen,
+                  title: CommonText.medium("Approve", size: 12.sp),
+                  value: 'approved',
+                  groupValue: selectedStaffValue,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedStaffValue = value!;
+                    });
+                  },
+                ),
+                RadioListTile<String>(
+                  title: CommonText.medium("Deny", size: 12.sp),
+                  value: 'disapproved',
+                  activeColor: colorGreen,
+                  // <-- Set your desired selection color here
+                  groupValue: selectedStaffValue,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedStaffValue = value!;
+                    });
+                  },
+                ),
+                gap(20.0),
+                CommonButton(
+                  cornersRadius: 30,
+                  text: AppTags.submit,
+                  onPressed: () {
+                    if (selectedStaffValue != "") {
+                      onTap!();
+                      Navigator.of(context).pop();
+                    } else {
+                      CommonFunctions.showSuccessToast("Please Select any one");
+                    }
+                  },
+                )
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 }

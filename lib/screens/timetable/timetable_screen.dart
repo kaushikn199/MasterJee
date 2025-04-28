@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_common/get_reset.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/class_timetable/class_time_table_response.dart';
 import 'package:masterjee/others/StorageHelper.dart';
@@ -62,7 +61,8 @@ class _TimetableScreenState extends State<TimetableScreen> {
       appBar: AppBarTwo(title: AppTags.timetable),
       body: Builder(builder: (context) {
         if (_isLoading) {
-          return SizedBox(
+          return SizedBox
+            (
             height: MediaQuery.of(context).size.height * .5,
             child: const Center(
               child: CircularProgressIndicator(),
@@ -166,7 +166,6 @@ Widget cardChildWidget(DayTimetable data) {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-
         Expanded(
           child: Row(
             children: [
@@ -175,13 +174,11 @@ Widget cardChildWidget(DayTimetable data) {
                 size: 12.sp,
                 color: Colors.black,
               ),
-
               CommonText.bold(
                 " To ",
                 size: 12.sp,
                 color: Colors.black,
               ),
-
               CommonText.bold(
                 data.timeTo,
                 size: 12.sp,
@@ -190,13 +187,7 @@ Widget cardChildWidget(DayTimetable data) {
             ],
           ),
         ),
-
-
-
-        // Space between time and list
         SizedBox(width: 10.sp),
-
-        // Right side - List of lesson plans
         Expanded(
           child: ListView.builder(
             shrinkWrap: true,
@@ -213,8 +204,7 @@ Widget cardChildWidget(DayTimetable data) {
   );
 }
 
-
-cardLessonPlansWidget(LessonPlan data){
+cardLessonPlansWidget(LessonPlan data) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,18 +213,24 @@ cardLessonPlansWidget(LessonPlan data){
       gap(5.0),
       CommonText.medium(data.section, size: 13.sp, color: colorGaryText),
       gap(5.0),
-      CommonText.medium(data.lessonPlanClass, size: 13.sp, color: colorGaryText),
+      CommonText.medium(data.lessonPlanClass,
+          size: 13.sp, color: colorGaryText),
       gap(10.0),
       Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),color: colorGreen),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: colorGreen),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.add,color: colorWhite,),
+            Icon(
+              Icons.add,
+              color: colorWhite,
+            ),
             gap(2.0),
             CommonText.medium("Lesson Plan", size: 13.sp, color: colorWhite)
           ],
-        ).paddingOnly(left: 5,right: 10,top: 5,bottom: 5),
+        ).paddingOnly(left: 5, right: 10, top: 5, bottom: 5),
       ),
     ],
   );

@@ -13,6 +13,12 @@ class ApiHelper {
   static const getDuesReport = 'getDuesReport';
   static const getAllGMeetClassesReports = 'allGmeetClassesReports';
   static const getClassTimetable = 'getClassTimetable';
+  static const getLeaveApplicationForApproval = 'getLeaveApplicationForApproval';
+  static const getUserLeaveApplicationsInfo = 'getUserLeaveApplicationsInfo';
+  static const updateStaffLeaveStaus = 'updateStaffLeaveStaus';
+  static const updateStudentLeaveStaus = 'updateStudentLeaveStaus';
+  static const saveLeaveApplication = 'saveLeaveApplication';
+  static const getSubordinateStaff = 'getSubordinateStaff';
 
 
   static const Map<String, String> defaultHeaders = {
@@ -21,19 +27,20 @@ class ApiHelper {
     'Content-Type': 'application/json',
   };
 
-
   static Future<Map<String, dynamic>> post(
       String endpoint,
       Map<String, dynamic> body, {
         Map<String, String>? customHeaders,
       }) async {
     var url = Uri.parse('$BASE_URL$endpoint');
-    print("url : ${url}");
+    print("url : $url");
 
     var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
       CommonFunctions.showSuccessToast("No internet connection");
+      throw Exception('No Internet Connection'); // Stop further code execution
     }
+
     try {
       final response = await http.post(
         url,
@@ -45,7 +52,7 @@ class ApiHelper {
       print('Response: ${response.body}');
 
       final responseData = json.decode(response.body);
-      print('responseData: ${responseData}');
+      print('responseData: $responseData');
 
       if (response.statusCode == 200) {
         return responseData;
@@ -57,6 +64,7 @@ class ApiHelper {
       rethrow;
     }
   }
+
 
 
 
