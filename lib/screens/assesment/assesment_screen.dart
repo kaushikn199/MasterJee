@@ -6,6 +6,7 @@ import 'package:masterjee/constants.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
+import 'package:masterjee/widgets/circular_radio_button.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:masterjee/widgets/util.dart';
 
@@ -235,36 +236,14 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                GestureDetector(
+                CircularRadioButton(
+                  isSelected: a.isChecked,
                   onTap: () {
                     setState(() {
                       a.isChecked = !a.isChecked;
                     });
-                    print('Checked: $a.isChecked');
+                    print('Checked: ${a.isChecked}');
                   },
-                  child: Container(
-                    width: 15,
-                    height: 15,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: a.isChecked ? Colors.green : Colors.grey,
-                        width: 2,
-                      ),
-                    ),
-                    child: a.isChecked
-                        ? Center(
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.green,
-                        ),
-                      ),
-                    )
-                        : null,
-                  ),
                 ),
                 gap(8.0),
                 CommonText.medium("Present", textAlign: TextAlign.start,

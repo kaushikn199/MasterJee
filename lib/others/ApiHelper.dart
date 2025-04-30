@@ -19,6 +19,8 @@ class ApiHelper {
   static const updateStudentLeaveStaus = 'updateStudentLeaveStaus';
   static const saveLeaveApplication = 'saveLeaveApplication';
   static const getSubordinateStaff = 'getSubordinateStaff';
+  static const getAllStudents = 'getAllStudents';
+  static const getAttendanceReport = 'getAttendanceReport';
 
 
   static const Map<String, String> defaultHeaders = {

@@ -46,7 +46,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
   String? _selectedApplyUserId;
 
   String? _selectedLeaveType;
-  String? _selectedLeaveTypeId;
+  int _selectedLeavePos = 0;
 
   String selectedStaffValue = '';
 
@@ -176,11 +176,10 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
 
   Future<void> callAPiSubordinateStaff() async {
     try {
-      SubordinateStaffResponse data = await Provider.of<ApplyLeaveApi>(
-          context,
-          listen: false)
+      SubordinateStaffResponse data = await Provider.of<ApplyLeaveApi>(context,
+              listen: false)
           .getSubordinateStaff(
-          StorageHelper.getStringData(StorageHelper.userIdKey).toString());
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString());
       if (data.data != null) {
         setState(() {
           applyList = data.data ?? [];
@@ -192,6 +191,39 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     }
   }
 
+  Future<void> saveLeaveApplication(
+      String userId,
+      String staffId,
+      String leaveTypeId,
+      String fromDate,
+      String toDate,
+      String reason,
+      String pendingLeave) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      UserLeaveApplicationsInfoResponse data =
+          await Provider.of<ApplyLeaveApi>(context, listen: false)
+              .saveLeaveApplication(userId, staffId, leaveTypeId, fromDate,
+                  toDate, reason, pendingLeave);
+      setState(() {
+        _isLoading = false;
+      });
+      if (data.data != null) {
+        setState(() {});
+        return;
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -572,7 +604,6 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
           width: 80.sp,
           child: CommonText.medium(key, size: 14.sp, color: Colors.black)),
       SizedBox(width: 20.w),
-      
       Flexible(
         child: CommonText.medium(value,
             size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
@@ -700,16 +731,14 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                 onTap: () {
                                   setState(() {
                                     _selectedApplyUser = cd.name;
-                                    for (int i = 0;
-                                        i < applyList.length;
-                                        i++) {
+                                    for (int i = 0; i < applyList.length; i++) {
                                       if (applyList[i]
                                               .name
                                               .toString()
                                               .toLowerCase() ==
                                           cd.toString().toLowerCase()) {
                                         _selectedApplyUserId =
-                                            applyList[i].name.toString();
+                                            applyList[i].employeeId.toString();
                                         break;
                                       }
                                     }
@@ -751,11 +780,14 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                               setState(() {
                                 _selectedLeaveType = null;
                                 _selectedLeaveType = value.toString();
-                                for (int i = 0; i < leaveTypeList.length;
-                                    i++) {
-                                  if (leaveTypeList[i].type.toString().toLowerCase() ==
+                                for (int i = 0; i < leaveTypeList.length; i++) {
+                                  if (leaveTypeList[i]
+                                          .type
+                                          .toString()
+                                          .toLowerCase() ==
                                       value.toString().toLowerCase()) {
-                                    _selectedLeaveTypeId = leaveTypeList[i].id.toString();
+                                    _selectedLeavePos =  i;
+                                        i;
                                     break;
                                   }
                                 }
@@ -767,16 +799,16 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                 value: cd.type,
                                 onTap: () {
                                   setState(() {
-                                    _selectedLeaveTypeId = cd.id;
                                     for (int i = 0;
                                         i < leaveTypeList.length;
                                         i++) {
-                                      if (leaveTypeList[i].type
+                                      if (leaveTypeList[i]
+                                              .type
                                               .toString()
                                               .toLowerCase() ==
                                           cd.type.toString().toLowerCase()) {
-                                        _selectedLeaveTypeId =
-                                            leaveTypeList[i].id.toString();
+                                        _selectedLeavePos = i;
+                                            i;
                                         break;
                                       }
                                     }
@@ -880,7 +912,9 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                             : CommonButton(
                                 cornersRadius: 30,
                                 text: AppTags.submit,
-                                onPressed: () {},
+                                onPressed: () {
+                                  checkValidation();
+                                },
                               ),
                       ),
                     ],
@@ -892,6 +926,29 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         );
       },
     );
+  }
+
+  checkValidation() {
+    if (_selectedApplyUser == null) {
+      CommonFunctions.showWarningToast("Please select applying for user name");
+    } else if (_selectedLeaveType == null) {
+      CommonFunctions.showWarningToast("Please select leave type");
+    } else if (_fromDateController.text == "") {
+      CommonFunctions.showWarningToast("Please select from date");
+    } else if (_toDateController.text == "") {
+      CommonFunctions.showWarningToast("Please select to date");
+    } else if (_reasonController.text == "") {
+      CommonFunctions.showWarningToast("Please enter leave reason");
+    } else {
+      saveLeaveApplication(
+        StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          leaveTypeList[_selectedLeavePos].staffId.toString(),
+          leaveTypeList[_selectedLeavePos].leaveTypeId.toString(),
+          _fromDateController.text.toString(),
+        _toDateController.text.toString(),
+        _reasonController.text.toString(),
+        leaveTypeList[_selectedLeavePos].pendingLeave.toString());
+    }
   }
 
   Widget selectStatusPopup(BuildContext context, VoidCallback? onTap) {

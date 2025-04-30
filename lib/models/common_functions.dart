@@ -51,7 +51,7 @@ class CommonFunctions {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 2,
-        backgroundColor: Colors.red.shade300,
+        backgroundColor: colorBlack,
         textColor: kToastTextColor,
         fontSize: 16.0);
   }

@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:masterjee/models/class_section/class_section_response.dart';
 import 'package:masterjee/providers/apply_leave_api.dart';
+import 'package:masterjee/providers/attendance_api.dart';
 import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/providers/class_timetable.dart';
 import 'package:masterjee/providers/dues_report.dart';
@@ -40,6 +41,7 @@ import 'package:provider/provider.dart';
 import 'constants.dart';
 import 'others/StorageHelper.dart';
 import 'others/http_overrides.dart';
+import 'screens/attendance/attendance_report_screen/attendance_report_screen.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => GMeetApi()),
           ChangeNotifierProvider(create: (ctx) => ClassTimetable()),
           ChangeNotifierProvider(create: (ctx) => ApplyLeaveApi()),
+          ChangeNotifierProvider(create: (ctx) => ClassAttendanceApi()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>
@@ -142,6 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ScheduleScreen.routeName: (ctx) => const ScheduleScreen(),
                         UpcomingScreen.routeName: (ctx) => const UpcomingScreen(),
                         TimetableScreen.routeName: (ctx) => const TimetableScreen(),
+                        TimetableScreen.routeName: (ctx) => const AttendanceReportScreen(),
                       },
                       home: const SplashScreen()),
                 );
