@@ -33,4 +33,19 @@ class ClassAttendanceApi with ChangeNotifier {
     return AttendanceReportResponse.fromJson(responseData);
   }
 
+  Future<AttendanceReportResponse> saveStudentAttendance(
+      String userId, String classId, String sectionId, String date) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'classId': classId,
+      'sectionId': sectionId,
+      'date': date
+    };
+    print("body : ${body}");
+    final responseData =
+    await ApiHelper.post(ApiHelper.saveStudentAttendance, body);
+    print("responseData : ${responseData}");
+    return AttendanceReportResponse.fromJson(responseData);
+  }
+
 }

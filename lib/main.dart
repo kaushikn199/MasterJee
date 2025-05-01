@@ -145,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ScheduleScreen.routeName: (ctx) => const ScheduleScreen(),
                         UpcomingScreen.routeName: (ctx) => const UpcomingScreen(),
                         TimetableScreen.routeName: (ctx) => const TimetableScreen(),
-                        TimetableScreen.routeName: (ctx) => const AttendanceReportScreen(),
+                        AttendanceReportScreen.routeName: (ctx) => const AttendanceReportScreen(),
                       },
                       home: const SplashScreen()),
                 );

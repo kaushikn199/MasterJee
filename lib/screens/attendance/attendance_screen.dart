@@ -5,10 +5,10 @@ import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/all_student/all_students_model.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/attendance_api.dart';
+import 'package:masterjee/screens/attendance/attendance_report_screen/attendance_report_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
-
 import 'package:masterjee/widgets/build_radio_option.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
@@ -33,12 +33,12 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     });
     try {
       AllStudentsResponse data = await Provider.of<ClassAttendanceApi>(context,
-          listen: false)
+              listen: false)
           .getAllStudents(
-          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
-          StorageHelper.getStringData(StorageHelper.sectionIdKey)
-              .toString());
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+              StorageHelper.getStringData(StorageHelper.sectionIdKey)
+                  .toString());
       if (data.result) {
         setState(() {
           studentList = data.data ?? [];
@@ -67,20 +67,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       appBar: AppBarTwo(title: AppTags.attendance),
       bottomNavigationBar: studentList.isNotEmpty
           ? CommonButton(
-        cornersRadius: 30,
-        text: AppTags.submit,
-        onPressed: () {
-          setState(() {});
-        },
-      ).paddingOnly(left: 15, right: 15, bottom: 30)
+              cornersRadius: 30,
+              text: AppTags.submit,
+              onPressed: () {
+                setState(() {});
+              },
+            ).paddingOnly(left: 15, right: 15, bottom: 30)
           : SizedBox(),
       body: Builder(builder: (context) {
         if (_isLoading) {
           return SizedBox(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * .5,
+            height: MediaQuery.of(context).size.height * .5,
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -107,11 +104,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CommonText.semiBold("Attendance report",
-                  decoration: TextDecoration.underline,
-                  size: 14,
-                  color: colorGreen)
-                  .paddingAll(10),
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(
+                      context, AttendanceReportScreen.routeName);
+                },
+                child: const CommonText.semiBold("Attendance report",
+                        decoration: TextDecoration.underline,
+                        size: 14,
+                        color: colorGreen)
+                    .paddingAll(10),
+              ),
               Expanded(
                 child: ListView.builder(
                     shrinkWrap: true,
@@ -137,7 +140,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           children: [
                             CommonText.bold(
                                 "${studentList[index].firstname ?? ''} "
-                                    "${studentList[index].middlename ?? ''}",
+                                "${studentList[index].middlename ?? ''}",
                                 size: 14,
                                 color: colorBlack),
                             Row(
@@ -149,11 +152,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     title: "Present",
                                     value: 1,
                                     groupValue:
-                                    studentList[index].selectedValue ?? 0,
+                                        studentList[index].selectedValue ?? 0,
                                     onChanged: (value) {
                                       setState(() {
                                         studentList[index].selectedValue =
-                                        value!;
+                                            value!;
                                       });
                                     },
                                   ),
@@ -163,11 +166,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     title: "Leave",
                                     value: 2,
                                     groupValue:
-                                    studentList[index].selectedValue ?? 0,
+                                        studentList[index].selectedValue ?? 0,
                                     onChanged: (value) {
                                       setState(() {
                                         studentList[index].selectedValue =
-                                        value!;
+                                            value!;
                                       });
                                     },
                                   ),
@@ -183,11 +186,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     title: "Absent",
                                     value: 3,
                                     groupValue:
-                                    studentList[index].selectedValue ?? 0,
+                                        studentList[index].selectedValue ?? 0,
                                     onChanged: (value) {
                                       setState(() {
                                         studentList[index].selectedValue =
-                                        value!;
+                                            value!;
                                       });
                                     },
                                   ),
@@ -197,11 +200,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     title: "halfDay",
                                     value: 4,
                                     groupValue:
-                                    studentList[index].selectedValue ?? 0,
+                                        studentList[index].selectedValue ?? 0,
                                     onChanged: (value) {
                                       setState(() {
                                         studentList[index].selectedValue =
-                                        value!;
+                                            value!;
                                       });
                                     },
                                   ),

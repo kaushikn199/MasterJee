@@ -88,6 +88,9 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         });
       }
     } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
       print("error : ${error}");
     }
   }
@@ -220,9 +223,6 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         _isLoading = false;
       });
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override
