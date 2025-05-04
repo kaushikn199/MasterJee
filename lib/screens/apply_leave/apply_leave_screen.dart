@@ -52,6 +52,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
 
   @override
   void initState() {
+
     print("initState");
     callAPiUserLeaveApplicationsInfo().then(
       (value) {
@@ -186,6 +187,9 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
       if (data.data != null) {
         setState(() {
           applyList = data.data ?? [];
+          applyList.insert(0,SubordinateStaffData(
+              empid: StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              name: "Self"));
         });
         return;
       }
@@ -213,8 +217,17 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
       setState(() {
         _isLoading = false;
       });
-      if (data.data != null) {
-        setState(() {});
+      if (data.result) {
+        setState(() {
+          _selectedApplyUser = null;
+          _selectedLeaveType = null;
+          _fromDateController.text = "";
+          _toDateController.text = "";
+          _reasonController.text = "";
+          _selectedFromDate = DateTime.now();
+          _selectedToDate = DateTime.now();
+        });
+        callAPiLeaveApplicationForApproval();
         return;
       }
     } catch (error) {
@@ -650,10 +663,10 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     }
   }
 
-  void _showBottomSheet(BuildContext context, bool isEdit) {
+  void _showBottomSheet(BuildContext mainCon, bool isEdit) {
     showModalBottomSheet(
       backgroundColor: kSecondBackgroundColor,
-      context: context,
+      context: mainCon,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
@@ -718,7 +731,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                           .toLowerCase() ==
                                       value.toString().toLowerCase()) {
                                     _selectedApplyUserId =
-                                        applyList[i].name.toString();
+                                        applyList[i].empid.toString();
                                     break;
                                   }
                                 }
@@ -738,7 +751,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                               .toLowerCase() ==
                                           cd.toString().toLowerCase()) {
                                         _selectedApplyUserId =
-                                            applyList[i].employeeId.toString();
+                                            applyList[i].empid.toString();
                                         break;
                                       }
                                     }
@@ -786,8 +799,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                           .toString()
                                           .toLowerCase() ==
                                       value.toString().toLowerCase()) {
-                                    _selectedLeavePos =  i;
-                                        i;
+                                    _selectedLeavePos = i;
                                     break;
                                   }
                                 }
@@ -808,7 +820,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                               .toLowerCase() ==
                                           cd.type.toString().toLowerCase()) {
                                         _selectedLeavePos = i;
-                                            i;
+                                        i;
                                         break;
                                       }
                                     }
@@ -914,6 +926,8 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                 text: AppTags.submit,
                                 onPressed: () {
                                   checkValidation();
+                                  Navigator.pop(context);
+                                  FocusScope.of(context).unfocus();
                                 },
                               ),
                       ),
@@ -941,13 +955,13 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
       CommonFunctions.showWarningToast("Please enter leave reason");
     } else {
       saveLeaveApplication(
-        StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-          leaveTypeList[_selectedLeavePos].staffId.toString(),
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          _selectedApplyUserId.toString(),
           leaveTypeList[_selectedLeavePos].leaveTypeId.toString(),
           _fromDateController.text.toString(),
-        _toDateController.text.toString(),
-        _reasonController.text.toString(),
-        leaveTypeList[_selectedLeavePos].pendingLeave.toString());
+          _toDateController.text.toString(),
+          _reasonController.text.toString(),
+          leaveTypeList[_selectedLeavePos].pendingLeave.toString());
     }
   }
 

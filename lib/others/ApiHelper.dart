@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/widgets/app_tags.dart';
 
 import '../constants.dart';
 import 'package:http/http.dart' as http;
@@ -22,6 +23,8 @@ class ApiHelper {
   static const getAllStudents = 'getAllStudents';
   static const getAttendanceReport = 'getAttendanceReport';
   static const saveStudentAttendance = 'saveStudentAttendance';
+  static const getHomeworkList = 'getHomeworkList';
+  static const getSubmittedHomeworkInfo = 'getSubmittedHomeworkInfo';
 
 
   static const Map<String, String> defaultHeaders = {
@@ -60,6 +63,7 @@ class ApiHelper {
       if (response.statusCode == 200) {
         return responseData;
       } else {
+        CommonFunctions.showWarningToast((responseData['message'] ?? 'Something went wrong'));
         throw Exception(responseData['message'] ?? 'Something went wrong');
       }
     } catch (e) {

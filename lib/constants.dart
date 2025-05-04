@@ -54,6 +54,11 @@ enum CoursesPageData {
   All,
 }
 
+enum HomeworkListType{
+   upcoming,
+   closed
+}
+
 SizedBox gap(d) => SizedBox(height: d, width: d);
 
 Size designSize(context) => MediaQuery.of(context).size.width < 450 ? const Size(360, 690) : const Size(768, 1024);
@@ -100,7 +105,7 @@ extension $DateTimeExtension on DateTime {
     return strDate;
   }
 
-  String toLocalDMYDateString([String format = "dd/MM/yyyy"]) {
+  String toLocalDMYDateString([String format = "yyyy-MM-dd"]) {
     var strDate = DateFormat(format).format(toLocal());
     return strDate;
   }
