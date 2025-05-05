@@ -32,4 +32,20 @@ class HomeworkApi with ChangeNotifier {
     return SubmittedHomeworkResponse.fromJson(responseData);
   }
 
+
+  Future<SubmittedHomeworkResponse> saveHomeworkScore(String userId,
+      String homeworkId,String studentId,String score,String note) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'homeworkId': homeworkId,
+      'studentId': studentId,
+      'score': score,
+      'note': note,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveHomeworkScore, body);
+    print("responseData : ${responseData}");
+    return SubmittedHomeworkResponse.fromJson(responseData);
+  }
+
 }
