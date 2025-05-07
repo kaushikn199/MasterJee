@@ -1,11 +1,13 @@
-import 'package:file_picker_pro/file_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/homework_list/HomeworkListResponse.dart';
+import 'package:masterjee/models/teachers_subject/teachers_subject_response.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/homework_api.dart';
 import 'package:masterjee/screens/homework/submitted_homework_info.dart';
+import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
@@ -21,29 +23,22 @@ class HomeworkScreen extends StatefulWidget {
   State<HomeworkScreen> createState() => _HomeworkScreenState();
 }
 
-class _HomeworkScreenState extends State<HomeworkScreen>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+class _HomeworkScreenState extends State<HomeworkScreen> with
+    WidgetsBindingObserver, SingleTickerProviderStateMixin {
 
   bool _isLoading = false;
   late TabController tabController;
   final formKey = GlobalKey<FormState>();
   late List<HomeworkData> homeworkList = [];
-  final _fromMaxMarkController = TextEditingController();
+  List<SubjectData> subjectList = [];
+  DateTime? _selectedFromDate;
+  DateTime? _selectedToDate;
   String? _selectedSubject;
-  List<String> subjectData = [
-    "PA-1",
-    "Personal",
-    "Sanskrit",
-    "Kannada",
-    "English"
-  ];
   String? _selectedSubjectId;
-  final _HomeWorkDateController = TextEditingController();
-  DateTime? _selectedSubmissionDate;
-
-  final _SubmissionDateController = TextEditingController();
-  DateTime? _selectedHomeWorkDate;
-
+  final _homeworkDateController = TextEditingController();
+  final _submissionDateController = TextEditingController();
+  final _maxMarkController = TextEditingController();
+  final _UploadFileController = TextEditingController();
 
   Future<void> callApiHomeworkList(String type) async {
     setState(() {
@@ -76,6 +71,35 @@ class _HomeworkScreenState extends State<HomeworkScreen>
     }
   }
 
+  Future<void> callApiTeachersSubject() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      SubjectResponse data = await Provider.of<HomeworkApi>(context,
+          listen: false)
+          .getTeachersSubject(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString());
+      if (data.result) {
+        setState(() {
+          subjectList = data.data;
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void dispose() {
     tabController.dispose();
@@ -85,6 +109,7 @@ class _HomeworkScreenState extends State<HomeworkScreen>
   @override
   void initState() {
     tabController = TabController(length: 2, vsync: this);
+    callApiTeachersSubject();
     tabController.addListener(() {
       if (tabController.indexIsChanging == true) {
         if (tabController.index == 0) {
@@ -104,7 +129,7 @@ class _HomeworkScreenState extends State<HomeworkScreen>
       appBar: AppBarTwo(title: "HomeWork"),
       floatingActionButton: FloatingActionButton(
         shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.sp)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.sp)),
         backgroundColor: colorGreen,
         tooltip: AppTags.applyLeave,
         onPressed: () {
@@ -115,31 +140,7 @@ class _HomeworkScreenState extends State<HomeworkScreen>
       body: Stack(
         children: [
           Builder(builder: (context) {
-            /*if (_isLoading) {
-              return Center(
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * .5,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-              );
-            }
-            if (homeworkList.isEmpty) {
-              return Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-                    CommonText.medium('No Record Found',
-                        size: 16.sp,
-                        color: kDarkGreyColor,
-                        overflow: TextOverflow.fade),
-                  ],
-                ),
-              );
-            }*/
+
             return Container(
               padding: EdgeInsets.only(top: 10.sp),
               child: Column(children: [
@@ -147,7 +148,7 @@ class _HomeworkScreenState extends State<HomeworkScreen>
                   height: 50.sp,
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   padding:
-                  EdgeInsets.symmetric(horizontal: 10.sp, vertical: 5.sp),
+                      EdgeInsets.symmetric(horizontal: 10.sp, vertical: 5.sp),
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                     boxShadow: [
@@ -243,7 +244,8 @@ class _HomeworkScreenState extends State<HomeworkScreen>
   Widget contentCard(int index, BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context, SubmittedHomeworkInfoScreen.routeName ,arguments: homeworkList[index]);
+        Navigator.pushNamed(context, SubmittedHomeworkInfoScreen.routeName,
+            arguments: homeworkList[index]);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 15),
@@ -281,9 +283,9 @@ class _HomeworkScreenState extends State<HomeworkScreen>
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(12.r),
-            bottom: Radius.circular(12.r),
-          )),
+        top: Radius.circular(12.r),
+        bottom: Radius.circular(12.r),
+      )),
       builder: (BuildContext context) {
         return SingleChildScrollView(
           child: StatefulBuilder(builder: (context, setState) {
@@ -293,121 +295,182 @@ class _HomeworkScreenState extends State<HomeworkScreen>
               ),
               child: Container(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    DropdownButton(
-                      hint: const CommonText('Subject',
-                          size: 14, color: Colors.black54),
-                      value: _selectedSubject,
-                      icon: const Card(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CommonText.bold("Add Homework", size: 18.sp),
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Icon(Icons.close,
+                                  color: Colors.black, size: 24))
+                        ],
+                      ),
+                      gap(10.sp),
+                      Card(
                         elevation: 0.1,
-                        color: kBackgroundColor,
-                        child: Icon(Icons.keyboard_arrow_down_outlined),
-                      ),
-                      underline: const SizedBox(),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedSubject = null;
-                          _selectedSubject = value.toString();
-                          for (int i = 0; i < subjectData.length; i++) {
-                            if (subjectData[i].toString().toLowerCase() ==
-                                value.toString().toLowerCase()) {
-                              _selectedSubjectId = subjectData[i].toString();
-                              break;
-                            }
-                          }
-                        });
-                      },
-                      isExpanded: true,
-                      items: subjectData.map((cd) {
-                        return DropdownMenuItem(
-                          value: cd,
-                          onTap: () {
-                            setState(() {
-                              _selectedSubject = cd;
-                              for (int i = 0; i < subjectData.length; i++) {
-                                if (subjectData[i].toString().toLowerCase() ==
-                                    cd.toString().toLowerCase()) {
-                                  _selectedSubjectId = subjectData[i].toString();
-                                  break;
-                                }
-                              }
-                            });
-                          },
-                          child: Text(
-                            cd.toString(),
-                            style: const TextStyle(
-                              color: colorBlack,
-                              fontSize: 14,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.sp),
+                        ),
+                        color: colorWhite,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 2),
+                          child: DropdownButton(
+                            hint: const CommonText('Subject',
+                                size: 14, color: Colors.black54),
+                            value: _selectedSubject,
+                            icon: const Card(
+                              elevation: 0.1,
+                              color: colorWhite,
+                              child: Icon(Icons.keyboard_arrow_down_outlined),
                             ),
+                            underline: const SizedBox(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedSubject = null;
+                                _selectedSubject = value.toString();
+                                for (int i = 0; i < subjectList.length; i++) {
+                                  if (subjectList[i].name.toString().toLowerCase() ==
+                                      value.toString().toLowerCase()) {
+                                    _selectedSubjectId = subjectList[i].id.toString();
+                                    break;
+                                  }
+                                }
+                              });
+                            },
+                            isExpanded: true,
+                            items: subjectList.map((cd) {
+                              return DropdownMenuItem(
+                                value: cd.name,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedSubject = cd.name;
+                                    for (int i = 0;
+                                        i < subjectList.length;
+                                        i++) {
+                                      if (subjectList[i].name.toString()
+                                              .toLowerCase() == cd.name.toString().toLowerCase()) {
+                                        _selectedSubjectId =
+                                            subjectList[i].id.toString();
+                                        break;
+                                      }
+                                    }
+                                  });
+                                },
+                                child: Text(
+                                  cd.name.toString(),
+                                  style: const TextStyle(
+                                    color: colorBlack,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
-                        );
-                      }).toList(),
-                    ),
-                    CustomTextField(
-                      onTap: () {
-                        _selectHomeWorkDate(context);
-                      },
-                      hintText: 'Select Homework Date',
-                      isRequired: true,
-                      prefixIcon: const Icon(
-                        Icons.date_range_outlined,
+                        ),
+                      ),
+                      gap(10.sp), //
+                      CustomTextField(
+                        onTap: () {
+                          _selectFromDate(context);
+                        },
+                        hintText: 'Homework date',
+                        isRequired: true,
+                        prefixIcon: const Icon(
+                          Icons.date_range_outlined,
+                          color: kTextLowBlackColor,
+                        ),
+                        validate: (value) {
+                          if (value!.isEmpty) {
+                            return 'Homework Date cannot be empty';
+                          }
+                          return null;
+                        },
+                        isReadonly: true,
+                        controller: _homeworkDateController,
+                        onSave: (value) {
+                          _homeworkDateController.text = value as String;
+                        },
+                      ), //
+                      gap(10.sp), // Dat
+                      CustomTextField(
+                        onTap: () {
+                          _selectToDate(context);
+                        },
+                        hintText: 'Submission date',
+                        isRequired: true,
+                        prefixIcon: const Icon(
+                          Icons.date_range_outlined,
+                          color: kTextLowBlackColor,
+                        ),
+                        validate: (value) {
+                          if (value!.isEmpty) {
+                            return 'Submission Date cannot be empty';
+                          }
+                          return null;
+                        },
+                        isReadonly: true,
+                        controller: _submissionDateController,
+                        onSave: (value) {
+                          // _authData['email'] = value.toString();
+                          _submissionDateController.text = value as String;
+                        },
+                      ), // e Picker
+                      gap(10.sp),
+                      CustomTextField(
+                        hintText: 'Max mark',
+                        controller: _maxMarkController,
+                        keyboardType: TextInputType.text,
+                        validate: (value) {
+                          if (value!.isEmpty) {
+                            return 'Max mark cannot be empty';
+                          }
+                          return null;
+                        },
+                        onSave: (value) {
+                          _maxMarkController.text = value as String;
+                        },
+                      ),
+                      gap(10.sp),
+                      CustomTextField(
+                        hintText: 'Select file',
+                        isReadonly: true,
+                        controller: _UploadFileController,
+                         prefixIcon: const Icon(
+                        Icons.cloud_upload,
                         color: kTextLowBlackColor,
                       ),
-                      validate: (value) {
-                        if (value!.isEmpty) {
-                          return 'From Date cannot be empty';
-                        }
-                        return null;
-                      },
-                      isReadonly: true,
-                      controller: _HomeWorkDateController,
-                      onSave: (value) {
-                        // _authData['email'] = value.toString();
-                        _HomeWorkDateController.text = value as String;
-                      },
-                    ),
-                    CustomTextField(
-                      onTap: () {
-                        _selectSubmissionDate(context);
-                      },
-                      hintText: 'Select Submission Date',
-                      isRequired: true,
-                      prefixIcon: const Icon(
-                        Icons.date_range_outlined,
-                        color: kTextLowBlackColor,
+                        keyboardType: TextInputType.text,
+                        validate: (value) {
+                          if (value!.isEmpty) {
+                            return 'Max mark cannot be empty';
+                          }
+                          return null;
+                        },
+                        onSave: (value) {
+                          _UploadFileController.text = value as String;
+                        },
                       ),
-                      validate: (value) {
-                        if (value!.isEmpty) {
-                          return 'From Date cannot be empty';
-                        }
-                        return null;
-                      },
-                      isReadonly: true,
-                      controller: _SubmissionDateController,
-                      onSave: (value) {
-                        _SubmissionDateController.text = value as String;
-                      },
-                    ),
-                    CustomTextField(
-                      borderRadius: 10.0,
-                      onTap: () {},
-                      hintText: 'Max mark',
-                      isRequired: true,
-                      validate: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter max mark';
-                        }
-                        return null;
-                      },
-                      isReadonly: false,
-                      controller: _fromMaxMarkController,
-                      onSave: (value) {
-                        _fromMaxMarkController.text = value as String;
-                      },
-                    )
-                  ],
-                )
+                      gap(10.sp),
+                      // Submit Button
+                      CommonButton(
+                        cornersRadius: 30,
+                        text: AppTags.submit,
+                        onPressed: () {
+                          checkValidation(context);
+                        },
+                      )
+                    ],
+                  ),
+                ),
               ),
             );
           }),
@@ -416,37 +479,50 @@ class _HomeworkScreenState extends State<HomeworkScreen>
     );
   }
 
-  Future<void> _selectHomeWorkDate(BuildContext context) async {
+  checkValidation(BuildContext context) {
+    if (_selectedSubject == null) {
+      CommonFunctions.showWarningToast("Please select subject");
+    } else if (_homeworkDateController.text == "") {
+      CommonFunctions.showWarningToast("Please select homework");
+    } else if (_submissionDateController.text == "") {
+      CommonFunctions.showWarningToast("Please select submission");
+    } else if (_maxMarkController.text == "") {
+      CommonFunctions.showWarningToast("Please enter max mark");
+    }  else {
+      Navigator.pop(context);
+      FocusScope.of(context).unfocus();
+    }
+  }
+
+  Future<void> _selectFromDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: _selectedHomeWorkDate ?? DateTime.now(),
+      initialDate: _selectedFromDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (pickedDate != null && pickedDate != _selectedHomeWorkDate) {
+    if (pickedDate != null && pickedDate != _selectedFromDate) {
       setState(() {
-        _selectedHomeWorkDate = pickedDate;
-        _HomeWorkDateController.text = pickedDate.toLocalDMYDateString();
+        _selectedFromDate = pickedDate;
+        _homeworkDateController.text = pickedDate.toLocalDMYDateString();
       });
     }
   }
 
-  Future<void> _selectSubmissionDate(BuildContext context) async {
+  Future<void> _selectToDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: _selectedSubmissionDate ?? DateTime.now(),
+      initialDate: _selectedToDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (pickedDate != null && pickedDate != _selectedSubmissionDate) {
+    if (pickedDate != null && pickedDate != _selectedToDate) {
       setState(() {
-        _selectedSubmissionDate = pickedDate;
-        _SubmissionDateController.text = pickedDate.toLocalDMYDateString();
+        _selectedToDate = pickedDate;
+        _submissionDateController.text = pickedDate.toLocalDMYDateString();
       });
     }
   }
-
-
 }
 
 rowValue(String key, value) {

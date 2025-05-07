@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:masterjee/models/homework_list/HomeworkListResponse.dart';
 import 'package:masterjee/models/submitted_homework_info/submitted_homework_info.dart';
+import 'package:masterjee/models/teachers_subject/teachers_subject_response.dart';
 import 'package:masterjee/others/ApiHelper.dart';
 
 class HomeworkApi with ChangeNotifier {
@@ -32,7 +33,6 @@ class HomeworkApi with ChangeNotifier {
     return SubmittedHomeworkResponse.fromJson(responseData);
   }
 
-
   Future<SubmittedHomeworkResponse> saveHomeworkScore(String userId,
       String homeworkId,String studentId,String score,String note) async {
     Map<String, dynamic> body = {
@@ -47,5 +47,19 @@ class HomeworkApi with ChangeNotifier {
     print("responseData : ${responseData}");
     return SubmittedHomeworkResponse.fromJson(responseData);
   }
+
+  Future<SubjectResponse> getTeachersSubject(String userId,
+      String classId,String sectionId) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'classId': classId,
+      'sectionId': sectionId,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.getTeachersSubject, body);
+    print("responseData : ${responseData}");
+    return SubjectResponse.fromJson(responseData);
+  }
+
 
 }
