@@ -47,7 +47,7 @@ class ClassTimetableData {
 
   Map<String, dynamic> toJson() => {
     "day": day,
-    "day_timetable": dayTimetable.map((x) => x?.toJson()).toList(),
+    "day_timetable": dayTimetable.map((x) => x.toJson()).toList(),
   };
 
 }

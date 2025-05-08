@@ -23,7 +23,6 @@ class TimetableScreen extends StatefulWidget {
 }
 
 class _TimetableScreenState extends State<TimetableScreen> {
-
   var _isLoading = false;
   late List<ClassTimetableData> timeTableList = [];
 
@@ -44,8 +43,13 @@ class _TimetableScreenState extends State<TimetableScreen> {
   final _startTimeController = TextEditingController();
   final _endTimeController = TextEditingController();
 
-  final dayController = TextEditingController();
+  late var dayController = TextEditingController();
 
+  final _lectureYouTubeUrlController = TextEditingController();
+  final _teachingMethodController = TextEditingController();
+  final _generalObjectiveController = TextEditingController();
+  final _previousKnowledgeController = TextEditingController();
+  final _comprehensiveQuestionsController = TextEditingController();
 
   @override
   void initState() {
@@ -85,8 +89,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
       appBar: AppBarTwo(title: AppTags.timetable),
       body: Builder(builder: (context) {
         if (_isLoading) {
-          return SizedBox
-            (
+          return SizedBox(
             height: MediaQuery.of(context).size.height * .5,
             child: const Center(
               child: CircularProgressIndicator(),
@@ -115,13 +118,12 @@ class _TimetableScreenState extends State<TimetableScreen> {
               itemCount: timeTableList.length,
               padding: EdgeInsets.only(top: 10.sp),
               itemBuilder: (BuildContext context, int index) {
-                return cardWidget(context,timeTableList[index]);
+                return cardWidget(context, timeTableList[index]);
               }),
         );
       }),
     );
   }
-
 
   Future<void> _selectFromDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -138,236 +140,328 @@ class _TimetableScreenState extends State<TimetableScreen> {
     }
   }
 
-  void _showBottomSheet(BuildContext mainCon, LessonPlan data) {
+  void _showBottomSheet(
+      BuildContext mainCon, LessonPlan data, ClassTimetableData dayList) {
     showModalBottomSheet(
       backgroundColor: kSecondBackgroundColor,
       context: mainCon,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(12.r),
-            bottom: Radius.circular(12.r),
-          )),
+        top: Radius.circular(12.r),
+        bottom: Radius.circular(12.r),
+      )),
       builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: StatefulBuilder(builder: (context, setState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            height: MediaQuery.of(context).size.height * .8,
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CommonText.bold("Add lesson plan", size: 18.sp),
-                        GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Icon(Icons.close,
-                                color: Colors.black, size: 24))
-                      ],
-                    ),
-                    gap(10.sp),
-                    CustomTextField(
-                      hintText: 'Day',
-                      isReadonly: true,
-                      controller: dayController,
-                      keyboardType: TextInputType.text,
-                      onSave: (value) {
-                        dayController.text = value as String;
-                      },
-                    ),
-                    gap(10.sp),
-                    Card(
-                      elevation: 0.1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.sp),
-                      ),
-                      color: colorWhite,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 2),
-                        child: DropdownButton(
-                          hint: const CommonText('Select lesson',
-                              size: 14, color: Colors.black54),
-                          value: _selectedLesson,
-                          icon: const Card(
-                            elevation: 0.1,
-                            color: colorWhite,
-                            child: Icon(Icons.keyboard_arrow_down_outlined),
-                          ),
-                          underline: const SizedBox(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedLesson = null;
-                              _selectedLesson = value.toString();
-                              for (int i = 0; i < lessonList.length; i++) {
-                                if (lessonList[i].name.toString().toLowerCase() ==
-                                    value.toString().toLowerCase()) {
-                                  _selectedLessonId = lessonList[i].id.toString();
-                                  break;
-                                }
-                              }
-                            });
-                          },
-                          isExpanded: true,
-                          items: lessonList.map((cd) {
-                            return DropdownMenuItem(
-                              value: cd.name,
-                              onTap: () {
-                                setState(() {
-                                  _selectedLesson = cd.name;
-                                  for (int i = 0;
-                                  i < lessonList.length;
-                                  i++) {
-                                    if (lessonList[i].name.toString()
-                                        .toLowerCase() == cd.name.toString().toLowerCase()) {
-                                      _selectedLessonId =
-                                          lessonList[i].id.toString();
-                                      break;
-                                    }
-                                  }
-                                });
-                              },
-                              child: Text(
-                                cd.name.toString(),
-                                style: const TextStyle(
-                                  color: colorBlack,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                    gap(10.sp),
-                    Card(
-                      elevation: 0.1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.sp),
-                      ),
-                      color: colorWhite,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 2),
-                        child: DropdownButton(
-                          hint: const CommonText('Select topic',
-                              size: 14, color: Colors.black54),
-                          value: _selectedTopic,
-                          icon: const Card(
-                            elevation: 0.1,
-                            color: colorWhite,
-                            child: Icon(Icons.keyboard_arrow_down_outlined),
-                          ),
-                          underline: const SizedBox(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedTopic = null;
-                              _selectedTopic = value.toString();
-                              for (int i = 0; i < topicList.length; i++) {
-                                if (topicList[i].name.toString().toLowerCase() ==
-                                    value.toString().toLowerCase()) {
-                                  _selectedTopicId = topicList[i].id.toString();
-                                  break;
-                                }
-                              }
-                            });
-                          },
-                          isExpanded: true,
-                          items: topicList.map((cd) {
-                            return DropdownMenuItem(
-                              value: cd.name,
-                              onTap: () {
-                                setState(() {
-                                  _selectedTopic = cd.name;
-                                  for (int i = 0;
-                                  i < topicList.length;
-                                  i++) {
-                                    if (topicList[i].name.toString()
-                                        .toLowerCase() == cd.name.toString().toLowerCase()) {
-                                      _selectedTopicId =
-                                          topicList[i].id.toString();
-                                      break;
-                                    }
-                                  }
-                                });
-                              },
-                              child: Text(
-                                cd.name.toString(),
-                                style: const TextStyle(
-                                  color: colorBlack,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                    gap(10.sp),
-                    CustomTextField(
-                      onTap: () {
-                        _selectFromDate(context);
-                      },
-                      hintText: 'Date',
-                      isRequired: true,
-                      prefixIcon: const Icon(
-                        Icons.date_range_outlined,
-                        color: kTextLowBlackColor,
-                      ),
-                      isReadonly: true,
-                      controller: _homeworkDateController,
-                      onSave: (value) {
-                        _homeworkDateController.text = value as String;
-                      },
-                    ), //
-                    gap(10.sp),
-                    CustomTextField(
-                      hintText: 'Start time',
-                      isReadonly: true,
-                      controller: _startTimeController,
-                      keyboardType: TextInputType.text,
-                      onSave: (value) {
-                        _startTimeController.text = value as String;
-                      },
-                    ),
-                    gap(10.sp),
-                    CustomTextField(
-                      hintText: 'End time',
-                      isReadonly: true,
-                      controller: _startTimeController,
-                      keyboardType: TextInputType.text,
-                      onSave: (value) {
-                        _endTimeController.text = value as String;
-                      },
-                    ),
-                    gap(10.sp),
-                    // Submit Button
-                    CommonButton(
-                      cornersRadius: 30,
-                      text: AppTags.submit,
-                      onPressed: () {
-                       // checkValidation(context);
-                      },
-                    )
+                    CommonText.bold("Add lesson plan", size: 18.sp),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(Icons.close,
+                            color: Colors.black, size: 24))
                   ],
                 ),
-              ),
-            );
-          }),
+                gap(10.sp),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: StatefulBuilder(builder: (context, setState) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomTextField(
+                              hintText: 'Day',
+                              isReadonly: true,
+                              controller: dayController,
+                              keyboardType: TextInputType.text,
+                              onSave: (value) {
+                                dayController.text = value as String;
+                              },
+                            ),
+                            gap(5.sp),
+                            Card(
+                              elevation: 0.1,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.sp),
+                              ),
+                              color: colorWhite,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 2),
+                                child: DropdownButton(
+                                  hint: const CommonText('Select lesson',
+                                      size: 14, color: Colors.black54),
+                                  value: _selectedLesson,
+                                  icon: const Card(
+                                    elevation: 0.1,
+                                    color: colorWhite,
+                                    child: Icon(
+                                        Icons.keyboard_arrow_down_outlined),
+                                  ),
+                                  underline: const SizedBox(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedLesson = null;
+                                      _selectedLesson = value.toString();
+                                      for (int i = 0;
+                                          i < lessonList.length;
+                                          i++) {
+                                        if (lessonList[i]
+                                                .name
+                                                .toString()
+                                                .toLowerCase() ==
+                                            value.toString().toLowerCase()) {
+                                          _selectedLessonId =
+                                              lessonList[i].id.toString();
+                                          break;
+                                        }
+                                      }
+                                    });
+                                  },
+                                  isExpanded: true,
+                                  items: lessonList.map((cd) {
+                                    return DropdownMenuItem(
+                                      value: cd.name,
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedLesson = cd.name;
+                                          for (int i = 0;
+                                              i < lessonList.length;
+                                              i++) {
+                                            if (lessonList[i]
+                                                    .name
+                                                    .toString()
+                                                    .toLowerCase() ==
+                                                cd.name
+                                                    .toString()
+                                                    .toLowerCase()) {
+                                              _selectedLessonId =
+                                                  lessonList[i].id.toString();
+                                              break;
+                                            }
+                                          }
+                                        });
+                                      },
+                                      child: Text(
+                                        cd.name.toString(),
+                                        style: const TextStyle(
+                                          color: colorBlack,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+                            gap(5.sp),
+                            Card(
+                              elevation: 0.1,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.sp),
+                              ),
+                              color: colorWhite,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 2),
+                                child: DropdownButton(
+                                  hint: const CommonText('Select topic',
+                                      size: 14, color: Colors.black54),
+                                  value: _selectedTopic,
+                                  icon: const Card(
+                                    elevation: 0.1,
+                                    color: colorWhite,
+                                    child: Icon(
+                                        Icons.keyboard_arrow_down_outlined),
+                                  ),
+                                  underline: const SizedBox(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedTopic = null;
+                                      _selectedTopic = value.toString();
+                                      for (int i = 0;
+                                          i < topicList.length;
+                                          i++) {
+                                        if (topicList[i]
+                                                .name
+                                                .toString()
+                                                .toLowerCase() ==
+                                            value.toString().toLowerCase()) {
+                                          _selectedTopicId =
+                                              topicList[i].id.toString();
+                                          break;
+                                        }
+                                      }
+                                    });
+                                  },
+                                  isExpanded: true,
+                                  items: topicList.map((cd) {
+                                    return DropdownMenuItem(
+                                      value: cd.name,
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedTopic = cd.name;
+                                          for (int i = 0;
+                                              i < topicList.length;
+                                              i++) {
+                                            if (topicList[i]
+                                                    .name
+                                                    .toString()
+                                                    .toLowerCase() ==
+                                                cd.name
+                                                    .toString()
+                                                    .toLowerCase()) {
+                                              _selectedTopicId =
+                                                  topicList[i].id.toString();
+                                              break;
+                                            }
+                                          }
+                                        });
+                                      },
+                                      child: Text(
+                                        cd.name.toString(),
+                                        style: const TextStyle(
+                                          color: colorBlack,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+                            gap(5.sp),
+                            CustomTextField(
+                              onTap: () {
+                                _selectFromDate(context);
+                              },
+                              hintText: 'Date',
+                              isRequired: true,
+                              prefixIcon: const Icon(
+                                Icons.date_range_outlined,
+                                color: kTextLowBlackColor,
+                              ),
+                              isReadonly: true,
+                              controller: _homeworkDateController,
+                              onSave: (value) {
+                                _homeworkDateController.text = value as String;
+                              },
+                            ), //
+                            gap(10.sp),
+                            CustomTextField(
+                              hintText: 'Start time',
+                              isReadonly: true,
+                              controller: _startTimeController,
+                              keyboardType: TextInputType.text,
+                              onSave: (value) {
+                                _startTimeController.text = value as String;
+                              },
+                            ),
+                            gap(10.sp),
+                            CustomTextField(
+                              hintText: 'End time',
+                              isReadonly: true,
+                              controller: _endTimeController,
+                              keyboardType: TextInputType.text,
+                              onSave: (value) {
+                                _endTimeController.text = value as String;
+                              },
+                            ),
+                            gap(10.sp),
+                            CustomTextField(
+                              hintText: 'Lecture youtube url',
+                              isReadonly: false,
+                              controller: _lectureYouTubeUrlController,
+                              keyboardType: TextInputType.text,
+                              onSave: (value) {
+                                _lectureYouTubeUrlController.text =
+                                    value as String;
+                              },
+                            ),
+                            gap(10.sp),
+                            CustomTextField(
+                              hintText: 'Teaching method',
+                              isReadonly: false,
+                              controller: _teachingMethodController,
+                              keyboardType: TextInputType.text,
+                              onSave: (value) {
+                                _teachingMethodController.text =
+                                    value as String;
+                              },
+                            ),
+                            gap(10.sp),
+                            CustomTextField(
+                              hintText: 'General Objective',
+                              isReadonly: false,
+                              controller: _generalObjectiveController,
+                              keyboardType: TextInputType.text,
+                              onSave: (value) {
+                                _generalObjectiveController.text =
+                                    value as String;
+                              },
+                            ),
+                            gap(10.sp),
+                            CustomTextField(
+                              hintText: 'Previous Knowledge',
+                              isReadonly: false,
+                              controller: _previousKnowledgeController,
+                              keyboardType: TextInputType.text,
+                              onSave: (value) {
+                                _previousKnowledgeController.text =
+                                    value as String;
+                              },
+                            ),
+                            gap(10.sp),
+                            CustomTextField(
+                              hintText: 'Comprehensive Questions',
+                              isReadonly: false,
+                              controller: _comprehensiveQuestionsController,
+                              keyboardType: TextInputType.text,
+                              onSave: (value) {
+                                _comprehensiveQuestionsController.text =
+                                    value as String;
+                              },
+                            ),
+                            gap(10.sp),
+                            // Submit Button
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+                CommonButton(
+                  cornersRadius: 30,
+                  text: AppTags.submit,
+                  onPressed: () {
+                    // checkValidation(context);
+                  },
+                )
+              ],
+            ),
+          ),
         );
       },
     );
   }
 
-  cardWidget(BuildContext context,ClassTimetableData dayList) {
+  cardWidget(BuildContext context, ClassTimetableData dayList) {
     return Container(
       margin: EdgeInsets.all(10.sp),
       decoration: BoxDecoration(
@@ -399,35 +493,38 @@ class _TimetableScreenState extends State<TimetableScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CommonText.bold(dayList.day, size: 14.sp, color: Colors.black),
+                  CommonText.bold(dayList.day,
+                      size: 14.sp, color: Colors.black),
                 ],
               ),
             ),
           ),
           dayList == null
               ? Center(
-            child: Padding(
-              padding: EdgeInsets.all(20.sp),
-              child: CommonText.medium('No Schedule Available',
-                  size: 12.sp,
-                  color: Colors.redAccent,
-                  overflow: TextOverflow.fade),
-            ),
-          )
+                  child: Padding(
+                    padding: EdgeInsets.all(20.sp),
+                    child: CommonText.medium('No Schedule Available',
+                        size: 12.sp,
+                        color: Colors.redAccent,
+                        overflow: TextOverflow.fade),
+                  ),
+                )
               : ListView.builder(
-              shrinkWrap: true,
-              itemCount: dayList.dayTimetable.length,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.only(top: 10.sp),
-              itemBuilder: (BuildContext context, int index) {
-                return cardChildWidget(context,dayList.dayTimetable[index]);
-              }),
+                  shrinkWrap: true,
+                  itemCount: dayList.dayTimetable.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(top: 10.sp),
+                  itemBuilder: (BuildContext context, int index) {
+                    return cardChildWidget(
+                        context, dayList.dayTimetable[index], dayList);
+                  }),
         ],
       ),
     );
   }
 
-  Widget cardChildWidget(BuildContext context,DayTimetable data) {
+  Widget cardChildWidget(
+      BuildContext context, DayTimetable data, ClassTimetableData dayList) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10.sp, horizontal: 15.sp),
       child: Row(
@@ -463,7 +560,8 @@ class _TimetableScreenState extends State<TimetableScreen> {
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.only(top: 0),
               itemBuilder: (BuildContext context, int index) {
-                return cardLessonPlansWidget(context,data.lessonPlans[index]);
+                return cardLessonPlansWidget(
+                    context, data.lessonPlans[index], data, dayList);
               },
             ),
           ),
@@ -472,7 +570,8 @@ class _TimetableScreenState extends State<TimetableScreen> {
     );
   }
 
-  cardLessonPlansWidget(BuildContext context,LessonPlan data) {
+  cardLessonPlansWidget(BuildContext context, LessonPlan data,
+      DayTimetable dayTime, ClassTimetableData dayList) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -486,7 +585,12 @@ class _TimetableScreenState extends State<TimetableScreen> {
         gap(10.0),
         InkWell(
           onTap: () {
-            _showBottomSheet(context,data);
+            dayController.text = dayList.day.toString();
+            _startTimeController.text = dayTime.timeFrom.toString();
+            _endTimeController.text = dayTime.timeTo.toString();
+            _selectedFromDate = DateTime.now();
+            _homeworkDateController.text = '';
+            _showBottomSheet(context, data, dayList);
           },
           child: Container(
             decoration: const BoxDecoration(
@@ -508,6 +612,4 @@ class _TimetableScreenState extends State<TimetableScreen> {
       ],
     );
   }
-
-
 }
