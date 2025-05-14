@@ -11,6 +11,7 @@ import 'package:masterjee/providers/class_timetable.dart';
 import 'package:masterjee/providers/dues_report.dart';
 import 'package:masterjee/providers/g_meet.dart';
 import 'package:masterjee/providers/homework_api.dart';
+import 'package:masterjee/providers/student_behavior_api.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
@@ -89,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => ApplyLeaveApi()),
           ChangeNotifierProvider(create: (ctx) => ClassAttendanceApi()),
           ChangeNotifierProvider(create: (ctx) => HomeworkApi()),
+          ChangeNotifierProvider(create: (ctx) => StudentBehaviorApi()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>

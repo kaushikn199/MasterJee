@@ -27,6 +27,7 @@ class ApiHelper {
   static const getSubmittedHomeworkInfo = 'getSubmittedHomeworkInfo';
   static const saveHomeworkScore = 'saveHomeworkScore';
   static const getTeachersSubject = 'getTeachersSubject';
+  static const studentBehaviour = 'studentBehaviour';
 
 
   static const Map<String, String> defaultHeaders = {

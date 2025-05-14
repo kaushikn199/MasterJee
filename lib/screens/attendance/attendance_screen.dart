@@ -73,7 +73,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 setState(() {});
               },
             ).paddingOnly(left: 15, right: 15, bottom: 30)
-          : SizedBox(),
+          : const SizedBox(),
       body: Builder(builder: (context) {
         if (_isLoading) {
           return SizedBox(
