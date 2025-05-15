@@ -30,7 +30,7 @@ import 'package:masterjee/screens/home/main_screen.dart';
 import 'package:masterjee/screens/signup_screen.dart';
 import 'package:masterjee/screens/student_behaviour/behaviour_screen.dart';
 import 'package:masterjee/screens/student_behaviour/comment_screen.dart';
-import 'package:masterjee/screens/student_behaviour/progress_screen.dart';
+import 'package:masterjee/screens/student_behaviour/incident_screen.dart';
 import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
 import 'package:masterjee/screens/student_behaviour/view_screen.dart';
 import 'package:masterjee/screens/student_progress/marksheet_screen.dart';
@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         StudentProgressScreen.routeName: (ctx) => const StudentProgressScreen(),
                         OverallScreen.routeName: (ctx) => const OverallScreen(),
                         MarkSheetScreen.routeName: (ctx) => const MarkSheetScreen(),
-                        ProgressScreen.routeName: (ctx) => const ProgressScreen(),
+                        IncidentScreen.routeName: (ctx) => const IncidentScreen(),
                         BehaviourScreen.routeName: (ctx) => const BehaviourScreen(),
                         GMeetLiveClassesScreen.routeName: (ctx) => const GMeetLiveClassesScreen(),
                         ViewScreen.routeName: (ctx) => const ViewScreen(),

@@ -1,29 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/student_behaviour_incident/student_behaviour_incident.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/student_behavior_api.dart';
 import 'package:masterjee/screens/student_behaviour/view_screen.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
-class ProgressScreen extends StatefulWidget {
-  const ProgressScreen({super.key});
+class IncidentScreen extends StatefulWidget {
+  const IncidentScreen({super.key});
 
-  static String routeName = 'ProgressScreen';
+  static String routeName = 'IncidentScreen';
 
   @override
-  State<ProgressScreen> createState() => _ProgressScreenState();
+  State<IncidentScreen> createState() => _IncidentScreenState();
 }
 
-class _ProgressScreenState extends State<ProgressScreen> {
+class _IncidentScreenState extends State<IncidentScreen> {
 
   var _isLoading = false;
-  List<int> resultData = [1, 2, 3, 4, 5];
+  late List<BehaviorIncidentData> incidentDataList = [];
+
+  @override
+  void initState() {
+    callApiStudentBehaviourIncident();
+    super.initState();
+  }
+
+  Future<void> callApiStudentBehaviourIncident() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      StudentBehaviorIncidentResponse data = await Provider.of<StudentBehaviorApi>(context,
+          listen: false).studentBehaviourIncident(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString());
+      if (data.result ?? false) {
+        setState(() {
+          incidentDataList = data.data;
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarTwo(title: AppTags.progress),
+      appBar: AppBarTwo(title: AppTags.incident),
       body: Stack(
         children: [
           Builder(builder: (context) {
@@ -35,7 +75,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 ),
               );
             }
-            if (resultData.isEmpty) {
+            if (incidentDataList.isEmpty) {
               return Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -51,10 +91,10 @@ class _ProgressScreenState extends State<ProgressScreen> {
               padding: EdgeInsets.symmetric(horizontal: 10.sp),
               child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: resultData.length,
+                  itemCount: incidentDataList.length,
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
-                    return InkWell(child: assignmentCard(resultData[index], false),onTap: () {
+                    return InkWell(child: assignmentCard(incidentDataList[index]),onTap: () {
                       Navigator.pushNamed(
                           context, ViewScreen.routeName);
                     },);
@@ -67,7 +107,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  Widget assignmentCard(int a, bool isClosed) {
+  Widget assignmentCard(BehaviorIncidentData data) {
     return Container(
       margin: EdgeInsets.only(bottom: 20.sp),
       decoration: BoxDecoration(
@@ -82,42 +122,24 @@ class _ProgressScreenState extends State<ProgressScreen> {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.all(10.sp),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(10.r), topLeft: Radius.circular(10.r)),
-                  color: kToastTextColor),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      "Abc1234567 - venkatesh",
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-
-                ],
-              ),
-            ),
-          ),
           Padding(
-            padding: EdgeInsets.all(20.sp),
+            padding: EdgeInsets.all(15.sp),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                rowValue("Insidents",  "10"),
-                gap(10.sp),
-                rowValue("Points", "20"),
-                gap(10.sp),
+                CommonText.semiBold(
+                    "${data.admissionNo} - ${data.firstname} ${data.lastname}",
+                    size: 12.sp,
+                    color: kDarkGreyColor,
+                    overflow: TextOverflow.fade),
+                gap(10.0),
+                rowValue("Incident  ",": ${data.totalIncident}"),
+                gap(5.0),
+                rowValue("Points  ",": ${data.totalPoints}"),
+
               ],
             ),
           ),
@@ -128,8 +150,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   rowValue(String key, value) {
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Expanded( child: CommonText.medium(key, size: 12.sp, color: Colors.black)),
-      SizedBox(width: 20.w),
+      SizedBox(width: 60,child: CommonText.medium(key, size: 12.sp, color: Colors.black),),
       CommonText.medium(value, size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
     ]);
   }

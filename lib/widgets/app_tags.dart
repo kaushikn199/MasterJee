@@ -42,6 +42,8 @@ class AppTags {
   static const String schedule  = "Schedule";
   static const String minutebook  = "Minutebook";
   static const String addMoreSlot  = "Add More slot";
+  static const String incident  = "Incident";
+
 }
 
 class AssetsUtils {

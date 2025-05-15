@@ -8,7 +8,7 @@ import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/attendance_api.dart';
 import 'package:masterjee/providers/student_behavior_api.dart';
 import 'package:masterjee/screens/student_behaviour/behaviour_screen.dart';
-import 'package:masterjee/screens/student_behaviour/progress_screen.dart';
+import 'package:masterjee/screens/student_behaviour/incident_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
@@ -154,10 +154,10 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: CommonButton(
-                            text: AppTags.progress,
+                            text: AppTags.incident,
                             onPressed: () {
                               Navigator.pushNamed(
-                                  context, ProgressScreen.routeName);
+                                  context, IncidentScreen.routeName);
                             },
                           ),
                         ),
