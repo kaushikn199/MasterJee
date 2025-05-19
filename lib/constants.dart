@@ -141,6 +141,16 @@ DateTime fromLocalYMDDateString(String date, [String format = "yyyy/MM/dd"]) {
   return tempDate;
 }
 
+String formatDateString(String inputDate, String inputFormat, String outputFormat) {
+  try {
+    final dateTime = DateFormat(inputFormat).parse(inputDate);
+    return DateFormat(outputFormat).format(dateTime);
+  } catch (e) {
+    return 'Invalid date';
+  }
+}
+
+
 extension TimeExtension on String {
   String get fromLocalTimeDateString {
     String date = "2024-10-10 $this";

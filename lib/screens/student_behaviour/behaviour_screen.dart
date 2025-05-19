@@ -96,8 +96,9 @@ class _BehaviourScreenState extends State<BehaviourScreen> {
                   itemBuilder: (BuildContext context, int index) {
                     return InkWell(child: assignmentCard(studentBehaviorList[index]),
                     onTap: () {
-                      Navigator.pushNamed(
-                          context, ViewScreen.routeName);
+                      Navigator.pushNamed(context,
+                          ViewScreen.routeName ,
+                          arguments:studentBehaviorList[index].sInfo?.id);
                     },);
                   }),
             );

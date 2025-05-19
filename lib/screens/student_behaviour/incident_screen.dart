@@ -95,8 +95,9 @@ class _IncidentScreenState extends State<IncidentScreen> {
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
                     return InkWell(child: assignmentCard(incidentDataList[index]),onTap: () {
-                      Navigator.pushNamed(
-                          context, ViewScreen.routeName);
+                      Navigator.pushNamed(context,
+                          ViewScreen.routeName ,
+                          arguments:incidentDataList[index].studentId);
                     },);
                   }),
             );

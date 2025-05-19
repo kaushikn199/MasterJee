@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
-import 'package:masterjee/screens/student_behaviour/comment_screen.dart';
+import 'package:masterjee/models/student_behaviour_view/BehaviourViewResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/student_behavior_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:masterjee/widgets/util.dart';
+import 'package:provider/provider.dart';
 
 class ViewScreen extends StatefulWidget {
   const ViewScreen({super.key});
@@ -20,8 +23,99 @@ class ViewScreen extends StatefulWidget {
 class _ViewScreenState extends State<ViewScreen> {
 
   var _isLoading = false;
-  List<int> resultData = [1, 2, 3, 4, 5];
-  final commentController = TextEditingController();
+  late List<IncidentData> incidentList = [];
+  late String studentId;
+  bool _isInitialized = false;
+  late Student stuData;
+  List<TextEditingController> controllers = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is String) {
+        studentId = args;
+        callApiStudentBehaviourView(studentId);
+        _isInitialized = true;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    for (var controller in controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> callApiStudentBehaviourView(String studentId) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      BehaviourViewResponse data =
+          await Provider.of<StudentBehaviorApi>(context, listen: false)
+              .studentBehaviourView(
+                  StorageHelper.getStringData(StorageHelper.userIdKey)
+                      .toString(),
+                  studentId);
+      if (data.result) {
+        setState(() {
+          stuData = data.data.studentData;
+          incidentList = data.data.incidentData;
+          controllers = List.generate(data.data.incidentData.length, (index) => TextEditingController());
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> saveIncidentComment(String userId,String incidentId,
+      String comment,int index) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      BehaviourViewResponse data =
+      await Provider.of<StudentBehaviorApi>(context, listen: false)
+          .saveIncidentComment(
+          userId,
+          incidentId,
+          comment);
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          for (var controller in controllers) {
+            controller.dispose();
+          }
+          callApiStudentBehaviourView(studentId);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,40 +132,40 @@ class _ViewScreenState extends State<ViewScreen> {
                 ),
               );
             }
-            if (resultData.isEmpty) {
+            if (incidentList.isEmpty) {
               return Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-                    CommonText.medium('No Record Found', size: 16.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+                    CommonText.medium('No Record Found',
+                        size: 16.sp,
+                        color: kDarkGreyColor,
+                        overflow: TextOverflow.fade),
                   ],
                 ),
               );
             }
+
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.sp),
               child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: resultData.length,
+                  itemCount: incidentList.length,
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
-                    return InkWell(child: assignmentCard(resultData[index], false),
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, CommentScreen.routeName);
-                      },);
+                    return InkWell(
+                        child: assignmentCard(incidentList[index], index));
                   }),
             );
           }),
-
         ],
       ),
     );
   }
 
-  Widget assignmentCard(int a, bool isClosed) {
+  Widget assignmentCard(IncidentData data,int index) {
     return Container(
       margin: EdgeInsets.only(bottom: 20.sp),
       decoration: BoxDecoration(
@@ -93,9 +187,14 @@ class _ViewScreenState extends State<ViewScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Expanded( child: CommonText.bold("Theft", size: 14.sp, color: Colors.black)),
+                  Expanded(
+                      child: CommonText.bold(data.title,
+                          size: 14.sp, color: Colors.black)),
                   SizedBox(width: 20.w),
-                  CommonText.medium("Point : 10", size: 13.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+                  CommonText.medium("Point : ${data.point}",
+                      size: 13.sp,
+                      color: kDarkGreyColor,
+                      overflow: TextOverflow.fade),
                 ]),
                 const SizedBox(
                   height: 10,
@@ -108,29 +207,41 @@ class _ViewScreenState extends State<ViewScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                CommonText.medium(AppTags.clickHereToViewMoreComments,size: 10.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+                CommonText.regular(
+                    "${formatDateString(data.idate, "yyyy-MM-dd", "yyyy-MM-dd")} | ${data.employeeId} - ${data.name}",
+                    size: 9.sp,
+                    color: colorBlack,
+                    overflow: TextOverflow.fade),
+                const SizedBox(
+                  height: 5,
+                ),
+                CommonText.regular(data.description,
+                    size: 11.sp,
+                    color: kDarkGreyColor,
+                    overflow: TextOverflow.fade),
                 const SizedBox(
                   height: 10,
                 ),
+                studentList(data.studentComments, data),
+                const SizedBox(
+                  height: 10,
+                ),
+                studentList(data.staffComments, data),
                 TextFormField(
                   style: const TextStyle(fontSize: 14),
                   keyboardType: TextInputType.name,
                   maxLines: 3,
-                  decoration: getInputDecoration(
-                    'Write comment here...',
-                    null,
-                      kSecondBackgroundColor,
-                    Colors.white
-                  ),
+                  controller: controllers[index],
+                  decoration: getInputDecoration('Write comment here...', null,
+                      kSecondBackgroundColor, Colors.white),
                   validator: (input) {
-                    if (input == null){
+                    if (input == null) {
                       return "Please enter name";
-                    }else{
+                    } else {
                       return "";
                     }
                   },
-                  onSaved: (value) {
-                  },
+                  onSaved: (value) {},
                 ),
                 const SizedBox(
                   height: 10,
@@ -140,11 +251,14 @@ class _ViewScreenState extends State<ViewScreen> {
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : CommonButton(
-                    cornersRadius: 30,
-                        text: AppTags.submit,
-                        onPressed: () {
-                        },
-                      ),
+                          cornersRadius: 30,
+                          text: AppTags.submit,
+                          onPressed: () {
+                            if(controllers[index].text != ""){
+                              saveIncidentComment(data.studentId,data.incidentId,controllers[index].text,index);
+                            }
+                          },
+                        ),
                 ),
               ],
             ),
@@ -154,12 +268,45 @@ class _ViewScreenState extends State<ViewScreen> {
     );
   }
 
-  rowValue(String key, value) {
-    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Expanded( child: CommonText.medium(key, size: 12.sp, color: Colors.black)),
-      SizedBox(width: 20.w),
-      CommonText.medium(value, size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
-    ]);
+  Widget studentList(List<StudentComment> data, IncidentData incidentData) {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: data.length,
+        padding: EdgeInsets.only(top: 10.sp),
+        itemBuilder: (BuildContext context, int index) {
+          return InkWell(
+            child: studentData(data[index], incidentData),
+          );
+        });
   }
 
+  Widget studentData(StudentComment data, IncidentData incidentData) {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 10,
+        ),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Expanded(
+              child: CommonText.medium(data.comment,
+                  size: 12.sp, color: Colors.black)),
+          SizedBox(width: 20.w),
+          CommonText.medium(
+              "${formatDateString(data.createdDate, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd")} | ${stuData.admissionNo} - ${stuData.firstname}",
+              size: 9.sp,
+              color: kDarkGreyColor,
+              overflow: TextOverflow.fade),
+        ])
+      ],
+    );
+  }
+
+  rowValue(String key, value) {
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Expanded(child: CommonText.medium(key, size: 12.sp, color: Colors.black)),
+      SizedBox(width: 20.w),
+      CommonText.medium(value,
+          size: 11.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+    ]);
+  }
 }
