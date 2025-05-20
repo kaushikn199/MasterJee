@@ -38,16 +38,13 @@ class _MainScreenState extends State<MainScreen> {
   late List<ClassData> loadedClassList = [];
   int dropDownIndex = 0;
   late UserData? userData = null;
-
   String? _selectedClass;
-
-  //String? _classId;
   late ClassData? classData = null;
-
   String? _selectedSection;
-
-  //String? _sectionId;
   late SectionData? sectionData = null;
+
+  String? classId;
+  String? sectionId;
 
   void loadUserData() async {
     final user = await StorageHelper.getUserData();
@@ -68,8 +65,31 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     loadUserData();
-    callApiClassSection();
+    callApiClassSection().then((value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (isClassOrSectionIdMissing()) {
+          openDialog();
+        }
+      });
+    },);
+
     super.initState();
+  }
+
+  static bool isClassOrSectionIdMissing() {
+    final classId = StorageHelper.getStringData(StorageHelper.classIdKey);
+    final sectionId = StorageHelper.getStringData(StorageHelper.sectionIdKey);
+    return classId == null ||
+        classId.isEmpty ||
+        sectionId == null ||
+        sectionId.isEmpty;
+  }
+
+  openDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => _changeUserPopup(context),
+    );
   }
 
   Future<void> callApiClassSection() async {
@@ -133,6 +153,10 @@ class _MainScreenState extends State<MainScreen> {
                       color: Colors.blue),
                 ),
                 gap(10.0),
+                loadedClassList.isEmpty
+                    ?
+               const Text('No class data available')
+                   :
                 Card(
                   elevation: 0.1,
                   shape: RoundedRectangleBorder(
@@ -205,6 +229,10 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
                 gap(10.0),
+                loadedClassList.isEmpty
+                    ?
+                const Text('No Section data available')
+                    :
                 Card(
                   elevation: 0.1,
                   shape: RoundedRectangleBorder(
@@ -463,69 +491,105 @@ class _MainScreenState extends State<MainScreen> {
                       name: AppTags.attendance,
                       image: AssetsUtils.attendanceIcon,
                       onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          AttendanceScreen.routeName,
-                          arguments: {'header': AppTags.attendance},
-                        );
+                        if (isClassOrSectionIdMissing()) {
+                          openDialog();
+                        } else {
+                          Navigator.pushNamed(
+                            context,
+                            AttendanceScreen.routeName,
+                            arguments: {'header': AppTags.attendance},
+                          );
+                        }
                       },
                     ),
                     cardHomeWidget(
                         name: AppTags.duesReport,
                         image: AssetsUtils.duesReportIcon,
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, DuesReportScreen.routeName);
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(
+                                context, DuesReportScreen.routeName);
+                          }
                         }),
                     cardHomeWidget(
                         name: AppTags.timetable,
                         image: AssetsUtils.timeTableIcon,
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            TimetableScreen.routeName,
-                            arguments: {'header': AppTags.timetable},
-                          );
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(
+                              context,
+                              TimetableScreen.routeName,
+                              arguments: {'header': AppTags.timetable},
+                            );
+                          }
                         }),
                     cardHomeWidget(
                         name: AppTags.leads,
                         image: AssetsUtils.leadIcon,
                         onTap: () {
-                          Navigator.pushNamed(context, LeadsScreen.routeName);
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(context, LeadsScreen.routeName);
+                          }
                         }),
                     cardHomeWidget(
                         name: AppTags.homework,
                         image: AssetsUtils.homeworkIcIcon,
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, HomeworkScreen.routeName);
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(
+                                context, HomeworkScreen.routeName);
+                          }
                         }),
                     cardHomeWidget(
                         name: AppTags.studentBehavior,
                         image: AssetsUtils.studentBehaviourIcon,
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, StudentBehaviourScreen.routeName);
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(
+                                context, StudentBehaviourScreen.routeName);
+                          }
                         }),
                     cardHomeWidget(
                         name: AppTags.studentProgress,
                         image: AssetsUtils.studentProgressIcon,
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, StudentProgressScreen.routeName);
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(
+                                context, StudentProgressScreen.routeName);
+                          }
                         }),
                     cardHomeWidget(
                         name: AppTags.assesment,
                         image: AssetsUtils.attendanceIcon,
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, AssesmentScreen.routeName);
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(
+                                context, AssesmentScreen.routeName);
+                          }
                         }),
                     cardHomeWidget(
                         name: AppTags.ptm,
                         image: AssetsUtils.ptmIcon,
                         onTap: () {
-                          Navigator.pushNamed(context, PTMScreen.routeName);
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(context, PTMScreen.routeName);
+                          }
                         }),
                     cardHomeWidget(
                         name: AppTags.biometricAttendance,
@@ -535,15 +599,23 @@ class _MainScreenState extends State<MainScreen> {
                         name: AppTags.applyLeave,
                         image: AssetsUtils.leaveIcon,
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, ApplyLeaveScreen.routeName);
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(
+                                context, ApplyLeaveScreen.routeName);
+                          }
                         }),
                     cardHomeWidget(
                         name: AppTags.gmeetLiveClasses,
                         image: AssetsUtils.gmeetliveIcon,
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, GMeetLiveClassesScreen.routeName);
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(
+                                context, GMeetLiveClassesScreen.routeName);
+                          }
                         }),
                   ],
                 ),
