@@ -32,6 +32,8 @@ class ApiHelper {
   static const studentBehaviourIncident = 'studentBehaviourIncident';
   static const studentBehaviourView = 'studentBehaviourView';
   static const saveIncidentComment = 'saveIncidentComment';
+  static const studentAssessment = 'studentAssessment';
+  static const saveStudentAssessment = 'saveStudentAssessment';
 
 
   static const Map<String, String> defaultHeaders = {
