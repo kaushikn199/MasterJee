@@ -24,6 +24,7 @@ class AssesmentScreen extends StatefulWidget {
 }
 
 class _AssesmentScreenState extends State<AssesmentScreen> {
+
   String? _selectedSubject;
   String? _selectedTemplate;
   String _selectedValue = 'Option 1';
@@ -33,6 +34,9 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
   String? _selectedExamId;
   String? _selectedSubjectId;
   bool _isLoading = false;
+
+  List<TextEditingController> scoreControllers = [];
+  List<TextEditingController> noteControllers = [];
 
   Future<void> callApiStudentAssessment() async {
     setState(() {
@@ -50,6 +54,10 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
           studentsList = data.data.students ?? [];
           examTypeList = data.data.examType ?? [];
           subjectsList = data.data.subjects ?? [];
+          for (int i = 0; i < studentsList.length; i++) {
+            scoreControllers.add(TextEditingController());
+            noteControllers.add(TextEditingController());
+          }
           _isLoading = false;
         });
         return;
@@ -103,16 +111,38 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
 
   @override
   void initState() {
+
     callApiStudentAssessment();
     super.initState();
   }
+  List<Map<String, dynamic>> assessmentsList = [];
 
   submit(){
-    if(_selectedExamId == ""){
-      CommonFunctions.showWarningToast("");
-    }else if(_selectedSubjectId == ""){
-      CommonFunctions.showWarningToast("");
-    }
+    setState(() {
+      if(_selectedExamId == null || _selectedExamId == ""){
+        CommonFunctions.showWarningToast("Please select exam type");
+      }else if(_selectedSubjectId == null || _selectedSubjectId == ""){
+        CommonFunctions.showWarningToast("Please select subject");
+      }else{
+        for (int i = 0; i < studentsList.length; i++) {
+          Student student = studentsList[i];
+          if(student.isChecked){
+            assessmentsList.add({
+              "student_id": student.studentId,
+              "score": scoreControllers[i].text,
+              "note": noteControllers[i].text,
+            });
+          }
+          print("Student name: ${student.firstname}");
+        }
+        if(assessmentsList.isNotEmpty){
+          callApiSaveStudentAssessment(_selectedExamId!,_selectedSubjectId!,
+              assessmentsList);
+        }else{
+          CommonFunctions.showWarningToast("Please select any student");
+        }
+      }
+    });
   }
 
   @override
@@ -273,7 +303,7 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
                   itemCount: studentsList.length,
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
-                    return assignmentCard(studentsList[index]);
+                    return assignmentCard(studentsList[index],index);
                   }),
             )),
           ],
@@ -281,7 +311,7 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
     );
   }
 
-  Widget assignmentCard(Student data) {
+  Widget assignmentCard(Student data,int index) {
     return Container(
       margin: EdgeInsets.only(bottom: 20.sp),
       decoration: BoxDecoration(
@@ -332,6 +362,7 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
               style: const TextStyle(fontSize: 14),
               keyboardType: TextInputType.number,
               maxLines: 1,
+              controller: scoreControllers[index],
               decoration: getInputDecoration(
                   'Score', null, kSecondBackgroundColor, Colors.white),
               validator: (input) {
@@ -346,7 +377,8 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
             gap(10.sp),
             TextFormField(
               style: const TextStyle(fontSize: 14),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.text,
+              controller: noteControllers[index],
               maxLines: 1,
               decoration: getInputDecoration(
                   'Note', null, kSecondBackgroundColor, Colors.white),
