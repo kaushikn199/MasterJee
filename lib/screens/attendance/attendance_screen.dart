@@ -104,16 +104,23 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              gap(10.0),
               InkWell(
                 onTap: () {
                   Navigator.pushNamed(
                       context, AttendanceReportScreen.routeName);
                 },
-                child: const CommonText.semiBold("Attendance report",
-                        decoration: TextDecoration.underline,
-                        size: 14,
-                        color: colorGreen)
-                    .paddingAll(10),
+                child:  Container(
+                  decoration: BoxDecoration(
+                    color: colorGreen,
+                    border: Border.all(color: colorGreen, width: 1), // Border color and width
+                    borderRadius: BorderRadius.circular(20), // Rounded corners
+                  ),
+                  child: CommonText.medium("Attendance report",
+                          size: 13,
+                          color: colorWhite)
+                      .paddingOnly(top: 5,bottom: 5,left: 20,right: 20),
+                ),
               ),
               Expanded(
                 child: ListView.builder(

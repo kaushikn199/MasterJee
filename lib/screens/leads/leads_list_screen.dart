@@ -15,23 +15,44 @@ class LeadsListScreen extends StatefulWidget {
 class _LeadsListScreenState extends State<LeadsListScreen> {
 
   List<int> contentData = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  var _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: kBackgroundColor,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.sp),
-        child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: contentData.length,
-            padding: EdgeInsets.only(top: 10.sp),
-            itemBuilder: (BuildContext context, int index) {
-              int data = contentData[index];
-              return contentCard(data, context);
-            }),
-      ),
-    );
+    return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.sp)),
+          backgroundColor: colorGreen,
+          onPressed: () {
+            // _showBottomSheet(context, false);
+          },
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
+        ),
+        body: Builder(builder: (context) {
+      if (_isLoading) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * .5,
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+      return Container(
+        height: double.infinity,
+        color: kBackgroundColor,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.sp),
+          child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: contentData.length,
+              padding: EdgeInsets.only(top: 10.sp),
+              itemBuilder: (BuildContext context, int index) {
+                int data = contentData[index];
+                return contentCard(data, context);
+              }),
+        ),
+      );
+    }));
   }
 
   Widget contentCard(int data, BuildContext context) {
@@ -115,5 +136,4 @@ class _LeadsListScreenState extends State<LeadsListScreen> {
               size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
         ]);
   }
-
 }

@@ -43,6 +43,7 @@ class AppTags {
   static const String minutebook  = "Minutebook";
   static const String addMoreSlot  = "Add More slot";
   static const String incident  = "Incident";
+  static const String save  = "Save";
 
 }
 
