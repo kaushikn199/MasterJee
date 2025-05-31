@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
-import 'package:masterjee/models/leads/followup_response.dart';
 import 'package:masterjee/models/leads/leads_response.dart';
 import 'package:masterjee/models/leads/missed_leads_response.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/leads_api.dart';
-import 'package:masterjee/screens/leads/campaign_list_screen.dart';
+import 'package:masterjee/screens/leads/campaign_leads_screen.dart';
 import 'package:masterjee/screens/leads/edit_leads_screen.dart';
 import 'package:masterjee/screens/leads/followups_screen.dart';
 import 'package:masterjee/screens/leads/missed_screen.dart';
@@ -28,6 +27,7 @@ class LeadsScreen extends StatefulWidget {
 
 class _LeadsScreenState extends State<LeadsScreen>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+
   late TabController tabController;
   bool _isLoading = false;
   List<int> contentData = [];
@@ -41,6 +41,8 @@ class _LeadsScreenState extends State<LeadsScreen>
   List<Campaign> campaignList = [];
   List<MissedFollowup> missedFollowupList = [];
   List<FollowUpStatus> followUpStatusList = [];
+  List<Lead> openLeadsList = [];
+
   Future<void> callApiLeadsList() async {
     setState(() {
       _isLoading = true;
@@ -52,6 +54,8 @@ class _LeadsScreenState extends State<LeadsScreen>
         setState(() {
           campaignList = data.campaigns;
           missedFollowupList = data.missedFollowups;
+          openLeadsList = data.openLeads;
+          print("openLeadsList : ${openLeadsList.length}");
           _isLoading = false;
         });
         return;
@@ -67,7 +71,9 @@ class _LeadsScreenState extends State<LeadsScreen>
       });
     }
   }
+
   int selectedIndex = 0;
+
   @override
   void initState() {
     callApiLeadsList();
@@ -76,7 +82,7 @@ class _LeadsScreenState extends State<LeadsScreen>
       if (tabController.indexIsChanging) return; // Prevent duplicate calls
       selectedIndex = tabController.index;
       print("Tab changed to index: $selectedIndex");
-      if(selectedIndex == 0 || selectedIndex == 1){
+      if (selectedIndex == 0 || selectedIndex == 1) {
         callApiLeadsList();
       }
     });
@@ -106,16 +112,27 @@ class _LeadsScreenState extends State<LeadsScreen>
                     unselectedLabelColor: Colors.black,
                     indicatorColor: kRedColor,
                     tabs: [
-                      Tab(icon: CommonText.medium(AppTags.campaign,
+                      Tab(
+                          icon: CommonText.medium(AppTags.campaign,
                               size: 12.sp, overflow: TextOverflow.fade)),
-                      Tab(icon: CommonText.medium(AppTags.leads,
+                      Tab(
+                          icon: CommonText.medium(AppTags.leads,
                               size: 12.sp, overflow: TextOverflow.fade)),
-                      Tab(icon: CommonText.medium("Followups",
+                      Tab(
+                          icon: CommonText.medium("Followups",
                               size: 12.sp, overflow: TextOverflow.fade)),
-                      Tab(icon: CommonText.medium("Walk-in", size: 12.sp,
-                        overflow: TextOverflow.fade,)),
-                      Tab(icon: CommonText.medium("Missed",
-                        size: 10.sp, overflow: TextOverflow.fade,)),
+                      Tab(
+                          icon: CommonText.medium(
+                        "Walk-in",
+                        size: 12.sp,
+                        overflow: TextOverflow.fade,
+                      )),
+                      Tab(
+                          icon: CommonText.medium(
+                        "Missed",
+                        size: 10.sp,
+                        overflow: TextOverflow.fade,
+                      )),
                     ],
                   ),
                   Expanded(
@@ -168,7 +185,10 @@ class _LeadsScreenState extends State<LeadsScreen>
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
             onTap: () {
-              Navigator.pushNamed(context, EditLeadsScreen.routeName);
+              //Navigator.pushNamed(context, EditLeadsScreen.routeName);
+              Navigator.pushNamed(context,
+                  CampaignLeadsScreen.routeName,
+                  arguments:campaignList[index].campaignId);
             },
             child: Container(
               margin:
@@ -300,7 +320,7 @@ class _LeadsScreenState extends State<LeadsScreen>
                 SizedBox(
                   height: 5.h,
                 ),
-                rowValue(data.campaign ?? "",data.nextFollowupTime),
+                rowValue(data.campaign ?? "", data.nextFollowupTime),
                 Row(
                   children: [
                     Container(
@@ -312,25 +332,37 @@ class _LeadsScreenState extends State<LeadsScreen>
                         shape: BoxShape.circle,
                       ),
                     ),
-                    CommonText.regular("${data.daysAgo} days ago", size: 12.sp, color: Colors.black),
+                    CommonText.regular("${data.daysAgo} days ago",
+                        size: 12.sp, color: Colors.black),
                     const Expanded(child: SizedBox()),
-                    CommonText.regular(data.followupPriority, size: 12.sp, color: Colors.black),
+                    CommonText.regular(data.followupPriority,
+                        size: 12.sp, color: Colors.black),
                     gap(5.w),
                     Container(
-                      margin:  const EdgeInsets.only(right: 5),
+                      margin: const EdgeInsets.only(right: 5),
                       width: 10, // Adjust size
                       height: 10, // Adjust size
-                      decoration:  BoxDecoration(
-                        color: data.followupPriority == "Low" ? Colors.red : data.followupPriority == "Medium" ? Colors.yellow : data.followupPriority == "High" ? Colors.green : Colors.transparent, // Change color
+                      decoration: BoxDecoration(
+                        color: data.followupPriority == "Low"
+                            ? Colors.red
+                            : data.followupPriority == "Medium"
+                                ? Colors.yellow
+                                : data.followupPriority == "High"
+                                    ? Colors.green
+                                    : Colors.transparent, // Change color
                         shape: BoxShape.rectangle,
                       ),
                     ),
                   ],
                 ),
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Expanded(child: CommonText.regular(data.followupRemark, size: 12.sp, color: Colors.black)),
+                  Expanded(
+                      child: CommonText.regular(data.followupRemark,
+                          size: 12.sp, color: Colors.black)),
                   CommonText.regular(data.callStatus,
-                      size: 12.sp, color: Colors.black, overflow: TextOverflow.fade),
+                      size: 12.sp,
+                      color: Colors.black,
+                      overflow: TextOverflow.fade),
                 ])
               ],
             ),
@@ -350,5 +382,4 @@ class _LeadsScreenState extends State<LeadsScreen>
           size: 12.sp, color: Colors.black, overflow: TextOverflow.fade),
     ]);
   }
-
 }

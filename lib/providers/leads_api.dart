@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:masterjee/models/leads/campaign_leads_response.dart';
 import 'package:masterjee/models/leads/followup_response.dart';
 import 'package:masterjee/models/leads/leads_response.dart';
 import 'package:masterjee/models/leads/missed_leads_response.dart';
@@ -37,6 +38,15 @@ class LeadsApi with ChangeNotifier {
     final responseData = await ApiHelper.post(ApiHelper.walkinLeads, body);
     print("responseData : ${responseData}");
     return MissedLeadsResponse.fromJson(responseData);
+  }
+
+
+  Future<CampaignLeadsResponse> campaignLeads(String userId,String actCampId) async {
+    Map<String, dynamic> body = {'userId': userId,"actCampId":actCampId};
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.campaignLeads, body);
+    print("responseData : ${responseData}");
+    return CampaignLeadsResponse.fromJson(responseData);
   }
 
 }

@@ -38,6 +38,8 @@ class ApiHelper {
   static const allFollowup = 'allFollowup';
   static const missedLeads = 'missedLeads';
   static const walkinLeads = 'walkinLeads';
+  static const savePtm = 'savePtm';
+  static const campaignLeads = 'campaignLeads';
 
 
   static const Map<String, String> defaultHeaders = {

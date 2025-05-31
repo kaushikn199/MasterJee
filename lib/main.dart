@@ -13,6 +13,7 @@ import 'package:masterjee/providers/dues_report.dart';
 import 'package:masterjee/providers/g_meet.dart';
 import 'package:masterjee/providers/homework_api.dart';
 import 'package:masterjee/providers/leads_api.dart';
+import 'package:masterjee/providers/ptm_api.dart';
 import 'package:masterjee/providers/student_behavior_api.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
@@ -21,6 +22,7 @@ import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/forgot_password_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
+import 'package:masterjee/screens/leads/campaign_leads_screen.dart';
 import 'package:masterjee/screens/leads/edit_leads_screen.dart';
 import 'package:masterjee/screens/leads/followups_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
@@ -99,6 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => StudentBehaviorApi()),
           ChangeNotifierProvider(create: (ctx) => AssesmentApi()),
           ChangeNotifierProvider(create: (ctx) => LeadsApi()),
+          ChangeNotifierProvider(create: (ctx) => PtmApi()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>
@@ -164,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MissedScreen.routeName: (ctx) => const MissedScreen(),
                         WalkInScreen.routeName: (ctx) => const WalkInScreen(),
                         EditLeadsScreen.routeName: (ctx) => const EditLeadsScreen(),
+                        CampaignLeadsScreen.routeName: (ctx) => const CampaignLeadsScreen(),
                       },
                       home: const SplashScreen()),
                 );

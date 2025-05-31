@@ -41,7 +41,7 @@ Widget cardHomeWidget({
               name,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 12.sp,
+                fontSize: 10.sp,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),

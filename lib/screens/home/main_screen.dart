@@ -418,7 +418,11 @@ class _MainScreenState extends State<MainScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
+                        Icon( Icons.account_circle,
+                          color: kDarkGreyColor,
+                          size: 60.sp,
+                           )
+                        /*Container(
                           width: 60.sp,
                           height: 60.sp,
                           decoration: BoxDecoration(
@@ -438,9 +442,9 @@ class _MainScreenState extends State<MainScreen> {
                                   fit: BoxFit.cover,
                                   width: 50.w,
                                   height: 50.h)),
-                        ),
+                        )*/,
                         SizedBox(
-                          width: 20.w,
+                          width: 10.w,
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -481,7 +485,7 @@ class _MainScreenState extends State<MainScreen> {
                 GridView.count(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  crossAxisCount: 3,
+                  crossAxisCount: 4,
                   childAspectRatio: 0.8,
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   mainAxisSpacing: 8,
@@ -528,13 +532,26 @@ class _MainScreenState extends State<MainScreen> {
                           }
                         }),
                     cardHomeWidget(
-                        name: AppTags.leads,
-                        image: AssetsUtils.leadIcon,
+                        name: AppTags.applyLeave,
+                        image: AssetsUtils.leaveIcon,
                         onTap: () {
                           if (isClassOrSectionIdMissing()) {
                             openDialog();
                           } else {
-                            Navigator.pushNamed(context, LeadsScreen.routeName);
+                            Navigator.pushNamed(
+                                context, ApplyLeaveScreen.routeName);
+                          }
+                        }),
+
+                    cardHomeWidget(
+                        name: AppTags.assesment,
+                        image: AssetsUtils.attendanceIcon,
+                        onTap: () {
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(
+                                context, AssesmentScreen.routeName);
                           }
                         }),
                     cardHomeWidget(
@@ -560,6 +577,10 @@ class _MainScreenState extends State<MainScreen> {
                           }
                         }),
                     cardHomeWidget(
+                        name: AppTags.biometricAttendance,
+                        image: AssetsUtils.biometricAttendanceIcon,
+                        onTap: () {}),
+                    cardHomeWidget(
                         name: AppTags.studentProgress,
                         image: AssetsUtils.studentProgressIcon,
                         onTap: () {
@@ -568,17 +589,6 @@ class _MainScreenState extends State<MainScreen> {
                           } else {
                             Navigator.pushNamed(
                                 context, StudentProgressScreen.routeName);
-                          }
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.assesment,
-                        image: AssetsUtils.attendanceIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(
-                                context, AssesmentScreen.routeName);
                           }
                         }),
                     cardHomeWidget(
@@ -592,21 +602,6 @@ class _MainScreenState extends State<MainScreen> {
                           }
                         }),
                     cardHomeWidget(
-                        name: AppTags.biometricAttendance,
-                        image: AssetsUtils.biometricAttendanceIcon,
-                        onTap: () {}),
-                    cardHomeWidget(
-                        name: AppTags.applyLeave,
-                        image: AssetsUtils.leaveIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(
-                                context, ApplyLeaveScreen.routeName);
-                          }
-                        }),
-                    cardHomeWidget(
                         name: AppTags.gmeetLiveClasses,
                         image: AssetsUtils.gmeetliveIcon,
                         onTap: () {
@@ -615,6 +610,16 @@ class _MainScreenState extends State<MainScreen> {
                           } else {
                             Navigator.pushNamed(
                                 context, GMeetLiveClassesScreen.routeName);
+                          }
+                        }),
+                    cardHomeWidget(
+                        name: AppTags.leads,
+                        image: AssetsUtils.leadIcon,
+                        onTap: () {
+                          if (isClassOrSectionIdMissing()) {
+                            openDialog();
+                          } else {
+                            Navigator.pushNamed(context, LeadsScreen.routeName);
                           }
                         }),
                   ],

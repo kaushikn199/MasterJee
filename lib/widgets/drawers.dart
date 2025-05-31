@@ -121,7 +121,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
+            /*Container(
               width: 60.sp,
               height: 60.sp,
               decoration: BoxDecoration(
@@ -143,9 +143,13 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     AssetsUtils.logoIcon,
                     fit: BoxFit.cover),
               ),
+            )*/
+            Icon( Icons.account_circle,
+              color: kDarkGreyColor,
+              size: 60.sp,
             ),
             SizedBox(
-              width: 20.sp,
+              width: 10.sp,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
