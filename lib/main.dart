@@ -26,6 +26,7 @@ import 'package:masterjee/screens/leads/campaign_leads_screen.dart';
 import 'package:masterjee/screens/leads/edit_leads_screen.dart';
 import 'package:masterjee/screens/leads/followups_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
+import 'package:masterjee/screens/leads/leads_view_screen.dart';
 import 'package:masterjee/screens/leads/missed_screen.dart';
 import 'package:masterjee/screens/leads/walk_in_screen.dart';
 import 'package:masterjee/screens/ptm/add/add_screen.dart';
@@ -168,6 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         WalkInScreen.routeName: (ctx) => const WalkInScreen(),
                         EditLeadsScreen.routeName: (ctx) => const EditLeadsScreen(),
                         CampaignLeadsScreen.routeName: (ctx) => const CampaignLeadsScreen(),
+                        LeadsViewScreen.routeName: (ctx) => const LeadsViewScreen(),
                       },
                       home: const SplashScreen()),
                 );

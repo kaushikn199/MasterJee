@@ -40,6 +40,8 @@ class ApiHelper {
   static const walkinLeads = 'walkinLeads';
   static const savePtm = 'savePtm';
   static const campaignLeads = 'campaignLeads';
+  static const leadsView = 'leadsView';
+  static const followUpHistory = 'Follow-up history';
 
 
   static const Map<String, String> defaultHeaders = {

@@ -3,10 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_common/get_reset.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/leads/view_leads_reasponse.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+
 
 class EditLeadsScreen extends StatefulWidget {
   const EditLeadsScreen({super.key});
@@ -18,6 +20,7 @@ class EditLeadsScreen extends StatefulWidget {
 }
 
 class _EditLeadsScreenState extends State<EditLeadsScreen> {
+
   DateTime? _selectedFromDate;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
@@ -32,7 +35,7 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
   String? _selectedGenderId;
 
   final _dateController = TextEditingController();
-  late var dayController = TextEditingController();
+  late var nameController = TextEditingController();
   late var casteController = TextEditingController();
   late var subCasteController = TextEditingController();
   late var aadhaarNoController = TextEditingController();
@@ -55,6 +58,42 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
   late var emergencyPhoneNumberController = TextEditingController();
   late var emailController = TextEditingController();
   late var sourceController = TextEditingController();
+  late LeadData? data;
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      data = ModalRoute.of(context)!.settings.arguments as LeadData;
+      if(data != null){
+        nameController.text = data?.lName ?? "";
+        emailController.text = data?.lEmail ?? "";
+        casteController.text = data?.lCaste ?? "";
+        subCasteController.text = data?.lSubCaste ?? "";
+        aadhaarNoController.text = data?.lAadharNo ?? "";
+        bloodGroupController.text = data?.lBloodGroup ?? "";
+        religionController.text = data?.lReligion ?? "";
+        motherTongueController.text = data?.lMotherTongue ?? "";
+        fatherNameController.text = data?.lFatherName ?? "";
+        fatherPhoneController.text = data?.lFatherPhone ?? "";
+        fatherOccupationController.text = data?.lFatherQualification ?? "";
+        motherQualificationController.text = data?.lMotherQualification ?? "";
+        guardianNameController.text = data?.lGuradianName ?? "";
+        guardianPhotoController.text = data?.lGuardianPhone ?? "";
+        classController.text = data?.lClass ?? "";
+        courseController.text = data?.lEnrolledCourse ?? "";
+        subjectController.text = data?.lClass ?? "";
+        addressController.text = data?.lAddress ?? "";
+        locationController.text = data?.lLocation ?? "";
+        phoneNumberController.text = data?.lPhoneNumber ?? "";
+        alternativePhoneNumberController.text = data?.lAlternativePhone ?? "";
+        emergencyPhoneNumberController.text = data?.lEmergencyContactNo ?? "";
+        sourceController.text = data?.lSource ?? "";
+      }
+      _isInitialized = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,10 +130,10 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
                             input!.length == 0 ? "Please enter name" : null,
                         hintText: 'Name',
                         isReadonly: false,
-                        controller: dayController,
+                        controller: nameController,
                         keyboardType: TextInputType.name,
                         onSave: (value) {
-                          dayController.text = value as String;
+                          nameController.text = value as String;
                         },
                       ),
                       gap(10.0),

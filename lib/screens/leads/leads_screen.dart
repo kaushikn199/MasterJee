@@ -9,6 +9,7 @@ import 'package:masterjee/providers/leads_api.dart';
 import 'package:masterjee/screens/leads/campaign_leads_screen.dart';
 import 'package:masterjee/screens/leads/edit_leads_screen.dart';
 import 'package:masterjee/screens/leads/followups_screen.dart';
+import 'package:masterjee/screens/leads/leads_view_screen.dart';
 import 'package:masterjee/screens/leads/missed_screen.dart';
 import 'package:masterjee/screens/leads/walk_in_screen.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
@@ -264,7 +265,14 @@ class _LeadsScreenState extends State<LeadsScreen>
             padding: EdgeInsets.only(top: 10.sp),
             itemBuilder: (BuildContext context, int index) {
               MissedFollowup data = missedFollowupList[index];
-              return leadsCard(data, context);
+              return InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context,
+                      LeadsViewScreen.routeName,
+                      arguments:missedFollowupList[index].leadId);
+                },
+                  child: leadsCard(data, context)
+              );
             }),
       ),
     );

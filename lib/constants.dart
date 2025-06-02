@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const BASE_URL = 'https://one2.in/cycode/cincharge/api/';
 const IMAGE_URL = 'https://one2.in/p99/';
@@ -58,6 +59,48 @@ enum CoursesPageData {
 enum HomeworkListType{
    upcoming,
    closed
+}
+
+
+void launchPhoneDialer(String? phoneNumber) async {
+  final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+
+  if (await canLaunchUrl(phoneUri)) {
+    await launchUrl(phoneUri);
+  } else {
+    throw 'Could not launch dialer for $phoneNumber';
+  }
+}
+
+void openWhatsApp(String phoneNumber) async {
+  final Uri whatsappUri = Uri.parse("https://wa.me/91$phoneNumber");
+
+  if (await canLaunchUrl(whatsappUri)) {
+    await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+  } else {
+    throw 'Could not open WhatsApp for $phoneNumber';
+  }
+}
+
+void openEmailApp(String email) async {
+  final Uri emailUri = Uri(
+    scheme: 'mailto',
+    path: email,
+    query: '', // You can add subject & body like: 'subject=Hello&body=Hi there'
+  );
+
+  if (await canLaunchUrl(emailUri)) {
+    await launchUrl(emailUri);
+  } else {
+    throw 'Could not launch email app for $email';
+  }
+}
+
+
+
+String formatFollowUpDate(String date, String time) {
+  DateTime dateTime = DateTime.parse('$date $time');
+  return DateFormat('dd MMMM yyyy hh:mm a').format(dateTime);
 }
 
 SizedBox gap(d) => SizedBox(height: d, width: d);
@@ -151,6 +194,8 @@ String formatDateString(String inputDate, String inputFormat, String outputForma
 }
 
 
+
+
 extension TimeExtension on String {
   String get fromLocalTimeDateString {
     String date = "2024-10-10 $this";
@@ -158,6 +203,8 @@ extension TimeExtension on String {
     return tempDate.toLocalTimeString();
   }
 }
+
+
 
 class Event {
   final String title;

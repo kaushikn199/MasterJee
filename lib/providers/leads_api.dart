@@ -4,6 +4,7 @@ import 'package:masterjee/models/leads/campaign_leads_response.dart';
 import 'package:masterjee/models/leads/followup_response.dart';
 import 'package:masterjee/models/leads/leads_response.dart';
 import 'package:masterjee/models/leads/missed_leads_response.dart';
+import 'package:masterjee/models/leads/view_leads_reasponse.dart';
 import 'package:masterjee/others/ApiHelper.dart';
 
 class LeadsApi with ChangeNotifier {
@@ -47,6 +48,16 @@ class LeadsApi with ChangeNotifier {
     final responseData = await ApiHelper.post(ApiHelper.campaignLeads, body);
     print("responseData : ${responseData}");
     return CampaignLeadsResponse.fromJson(responseData);
+  }
+
+
+
+  Future<ViewLeadsResponse> leadsView(String userId,String lId) async {
+    Map<String, dynamic> body = {'userId': userId,"lId":lId};
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.leadsView, body);
+    print("responseData : ${responseData}");
+    return ViewLeadsResponse.fromJson(responseData);
   }
 
 }
