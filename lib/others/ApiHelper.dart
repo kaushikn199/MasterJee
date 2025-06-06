@@ -41,7 +41,12 @@ class ApiHelper {
   static const savePtm = 'savePtm';
   static const campaignLeads = 'campaignLeads';
   static const leadsView = 'leadsView';
-  static const followUpHistory = 'Follow-up history';
+  static const saveFollowUp = 'saveFollowUp';
+  static const saveLeadTransfer = 'saveLeadTransfer';
+  static const getPtmList = 'getPtmList';
+  static const getGroupedStudents = 'getGroupedStudents';
+  static const savePtmSchedule = 'savePtmSchedule';
+  static const savePtmAttendance = 'savePtmAttendance';
 
 
   static const Map<String, String> defaultHeaders = {

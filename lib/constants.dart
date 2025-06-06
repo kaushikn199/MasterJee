@@ -96,6 +96,15 @@ void openEmailApp(String email) async {
   }
 }
 
+String formatTime(String time) {
+  final inputFormat = DateFormat.Hm(); // "09:00"
+  final outputFormat = DateFormat.jm(); // "09:00 AM"
+
+  final parsedTime = inputFormat.parse(time);
+  return outputFormat.format(parsedTime);
+}
+
+
 
 
 String formatFollowUpDate(String date, String time) {

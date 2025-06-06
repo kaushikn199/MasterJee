@@ -60,5 +60,49 @@ class LeadsApi with ChangeNotifier {
     return ViewLeadsResponse.fromJson(responseData);
   }
 
+  Future<ViewLeadsResponse> saveFollowUp(
+      String userId,
+      String classId,
+      String cId,
+      String lId,
+      String fr,
+      String nfd,
+      String nft,
+      String cs,
+      String level) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      "classId":classId,
+      "cId":cId,
+      "lId":lId,
+      "fr":fr,
+      "nfd":nfd,
+      "nft":nft,
+      "cs":cs,
+      "level":level};
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveFollowUp, body);
+    print("responseData : ${responseData}");
+    return ViewLeadsResponse.fromJson(responseData);
+  }
+
+  Future<ViewLeadsResponse> saveLeadTransfer(
+      String userId,
+      String tlid,
+      String tcid,
+      String transferTo,
+      String level) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      "tlid":tlid,
+      "tcid":tcid,
+      "transferTo":transferTo,
+      "level":level};
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveLeadTransfer, body);
+    print("responseData : ${responseData}");
+    return ViewLeadsResponse.fromJson(responseData);
+  }
+
 }
 

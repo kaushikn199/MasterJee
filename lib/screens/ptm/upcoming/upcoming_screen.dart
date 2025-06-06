@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/ptm/get_ptm_List_response.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/ptm_api.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class UpcomingScreen extends StatefulWidget {
   const UpcomingScreen({super.key});
@@ -17,7 +21,42 @@ class UpcomingScreen extends StatefulWidget {
 class _UpcomingScreenState extends State<UpcomingScreen> {
 
   var _isLoading = false;
-  List<int> resultData = [1, 2, 3, 4, 5];
+  List<PTMData> ptmList = [];
+
+
+  @override
+  void initState() {
+    callApiGetPtmList();
+    super.initState();
+  }
+
+  Future<void> callApiGetPtmList() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      PtmListResponse data = await Provider.of<PtmApi>(context, listen: false)
+          .getPtmList(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString());
+      if (data.result) {
+        setState(() {
+          ptmList =
+              data.data.where((ptm) => ptm.ptmTitle.trim().isNotEmpty).toList();
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("callApiGetPtmList : $error");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +73,7 @@ class _UpcomingScreenState extends State<UpcomingScreen> {
                 ),
               );
             }
-            if (resultData.isEmpty) {
+            if (ptmList.isEmpty) {
               return Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,10 +89,10 @@ class _UpcomingScreenState extends State<UpcomingScreen> {
               padding: EdgeInsets.symmetric(horizontal: 10.sp),
               child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: resultData.length,
+                  itemCount: ptmList.length,
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
-                    return assignmentCard(resultData[index], false);
+                    return assignmentCard(ptmList[index], false);
                   }),
             );
           }),
@@ -63,7 +102,7 @@ class _UpcomingScreenState extends State<UpcomingScreen> {
     );
   }
 
-  Widget assignmentCard(int a, bool isClosed) {
+  Widget assignmentCard(PTMData ptmData, bool isClosed) {
     return Container(
       margin: EdgeInsets.only(bottom: 20.sp),
       decoration: BoxDecoration(
@@ -89,27 +128,27 @@ class _UpcomingScreenState extends State<UpcomingScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CommonText.bold('OTM name', size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
-                    CommonText.regular('12 Apr 2024', size: 10.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+                    CommonText.bold(ptmData.ptmTitle, size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
+                    CommonText.regular(ptmData.fromDate, size: 10.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
                   ],
                 ),
                 gap(10.00),
-                CommonText.medium('PTM stands for Parent-Teacher Meeting, a scheduled discussion between a students parents and their teacher',
+                CommonText.medium(ptmData.remark,
                     size: 11.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
                 gap(10.0),
-            Row(
+                ptmData.schedule.isNotEmpty ? Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(child: CommonText.bold('Student ', size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
-                Expanded(child: CommonText.bold('Slot', size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
+                Expanded(child: CommonText.bold('Student ', size: 13.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
+                Expanded(child: CommonText.bold('Slot', size: 13.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
               ],
-            ),
+            ) : const SizedBox(),
                 ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: a,
+                    itemCount: ptmData.schedule.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return studentList(resultData[index], false);
+                      return studentList(ptmData.schedule[index]);
                     }),
               ],
             ),
@@ -119,7 +158,7 @@ class _UpcomingScreenState extends State<UpcomingScreen> {
     );
   }
 
-  Widget studentList(int a, bool isClosed) {
+  Widget studentList(Schedule data) {
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -130,8 +169,8 @@ class _UpcomingScreenState extends State<UpcomingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(child: CommonText.medium('Student${a*898} ', size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
-                Expanded(child: CommonText.medium('09:00 To 10:00', size: 14.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
+                Expanded(child: CommonText.medium('${data.admissionNo} - ${data.firstname} ${data.lastname}', size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
+                Expanded(child: CommonText.medium('${data.timeFrom} To ${data.timeTo}', size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
               ],
             ),
           ),

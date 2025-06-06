@@ -1,12 +1,20 @@
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/models/ptm/get_ptm_List_response.dart';
+import 'package:masterjee/models/ptm/grouped_students_response.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/ptm_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -19,22 +27,137 @@ class ScheduleScreen extends StatefulWidget {
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
   String? _selectedSubject;
+  int selectedPTMIndex = -1;
+  int selectedSlotIndex = -1;
   String? _selectedTemplate;
-
-  List<int> resultData = [1, 2,];
-
-
-  List<String> subjectData = [
-    "PTM 2025-08-12",
-    "1001 2025-08-12",
-  ];
   bool _isChecked = false;
-  List<String> template = [
-    "08:13 - 04:14",
+  final fromRollNoController = TextEditingController();
+  final toRollNoController = TextEditingController();
+  var _isLoading = false;
+  List<PTMData> ptmList = [];
+  List<StudentData> studentList = [];
+  List<StudentData> studentListTemp = [];
+  late int inputFromRollNo = 0;
+  late int inputToRollNo = 0;
+  List<Map<String, String>> students = [
+    /* {
+            "student_id": 1
+        }*/
   ];
-  final _fromDateController = TextEditingController();
-  final _fromRollNoFromController = TextEditingController();
-  final _fromRollNoToController = TextEditingController();
+
+  @override
+  void initState() {
+    callApiGetPtmList();
+    callApiGetGroupedStudents();
+    toRollNoController.addListener(() {
+      filterStudentList();
+    });
+    fromRollNoController.addListener(() {
+      filterStudentList();
+    });
+    super.initState();
+  }
+
+  void filterStudentList() {
+    setState(() {
+      inputFromRollNo = int.tryParse(fromRollNoController.text) ?? 0;
+      inputToRollNo = int.tryParse(toRollNoController.text) ?? 0;
+      studentListTemp = studentList
+          .where((student) =>
+              int.tryParse(student.rollNo) != null &&
+              int.parse(student.rollNo) <= inputToRollNo &&
+              int.parse(student.rollNo) >= inputFromRollNo)
+          .toList();
+    });
+  }
+
+  Future<void> callApiGetPtmList() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      PtmListResponse data = await Provider.of<PtmApi>(context, listen: false)
+          .getPtmList(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString());
+      if (data.result) {
+        setState(() {
+          ptmList =
+              data.data.where((ptm) => ptm.ptmTitle.trim().isNotEmpty).toList();
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("callApiGetPtmList : $error");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> callApiGetGroupedStudents() async {
+    try {
+      GroupedStudentsResponse data =
+          await Provider.of<PtmApi>(context, listen: false).getGroupedStudents(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+              StorageHelper.getStringData(StorageHelper.sectionIdKey)
+                  .toString());
+      if (data.result) {
+        setState(() {
+          studentList = data.data;
+        });
+        return;
+      }
+    } catch (error) {
+      print("callApiGetGroupedStudents : $error");
+    }
+  }
+
+  Future<void> callApiSavePtmSchedules(String ptmId, String ptsId) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      GroupedStudentsResponse data =
+          await Provider.of<PtmApi>(context, listen: false).savePtmSchedule(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              ptmId,
+              ptsId,
+              students);
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+        });
+        setState(() {
+          setState(() {
+            _isLoading = false;
+            studentListTemp.clear();
+            _selectedSubject = null;
+            _selectedTemplate = null;
+            fromRollNoController.text = "";
+            toRollNoController.text = "";
+            students.clear();
+            CommonFunctions.showWarningToast(data.message);
+          });
+        });
+        return;
+      }else{
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+      print("callApiSavePtmSchedules : $error");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +166,47 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         appBar: AppBarTwo(title: AppTags.schedule),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          child: CommonButton(
-            cornersRadius: 30,
-            text: AppTags.submit,
-            onPressed: () {
-              setState(() {});
-            },
+          child: SizedBox(
+
+            child: _isLoading
+                ?
+            const Center(child: CircularProgressIndicator())
+                :
+            CommonButton(
+              cornersRadius: 30,
+              text: AppTags.submit,
+              onPressed: () {
+                setState(() {
+                  if (_selectedSubject == "") {
+                    CommonFunctions.showWarningToast("Please select subject");
+                  } else if (_selectedTemplate == "") {
+                    CommonFunctions.showWarningToast("Please select slot");
+                  } else if (fromRollNoController.text == "") {
+                    CommonFunctions.showWarningToast("Please enter roll no from");
+                  } else if (toRollNoController.text == "") {
+                    CommonFunctions.showWarningToast("Please enter roll no to");
+                  } else {
+                    int count = 0;
+                    for (int i = 0; i < studentListTemp.length; i++) {
+                      if (studentListTemp[i].isChecked) {
+                        count = count + 1;
+                      }
+                    }
+                    if (count == 0) {
+                      CommonFunctions.showWarningToast("Please select student");
+                    } else {
+                      for (int i = 0; i < studentListTemp.length; i++) {
+                        if (studentListTemp[i].isChecked) {
+                          students.add({"student_id": studentListTemp[i].studentId});
+                        }
+                      }
+                      callApiSavePtmSchedules(ptmList[selectedPTMIndex].ptmId,
+                      ptmList[selectedPTMIndex].slots[selectedSlotIndex].ptsId);
+                    }
+                  }
+                });
+              },
+            ),
           ),
         ),
         body: SingleChildScrollView(
@@ -56,7 +214,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             children: [
               gap(10.sp),
               Card(
-                margin: EdgeInsets.only(left: 15, right: 15),
+                margin: const EdgeInsets.only(left: 15, right: 15),
                 elevation: 0.1,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -79,31 +237,28 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       setState(() {
                         _selectedSubject = null;
                         _selectedSubject = value.toString();
-                        for (int i = 0; i < subjectData.length; i++) {
-                          if (subjectData[i].toString().toLowerCase() ==
-                              value.toString().toLowerCase()) {
-                            break;
-                          }
-                        }
+                        _selectedTemplate = null;
                       });
                     },
                     isExpanded: true,
-                    items: subjectData.map((cd) {
+                    items: ptmList.map((cd) {
                       return DropdownMenuItem(
-                        value: cd,
+                        value: cd.ptmId,
                         onTap: () {
                           setState(() {
-                            _selectedSubject = cd;
-                            for (int i = 0; i < subjectData.length; i++) {
-                              if (subjectData[i].toString().toLowerCase() ==
-                                  cd.toString().toLowerCase()) {
+                            _selectedSubject = cd.ptmTitle;
+                            _selectedTemplate = null;
+                            for (int i = 0; i < ptmList.length; i++) {
+                              if (ptmList[i].ptmId == cd.ptmId) {
+                                selectedPTMIndex = i;
+                                print("selectedPTMIndex : $selectedPTMIndex");
                                 break;
                               }
                             }
                           });
                         },
                         child: Text(
-                          cd.toString(),
+                          cd.ptmTitle.toString(),
                           style: const TextStyle(
                             color: colorBlack,
                             fontSize: 14,
@@ -115,66 +270,76 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 ),
               ),
               gap(10.sp),
-              Card(
-                margin: EdgeInsets.only(left: 15, right: 15),
-                elevation: 0.1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                color: colorWhite,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                  child: DropdownButton(
-                    hint: const CommonText('Select slot...',
-                        size: 14, color: Colors.black54),
-                    value: _selectedTemplate,
-                    icon: const Card(
+              selectedPTMIndex == -1
+                  ? const SizedBox()
+                  : Card(
+                      margin: const EdgeInsets.only(left: 15, right: 15),
                       elevation: 0.1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       color: colorWhite,
-                      child: Icon(Icons.keyboard_arrow_down_outlined),
-                    ),
-                    underline: const SizedBox(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedTemplate = null;
-                        _selectedTemplate = value.toString();
-                        for (int i = 0; i < template.length; i++) {
-                          if (template[i].toString().toLowerCase() ==
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 2),
+                        child: DropdownButton(
+                          hint: const CommonText('Select slot...',
+                              size: 14, color: Colors.black54),
+                          value: _selectedTemplate,
+                          icon: const Card(
+                            elevation: 0.1,
+                            color: colorWhite,
+                            child: Icon(Icons.keyboard_arrow_down_outlined),
+                          ),
+                          underline: const SizedBox(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedTemplate = null;
+                              _selectedTemplate = value.toString();
+                              /*for (int i = 0; i < template.length; i++) {
+                          if (ptmList[selectedPTMIndex].slots[i].ptmId.toString().toLowerCase() ==
                               value.toString().toLowerCase()) {
                             break;
                           }
-                        }
-                      });
-                    },
-                    isExpanded: true,
-                    items: template.map((cd) {
-                      return DropdownMenuItem(
-                        value: cd,
-                        onTap: () {
-                          setState(() {
-                            _selectedTemplate = cd;
-                            for (int i = 0; i < template.length; i++) {
-                              if (template[i].toString().toLowerCase() ==
-                                  cd.toString().toLowerCase()) {
-                                // _selectedSubjectId = template[i].toString();
-                                break;
-                              }
-                            }
-                          });
-                        },
-                        child: Text(
-                          cd.toString(),
-                          style: const TextStyle(
-                            color: colorBlack,
-                            fontSize: 14,
-                          ),
+                        }*/
+                            });
+                          },
+                          isExpanded: true,
+                          items: ptmList[selectedPTMIndex].slots.map((cd) {
+                            return DropdownMenuItem(
+                              value: cd.ptsId,
+                              onTap: () {
+                                setState(() {
+                                  for (int i = 0;
+                                      i <
+                                          ptmList[selectedPTMIndex]
+                                              .slots
+                                              .length;
+                                      i++) {
+                                    if (ptmList[selectedPTMIndex]
+                                            .slots[i]
+                                            .ptsId ==
+                                        cd.ptsId) {
+                                      selectedSlotIndex = i;
+                                      print(
+                                          "selectedSlotIndex : $selectedPTMIndex");
+                                      break;
+                                    }
+                                  }
+                                });
+                              },
+                              child: Text(
+                                "${formatTime(cd.timeFrom)} - ${formatTime(cd.timeTo)}",
+                                style: const TextStyle(
+                                  color: colorBlack,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
+                      ),
+                    ),
               gap(10.sp),
               CustomTextField(
                 keyboardType: TextInputType.number,
@@ -189,10 +354,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   return null;
                 },
                 isReadonly: false,
-                controller: _fromRollNoFromController,
+                controller: fromRollNoController,
                 onSave: (value) {
                   // _authData['email'] = value.toString();
-                  _fromRollNoFromController.text = value as String;
+                  fromRollNoController.text = value as String;
                 },
               ).paddingOnly(left: 15, right: 15),
               gap(10.sp),
@@ -209,21 +374,54 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   return null;
                 },
                 isReadonly: false,
-                controller: _fromRollNoToController,
+                controller: toRollNoController,
                 onSave: (value) {
                   // _authData['email'] = value.toString();
-                  _fromRollNoToController.text = value as String;
+                  toRollNoController.text = value as String;
                 },
               ).paddingOnly(left: 15, right: 15),
+              studentListTemp.isNotEmpty
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                            checkColor: colorWhite,
+                            activeColor: colorGreen,
+                            value: _isChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _isChecked = value ?? false;
+                                for (int i = 0;
+                                    i < studentListTemp.length;
+                                    i++) {
+                                  studentListTemp[i].isChecked = _isChecked;
+                                }
+                              });
+                            },
+                          ),
+                          gap(10.w),
+                          const Expanded(
+                            child: CommonText(
+                              'Student',
+                              size: 14,
+                              color: colorBlack,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(),
               ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: resultData.length,
-                  padding: EdgeInsets.only(top: 10.sp),
+                  itemCount: studentListTemp.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return assignmentCard(resultData[index], false);
+                    return assignmentCard(studentListTemp[index]);
                   }),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               )
             ],
@@ -231,26 +429,33 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         ));
   }
 
-  Widget assignmentCard(int a, bool isClosed) {
+  Widget assignmentCard(StudentData data) {
     return Container(
-      margin: EdgeInsets.only(bottom: 10.sp),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Checkbox(
             checkColor: colorWhite,
             activeColor: colorGreen,
-            value: _isChecked,
+            value: data.isChecked,
             onChanged: (bool? value) {
               setState(() {
-                _isChecked = value ?? false;
+                data.isChecked = value ?? false;
               });
             },
           ),
-          CommonText('marko student ${a*99999999}', size: 14, color: colorBlack)
+          gap(10.w),
+          Expanded(
+            child: CommonText(
+              '${data.admissionNo} - ${data.firstname} ${data.lastname}',
+              size: 14,
+              color: colorBlack,
+            ),
+          ),
         ],
-      ).paddingOnly(left: 5, right: 15),
+      ),
     );
   }
-
-
 }

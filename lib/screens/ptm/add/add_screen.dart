@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -30,35 +32,72 @@ class _AddScreenState extends State<AddScreen> {
   DateTime? _selectedFromDate;
   final _titleController = TextEditingController();
   final _dateController = TextEditingController();
-  final _fromStartTimeController = TextEditingController();
-  final _fromEndTimeController = TextEditingController();
+
+  // final _fromStartTimeController = TextEditingController();
+  // final _fromEndTimeController = TextEditingController();
+  final List<TextEditingController> _fromStartTimeControllers = [];
+  final List<TextEditingController> _fromEndTimeControllers = [];
+
   final _remarkController = TextEditingController();
   List<int> resultData = [1];
   var _isLoading = false;
+  List<Map<String, String>> slots = [
+    /*{
+      "fromTime": "09:00",
+      "toTime": "10:00",
+    },
+    {
+      "fromTime": "10:00",
+      "toTime": "11:00",
+    }*/
+  ];
+
+  void _ensureSlotController(int index) {
+    // Add empty controllers if needed
+    while (_fromStartTimeControllers.length <= index) {
+      _fromStartTimeControllers.add(TextEditingController());
+      _fromEndTimeControllers.add(TextEditingController());
+    }
+  }
+
+  @override
+  void initState() {
+    _ensureSlotController(0);
+    super.initState();
+  }
+
 
   Future<void> callApiSavePtm() async {
     setState(() {
       _isLoading = true;
     });
     try {
-      PtmResponse data = await Provider.of<PtmApi>(context, listen: false)
-          .savePtm(
-              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-              _titleController.text,
-              _dateController.text,
-              _remarkController.text,
-              startTime,
-              endTime);
+      PtmResponse data =
+          await Provider.of<PtmApi>(context, listen: false).savePtm(
+        StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+        _titleController.text,
+        _dateController.text,
+        _remarkController.text,
+        slots,
+      );
       if (data.result) {
         setState(() {
           _isLoading = false;
-          _titleController.text = "";
-          _dateController.text = "";
-          _fromStartTimeController.text = "";
-          _fromEndTimeController.text = "";
-          _remarkController.text = "";
+          _titleController.clear();
+          _dateController.clear();
+          _remarkController.clear();
+
+          _fromStartTimeControllers.clear();
+          _fromEndTimeControllers.clear();
+
+          resultData.clear();
           startTime = "";
           endTime = "";
+
+          _fromStartTimeControllers.add(TextEditingController());
+          _fromEndTimeControllers.add(TextEditingController());
+          resultData.add(0);
+
           CommonFunctions.showWarningToast(data.message);
         });
         return;
@@ -80,6 +119,31 @@ class _AddScreenState extends State<AddScreen> {
     return Scaffold(
       backgroundColor: colorGaryBG,
       appBar: AppBarTwo(title: AppTags.add),
+      bottomNavigationBar: SizedBox(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : CommonButton(
+                cornersRadius: 30,
+                text: AppTags.submit,
+                onPressed: () {
+                  if (_titleController.text.isEmpty) {
+                    CommonFunctions.showWarningToast("Please enter title");
+                  } else if (_dateController.text.isEmpty) {
+                    CommonFunctions.showWarningToast("Please enter date");
+                  } else if (_remarkController.text.isEmpty) {
+                    CommonFunctions.showWarningToast("Please enter remark");
+                  } else {
+                    for (int i = 0; i < resultData.length; i++) {
+                      slots.add({
+                        "fromTime": _fromStartTimeControllers[i].text,
+                        "toTime": _fromEndTimeControllers[i].text,
+                      });
+                    }
+                    callApiSavePtm();
+                  }
+                },
+              ),
+      ).paddingAll(10.0),
       body: Container(
         height: double.infinity,
         color: kBackgroundColor,
@@ -132,11 +196,11 @@ class _AddScreenState extends State<AddScreen> {
               // Replace ListView.builder
               Column(
                 children: List.generate(resultData.length, (index) {
-                  return assignmentCard(resultData[index], false)
+                  return assignmentCard(resultData[index], index)
                       .paddingOnly(top: 10.sp);
                 }),
               ),
-              /*SizedBox(
+              SizedBox(
                 width: 200,
                 child: CommonButton(
                   paddingHorizontal: 7,
@@ -145,11 +209,12 @@ class _AddScreenState extends State<AddScreen> {
                   text: AppTags.addMoreSlot,
                   onPressed: () {
                     setState(() {
+                      _ensureSlotController(resultData.length);
                       resultData.add(1);
                     });
                   },
                 ),
-              ),*/
+              ),
               CustomTextField(
                 borderRadius: 10.0,
                 onTap: () {},
@@ -171,25 +236,6 @@ class _AddScreenState extends State<AddScreen> {
               const SizedBox(
                 height: 30,
               ),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : CommonButton(
-                      cornersRadius: 30,
-                      text: AppTags.submit,
-                      onPressed: () {
-                        if (_titleController.text.isEmpty) {
-                          CommonFunctions.showWarningToast(
-                              "Please enter title");
-                        } else if (_dateController.text.isEmpty) {
-                          CommonFunctions.showWarningToast("Please enter date");
-                        } else if (_remarkController.text.isEmpty) {
-                          CommonFunctions.showWarningToast(
-                              "Please enter remark");
-                        } else {
-                          callApiSavePtm();
-                        }
-                      },
-                    ),
               const SizedBox(
                 height: 10,
               )
@@ -200,7 +246,7 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  Widget assignmentCard(int a, bool isClosed) {
+  Widget assignmentCard(int a, int index) {
     return Container(
       margin: EdgeInsets.only(bottom: 20.sp),
       child: Column(
@@ -215,7 +261,7 @@ class _AddScreenState extends State<AddScreen> {
           CustomTextField(
             borderRadius: 10.0,
             onTap: () {
-              _selectStartTime(context);
+              _selectStartTime(context,index);
             },
             hintText: 'Start Time',
             isRequired: true,
@@ -230,15 +276,15 @@ class _AddScreenState extends State<AddScreen> {
               return null;
             },
             isReadonly: true,
-            controller: _fromStartTimeController,
+            controller: _fromStartTimeControllers[index],
             onSave: (value) {
-              _fromStartTimeController.text = value as String;
+              _fromStartTimeControllers[index].text = value as String;
             },
           ).paddingOnly(top: 10),
           CustomTextField(
             borderRadius: 10.0,
             onTap: () {
-              _selectEndTime(context);
+              _selectEndTime(context,index);
             },
             hintText: 'End Time',
             isRequired: true,
@@ -253,9 +299,9 @@ class _AddScreenState extends State<AddScreen> {
               return null;
             },
             isReadonly: true,
-            controller: _fromEndTimeController,
+            controller: _fromEndTimeControllers[index],
             onSave: (value) {
-              _fromEndTimeController.text = value as String;
+              _fromEndTimeControllers[index].text = value as String;
             },
           ).paddingOnly(top: 10),
         ],
@@ -279,7 +325,7 @@ class _AddScreenState extends State<AddScreen> {
     }
   }
 
-  Future<void> _selectStartTime(BuildContext context) async {
+  Future<void> _selectStartTime(BuildContext context,int index) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -296,13 +342,13 @@ class _AddScreenState extends State<AddScreen> {
       final formattedTime = DateFormat('HH:mm').format(selectedTime);
       setState(() {
         startTime = formattedTime;
-        _fromStartTimeController.text = pickedTime.format(context);
-        print("_fromStartTimeController : $formattedTime");
+        _fromStartTimeControllers[index].text = startTime/*pickedTime.format(context)*/;
+        print("_fromStartTimeController : ${_fromStartTimeControllers[index].text}");
       });
     }
   }
 
-  Future<void> _selectEndTime(BuildContext context) async {
+  Future<void> _selectEndTime(BuildContext context,int index) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -320,8 +366,8 @@ class _AddScreenState extends State<AddScreen> {
       setState(() {
         // final formattedTime = pickedTime.format(context);
         endTime = formattedTime;
-        _fromEndTimeController.text = pickedTime.format(context);
-        print("_fromEndTimeController : ${_fromEndTimeController.text}");
+        _fromEndTimeControllers[index].text = formattedTime/*pickedTime.format(context)*/;
+        print("_fromEndTimeController : ${_fromEndTimeControllers[index].text}");
       });
     }
   }

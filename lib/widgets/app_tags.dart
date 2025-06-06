@@ -44,6 +44,10 @@ class AppTags {
   static const String addMoreSlot  = "Add More slot";
   static const String incident  = "Incident";
   static const String save  = "Save";
+  static const String followUp  = "FollowUp";
+  static const String transferThisLead  = "Transfer this lead";
+  static const String transfer = "Transfer";
+  static const String followUpHistory = 'Follow-up history';
 
 }
 

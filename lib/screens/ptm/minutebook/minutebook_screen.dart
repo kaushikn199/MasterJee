@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/models/ptm/grouped_students_response.dart';
+import 'package:masterjee/models/ptm/ptm_response.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/ptm_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class MinutebookScreen extends StatefulWidget {
   const MinutebookScreen({super.key});
@@ -22,23 +28,71 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
 
   String? _selectedSubject;
   String? _selectedTemplate;
-
-  List<String> subjectData = [
-    "abc133 - venkatesh",
-    "1001 - ABC",
-    "1 Raj L",
-    "Savitha",
-    "Mona d"
-  ];
   bool _isChecked = false;
-  List<String> template = [
-    "08:13 - 04:14",
-  ];
   final _fromDateController = TextEditingController();
   final _fromRollNoFromController = TextEditingController();
   final _fromRollNoToController = TextEditingController();
+  double _progressValue = 0.1;
+  List<StudentData> studentList = [];
+  var _isLoading = false;
+  int selectIndex = 0;
 
-  double _progressValue = 0.1; // Initial progress (30%)
+  @override
+  void initState() {
+    callApiGetGroupedStudents();
+    super.initState();
+  }
+
+  Future<void> callApiGetGroupedStudents() async {
+    try {
+      GroupedStudentsResponse data =
+      await Provider.of<PtmApi>(context, listen: false).getGroupedStudents(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString());
+      if (data.result) {
+        setState(() {
+          studentList = data.data;
+        });
+        return;
+      }
+    } catch (error) {
+      print("callApiGetGroupedStudents : $error");
+    }
+  }
+
+
+  Future<void> callApiSavePtmAttendance() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      GroupedStudentsResponse data =
+      await Provider.of<PtmApi>(context, listen: false).savePtmAttendance(
+        StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+        "",
+        "",
+        "",
+        "",
+        "");
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,35 +136,31 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
                       setState(() {
                         _selectedSubject = null;
                         _selectedSubject = value.toString();
-                        for (int i = 0; i < subjectData.length; i++) {
-                          if (subjectData[i].toString().toLowerCase() ==
-                              value.toString().toLowerCase()) {
+                        for (int i = 0; i < studentList.length; i++) {
+                          if (studentList[i].toString().toLowerCase() == value.toString().toLowerCase()) {
                             break;
                           }
                         }
                       });
                     },
                     isExpanded: true,
-                    items: subjectData.map((cd) {
+                    items: studentList.map((cd) {
                       return DropdownMenuItem(
-                        value: cd,
+                        value: cd.id,
                         onTap: () {
                           setState(() {
-                            _selectedSubject = cd;
-                            for (int i = 0; i < subjectData.length; i++) {
-                              if (subjectData[i].toString().toLowerCase() ==
-                                  cd.toString().toLowerCase()) {
+                            _selectedSubject = cd.id;
+                            for (int i = 0; i < studentList.length; i++) {
+                              if (studentList[i].toString().toLowerCase() == cd.toString().toLowerCase()) {
                                 break;
                               }
                             }
                           });
                         },
                         child: Text(
-                          cd.toString(),
-                          style: const TextStyle(
-                            color: colorBlack,
-                            fontSize: 14,
-                          ),
+                          "${cd.admissionNo} - ${cd.firstname} ${cd.lastname}".toString(),
+                          style: const TextStyle(color: colorBlack,
+                            fontSize: 14),
                         ),
                       );
                     }).toList(),
