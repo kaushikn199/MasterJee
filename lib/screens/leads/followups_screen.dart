@@ -5,6 +5,7 @@ import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/leads/followup_response.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/leads_api.dart';
+import 'package:masterjee/screens/leads/leads_view_screen.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
@@ -91,7 +92,13 @@ class _FollowupsScreenState extends State<FollowupsScreen> {
             padding: EdgeInsets.only(top: 10.sp),
             itemBuilder: (BuildContext context, int index) {
               FollowupData data = followupList[index];
-              return leadsCard(data, context);
+              return InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context,
+                      LeadsViewScreen.routeName,
+                      arguments:data.lId);
+                },
+                  child: leadsCard(data, context));
             }),
       ),
     );

@@ -12,6 +12,8 @@ import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
 
+import 'leads_view_screen.dart';
+
 class CampaignLeadsScreen extends StatefulWidget {
   const CampaignLeadsScreen({super.key});
 
@@ -107,7 +109,13 @@ class _CampaignLeadsScreenState extends State<CampaignLeadsScreen> {
                   CampaignLead data = leadList[index].leads;
                   FollowUpData? followUpData =
                       parseFollowUpData(data.lFollowUpData);
-                  return leadsCard(data, followUpData, context);
+                  return InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context,
+                          LeadsViewScreen.routeName,
+                          arguments:followUpData?.lId);
+                    },
+                      child: leadsCard(data, followUpData, context));
                 }),
           ),
         );

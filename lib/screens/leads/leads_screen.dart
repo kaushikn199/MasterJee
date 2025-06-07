@@ -186,7 +186,6 @@ class _LeadsScreenState extends State<LeadsScreen>
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
             onTap: () {
-              //Navigator.pushNamed(context, EditLeadsScreen.routeName);
               Navigator.pushNamed(context,
                   CampaignLeadsScreen.routeName,
                   arguments:campaignList[index].campaignId);

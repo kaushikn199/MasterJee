@@ -30,8 +30,8 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
   String? _selectedTemplate;
   bool _isChecked = false;
   final _fromDateController = TextEditingController();
-  final _fromRollNoFromController = TextEditingController();
-  final _fromRollNoToController = TextEditingController();
+  final parentFeedbackController = TextEditingController();
+  final parentComplainController = TextEditingController();
   double _progressValue = 0.1;
   List<StudentData> studentList = [];
   var _isLoading = false;
@@ -62,7 +62,12 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
   }
 
 
-  Future<void> callApiSavePtmAttendance() async {
+  Future<void> callApiSavePtmAttendance(
+      String studentId,
+      String feedbackScore,
+      String feedbackRemark,
+      String parentsComplain,
+      String specialCase) async {
     setState(() {
       _isLoading = true;
     });
@@ -70,14 +75,20 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
       GroupedStudentsResponse data =
       await Provider.of<PtmApi>(context, listen: false).savePtmAttendance(
         StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-        "",
-        "",
-        "",
-        "",
-        "");
+          studentId,
+          feedbackScore,
+          feedbackRemark,
+          parentsComplain,
+          specialCase);
       if (data.result) {
         setState(() {
           _isLoading = false;
+          selectIndex = 0;
+          _selectedSubject = null;
+          _progressValue = 0.1;
+          parentFeedbackController.text = "";
+          parentComplainController.text = "";
+          _isChecked = false;
           CommonFunctions.showWarningToast(data.message);
         });
         return;
@@ -99,15 +110,34 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
     return  Scaffold(
         backgroundColor: kBackgroundColor,
         appBar: AppBarTwo(title: AppTags.minutebook),
-        bottomNavigationBar:  CommonButton(
-          cornersRadius: 30,
-          text: AppTags.submit,
-          onPressed: () {
-            setState(() {
+        bottomNavigationBar:  SizedBox(
+          child: _isLoading ?
+           const Center(child: CircularProgressIndicator()) :
+          CommonButton(
+            cornersRadius: 30,
+            text: AppTags.submit,
+            onPressed: () {
+              setState(() {
+                if(_selectedSubject == null || _selectedSubject == ""){
+                  CommonFunctions.showWarningToast("Please select student");
+                }else if(parentFeedbackController.text == ""){
+                  CommonFunctions.showWarningToast("Please enter parent feedback");
+                }else if(parentComplainController.text == ""){
+                  CommonFunctions.showWarningToast("Please enter parent complain");
+                }else{
 
-            });
-          },
-        ).paddingOnly(left: 15,right: 15,bottom: 30),
+                  callApiSavePtmAttendance(
+                      studentList[selectIndex].studentId,
+                      (_progressValue * 10).toInt().toString(),
+                      parentFeedbackController.text,
+                      parentComplainController.text,
+                      _isChecked ? "1" : "0"
+                  );
+                }
+              });
+            },
+          ).paddingOnly(left: 15,right: 15,bottom: 30) ,
+        ),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -135,12 +165,13 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
                     onChanged: (value) {
                       setState(() {
                         _selectedSubject = null;
-                        _selectedSubject = value.toString();
-                        for (int i = 0; i < studentList.length; i++) {
-                          if (studentList[i].toString().toLowerCase() == value.toString().toLowerCase()) {
+                       _selectedSubject = value.toString();
+                        /*for (int i = 0; i < studentList.length; i++) {
+                          if (studentList[i].id.toString().toLowerCase() == value.toString().toLowerCase()) {
+                            selectIndex = i;
                             break;
                           }
-                        }
+                        }*/
                       });
                     },
                     isExpanded: true,
@@ -151,7 +182,8 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
                           setState(() {
                             _selectedSubject = cd.id;
                             for (int i = 0; i < studentList.length; i++) {
-                              if (studentList[i].toString().toLowerCase() == cd.toString().toLowerCase()) {
+                              if (studentList[i].id == cd.id) {
+                                selectIndex = i;
                                 break;
                               }
                             }
@@ -199,10 +231,10 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
                   return null;
                 },
                 isReadonly: false,
-                controller: _fromRollNoFromController,
+                controller: parentFeedbackController,
                 onSave: (value) {
                   // _authData['email'] = value.toString();
-                  _fromRollNoFromController.text = value as String;
+                  parentFeedbackController.text = value as String;
                 },
               ).paddingOnly(left: 15,right: 15),
               gap(10.sp),
@@ -220,10 +252,10 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
                   return null;
                 },
                 isReadonly: false,
-                controller: _fromRollNoToController,
+                controller: parentComplainController,
                 onSave: (value) {
                   // _authData['email'] = value.toString();
-                  _fromRollNoToController.text = value as String;
+                  parentComplainController.text = value as String;
                 },
               ).paddingOnly(left: 15,right: 15),
               Row(

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_common/get_reset.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/models/leads/save_lead_body.dart';
 import 'package:masterjee/models/leads/view_leads_reasponse.dart';
+import 'package:masterjee/models/ptm/grouped_students_response.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/leads_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
-
+import 'package:provider/provider.dart';
 
 class EditLeadsScreen extends StatefulWidget {
   const EditLeadsScreen({super.key});
@@ -20,19 +24,51 @@ class EditLeadsScreen extends StatefulWidget {
 }
 
 class _EditLeadsScreenState extends State<EditLeadsScreen> {
-
   DateTime? _selectedFromDate;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
-
   String? _selectedGender;
   List<String> genderList = ["Male", "Female"];
   String? _selectedResourceId;
-
   String? _selectedResource;
-  List<String> resourceList = ["Parent", "Teacher","newspaper","Social media",
-    "Student TS","Tele marketing TS","Cousin"];
+  List<String> resourceList = [
+    "Parent",
+    "Teacher",
+    "newspaper",
+    "Social media",
+    "Student TS",
+    "Tele marketing TS",
+    "Cousin"
+  ];
   String? _selectedGenderId;
+  var _isLoading = false;
+  SaveLeadBody body = SaveLeadBody();
+
+  Future<void> callApiSaveLead() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      GroupedStudentsResponse data =
+          await Provider.of<LeadsApi>(context, listen: false).saveLead(body);
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   final _dateController = TextEditingController();
   late var nameController = TextEditingController();
@@ -45,6 +81,8 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
   late var fatherNameController = TextEditingController();
   late var fatherPhoneController = TextEditingController();
   late var fatherOccupationController = TextEditingController();
+  late var motherNameController = TextEditingController();
+  late var motherPhoneController = TextEditingController();
   late var motherQualificationController = TextEditingController();
   late var guardianNameController = TextEditingController();
   late var guardianPhotoController = TextEditingController();
@@ -66,7 +104,7 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
     super.didChangeDependencies();
     if (!_isInitialized) {
       data = ModalRoute.of(context)!.settings.arguments as LeadData;
-      if(data != null){
+      if (data != null) {
         nameController.text = data?.lName ?? "";
         emailController.text = data?.lEmail ?? "";
         casteController.text = data?.lCaste ?? "";
@@ -90,17 +128,61 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
         alternativePhoneNumberController.text = data?.lAlternativePhone ?? "";
         emergencyPhoneNumberController.text = data?.lEmergencyContactNo ?? "";
         sourceController.text = data?.lSource ?? "";
+        motherNameController.text = data?.lMotherName ?? "";
+        motherPhoneController.text = data?.lMotherPhone ?? "";
+        _dateController.text = data?.lDob ?? "";
       }
       _isInitialized = true;
     }
   }
 
   @override
+  void initState() {
+    //_determinePosition();
+    super.initState();
+  }
+
+  /*Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
+  }*/
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-
-      ),
+      appBar: AppBar(),
       backgroundColor: colorGaryBG,
       bottomNavigationBar: CommonButton(
         paddingHorizontal: 7,
@@ -108,12 +190,47 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
         cornersRadius: 10,
         text: AppTags.save,
         onPressed: () {
-          if (!globalFormKey.currentState!.validate()) {
+          /*if (!globalFormKey.currentState!.validate()) {
             return;
           }
-          globalFormKey.currentState!.save();
+          globalFormKey.currentState!.save();*/
+          body.userId = StorageHelper.getStringData(StorageHelper.userIdKey);
+          body.cId = data!.cId;
+          body.lId = data!.lId;
+          body.lName = nameController.text;
+          body.lDob = _dateController.text;
+          body.lMotherName = motherNameController.text;
+          body.lMotherPhone = motherPhoneController.text;
+          body.lResources = _selectedResource ?? "";
+          body.lat =
+          body.lng =
+          body.lGender = _selectedGender?? "";
+          body.lEmail = emailController.text;
+          body.lCaste = casteController.text;
+          body.lSubCaste = subCasteController.text;
+          body.lAadharNo = aadhaarNoController.text;
+          body.lBloodGroup = bloodGroupController.text;
+          body.lReligion = religionController.text;
+          body.lMotherTongue = motherTongueController.text;
+          body.lFatherName = fatherNameController.text;
+          body.lFatherPhone = fatherPhoneController.text;
+          body.lFatherQualification = fatherOccupationController.text;
+          body.lMotherQualification = motherQualificationController.text;
+          body.lGuradianName = guardianNameController.text;
+          body.lGuardianPhone = guardianPhotoController.text;
+          body.lClass = classController.text;
+          body.lEnrolledCourse = courseController.text;
+          body.lElectiveSubjects = subjectController.text;
+          body.lAddress = addressController.text;
+          body.lLocation = locationController.text;
+          body.lPhoneNumber = phoneNumberController.text;
+          body.lAlternativePhone = alternativePhoneNumberController.text;
+          body.lEmergencyContactNo = emergencyPhoneNumberController.text;
+          body.lSource = sourceController.text;
+          print("body : $body");
+          callApiSaveLead();
         },
-      ).paddingOnly(bottom: 10,left: 10,right: 10),
+      ).paddingOnly(bottom: 10, left: 10, right: 10),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -163,7 +280,8 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
                                 for (int i = 0; i < genderList.length; i++) {
                                   if (genderList[i].toString().toLowerCase() ==
                                       value.toString().toLowerCase()) {
-                                    _selectedResourceId = genderList[i].toString();
+                                    _selectedResourceId =
+                                        genderList[i].toString();
                                     break;
                                   }
                                 }
@@ -176,7 +294,9 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
                                 onTap: () {
                                   setState(() {
                                     _selectedGender = cd;
-                                    for (int i = 0; i < genderList.length; i++) {
+                                    for (int i = 0;
+                                        i < genderList.length;
+                                        i++) {
                                       if (genderList[i]
                                               .toString()
                                               .toLowerCase() ==
@@ -330,6 +450,32 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
                         keyboardType: TextInputType.text,
                         onSave: (value) {
                           fatherOccupationController.text = value as String;
+                        },
+                      ),
+                      gap(10.0),
+                      CustomTextField(
+                        validate: (input) => input!.length == 0
+                            ? "Please enter mother name"
+                            : null,
+                        hintText: 'Mother name',
+                        isReadonly: false,
+                        controller: motherNameController,
+                        keyboardType: TextInputType.text,
+                        onSave: (value) {
+                          motherNameController.text = value as String;
+                        },
+                      ),
+                      gap(10.0),
+                      CustomTextField(
+                        validate: (input) => input!.length == 0
+                            ? "Please enter mother phone"
+                            : null,
+                        hintText: 'Mother phone',
+                        isReadonly: false,
+                        controller: motherPhoneController,
+                        keyboardType: TextInputType.text,
+                        onSave: (value) {
+                          motherPhoneController.text = value as String;
                         },
                       ),
                       gap(10.0),
@@ -520,9 +666,12 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
                                 _selectedResource = null;
                                 _selectedResource = value.toString();
                                 for (int i = 0; i < resourceList.length; i++) {
-                                  if (resourceList[i].toString().toLowerCase() ==
+                                  if (resourceList[i]
+                                          .toString()
+                                          .toLowerCase() ==
                                       value.toString().toLowerCase()) {
-                                    _selectedResourceId = resourceList[i].toString();
+                                    _selectedResourceId =
+                                        resourceList[i].toString();
                                     break;
                                   }
                                 }
@@ -535,10 +684,12 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
                                 onTap: () {
                                   setState(() {
                                     _selectedResource = cd;
-                                    for (int i = 0; i < resourceList.length; i++) {
+                                    for (int i = 0;
+                                        i < resourceList.length;
+                                        i++) {
                                       if (resourceList[i]
-                                          .toString()
-                                          .toLowerCase() ==
+                                              .toString()
+                                              .toLowerCase() ==
                                           cd.toString().toLowerCase()) {
                                         _selectedResourceId =
                                             resourceList[i].toString();

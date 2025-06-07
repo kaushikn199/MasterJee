@@ -88,7 +88,7 @@ class PtmApi with ChangeNotifier {
       'specialCase': specialCase,
     };
     print("savePtmAttendance body : ${body}");
-    final responseData = await ApiHelper.post(ApiHelper.savePtmSchedule, body);
+    final responseData = await ApiHelper.post(ApiHelper.savePtmAttendance, body);
     print("savePtmAttendance : ${responseData}");
     return GroupedStudentsResponse.fromJson(responseData);
   }
