@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
+import 'package:location/location.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/leads/save_lead_body.dart';
@@ -24,6 +25,7 @@ class EditLeadsScreen extends StatefulWidget {
 }
 
 class _EditLeadsScreenState extends State<EditLeadsScreen> {
+
   DateTime? _selectedFromDate;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
@@ -142,7 +144,43 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
     super.initState();
   }
 
-  /*Future<Position> _determinePosition() async {
+  Location location = Location();
+  late bool _serviceEnabled;
+  late PermissionStatus _permissionGranted;
+  LocationData? _locationData;
+
+  Future<void> getLocation() async {
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        CommonFunctions.showWarningToast("This app needs location permission. Please enable it from app settings.");
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted){
+        CommonFunctions.showWarningToast("This app needs location permission. Please enable it from app settings.");
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+
+    print("_locationData ${_locationData?.latitude} ${_locationData?.longitude}");
+    setState(() {
+      if (_locationData?.latitude != 0 && _locationData?.longitude != 0){
+        CommonFunctions.showSuccessToast("Location added successfully.");
+      }else{
+        CommonFunctions.showWarningToast("Fail to get location");
+      }
+    });
+  }
+
+ /* Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -202,8 +240,8 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
           body.lMotherName = motherNameController.text;
           body.lMotherPhone = motherPhoneController.text;
           body.lResources = _selectedResource ?? "";
-          body.lat =
-          body.lng =
+          body.lat = _locationData?.latitude.toString() ?? "0";
+          body.lng =_locationData?.longitude.toString() ?? "0";
           body.lGender = _selectedGender?? "";
           body.lEmail = emailController.text;
           body.lCaste = casteController.text;
@@ -240,7 +278,8 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       CustomTextField(
                         validate: (input) =>
@@ -710,6 +749,24 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
                           ),
                         ),
                       ),
+                      gap(10.0),
+                      InkWell(
+                        onTap: () {
+                          getLocation();
+                        },
+                        child:  Container(
+                          decoration: BoxDecoration(
+                            color: colorGreen,
+                            border: Border.all(color: colorGreen, width: 1), // Border color and width
+                            borderRadius: BorderRadius.circular(20), // Rounded corners
+                          ),
+                          child: const CommonText.medium("Register Current Location",
+                              size: 13,
+                              color: colorWhite)
+                              .paddingOnly(top: 5,bottom: 5,left: 20,right: 20),
+                        ),
+                      ),
+                      gap(10.0),
                     ],
                   ),
                 ),

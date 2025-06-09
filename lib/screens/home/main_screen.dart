@@ -66,11 +66,11 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     loadUserData();
     callApiClassSection().then((value) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (isClassOrSectionIdMissing()) {
-          openDialog();
-        }
-      });
+        setState(() {
+          if (isClassOrSectionIdMissing()) {
+            openDialog();
+          }
+        });
     },);
 
     super.initState();

@@ -45,5 +45,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to get your current position and save your location info.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photo library to select images.</string>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>This app needs access to your documents to select files.</string>
 </dict>
 </plist>

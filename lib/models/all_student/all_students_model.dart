@@ -1,23 +1,24 @@
-
 class AllStudentsResponse {
   String status;
   String message;
   bool result;
-  List<StudentData> data;
+  List<StudentData>? data;
 
   AllStudentsResponse({
     required this.status,
     required this.message,
     required this.result,
-    required this.data,
+    this.data,
   });
 
   factory AllStudentsResponse.fromJson(Map<String, dynamic> json) {
     return AllStudentsResponse(
-      status: json['status'],
-      message: json['message'],
-      result: json['result'],
-      data: List<StudentData>.from(json['data'].map((x) => StudentData.fromJson(x))),
+      status: json['status'] ?? '',
+      message: json['message'] ?? '',
+      result: json['result'] ?? false,
+      data: json['data'] != null
+          ? List<StudentData>.from(json['data'].map((x) => StudentData.fromJson(x)))
+          : null,
     );
   }
 
@@ -25,9 +26,10 @@ class AllStudentsResponse {
     'status': status,
     'message': message,
     'result': result,
-    'data': List<dynamic>.from(data.map((x) => x.toJson())),
+    'data': data != null ? List<dynamic>.from(data!.map((x) => x.toJson())) : null,
   };
 }
+
 
 class StudentData {
   String id;
@@ -110,6 +112,7 @@ class StudentData {
   String faceAuth;
   String ssid;
   int? selectedValue;
+  String? selectedValueText;
 
   StudentData({
     required this.id,
@@ -192,6 +195,7 @@ class StudentData {
     required this.faceAuth,
     required this.ssid,
     this.selectedValue,
+    this.selectedValueText,
   });
 
   factory StudentData.fromJson(Map<String, dynamic> json) => StudentData(
@@ -275,6 +279,7 @@ class StudentData {
     faceAuth: json["face_auth"],
     ssid: json["ssid"],
     selectedValue: json["selectedValue"],
+    selectedValueText: json["selectedValueText"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -358,5 +363,6 @@ class StudentData {
     "face_auth": faceAuth,
     "ssid": ssid,
     "selectedValue": selectedValue,
+    "selectedValueText": selectedValueText,
   };
 }

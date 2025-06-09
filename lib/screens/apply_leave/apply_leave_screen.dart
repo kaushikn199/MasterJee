@@ -1,4 +1,3 @@
-import 'package:file_picker_pro/file_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
@@ -28,7 +27,6 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
   bool _isEditLoading = false;
   var _isLoading = false;
 
-  FileData imageFile = FileData();
   DateTime _selectedDate = DateTime.now();
   DateTime? _selectedFromDate;
   DateTime? _selectedToDate;

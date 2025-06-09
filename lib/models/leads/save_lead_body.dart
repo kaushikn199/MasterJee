@@ -31,7 +31,7 @@ class SaveLeadBody {
   String lat;
   String lng;
   String lGender;
-  String lAadharNo;//33
+  String lAadharNo;
 
   SaveLeadBody({
     this.userId = "",

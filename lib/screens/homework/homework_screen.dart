@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
@@ -12,6 +15,7 @@ import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class HomeworkScreen extends StatefulWidget {
@@ -121,6 +125,60 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
     });
     callApiHomeworkList(HomeworkListType.upcoming.name);
     super.initState();
+  }
+
+  late final PlatformFile file;
+
+  Future<void> pickFile() async {
+    if (Theme.of(context).platform == TargetPlatform.android) {
+      if (await _requestStoragePermission()) {
+        _openFilePicker();
+      }
+    } else {
+      _openFilePicker();
+    }
+  }
+
+  Future<bool> _requestStoragePermission() async {
+    Permission permission = Permission.storage;
+
+    if (await Permission.photos.isGranted) {
+      permission = Permission.photos;
+    }
+
+    if (await permission.isGranted) {
+      return true;
+    }
+
+    final status = await permission.request();
+
+    if (status.isGranted) {
+      return true;
+    } else if (status.isPermanentlyDenied) {
+      await openAppSettings();
+    } else {
+      _showToast("Storage permission denied");
+    }
+    return false;
+  }
+
+  Future<void> _openFilePicker() async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'xls', 'xlsx'],
+    );
+
+    if (result != null) {
+      final file = result.files.first;
+      _UploadFileController.text = file.name;
+    } else {
+      _showToast("No file selected");
+    }
+  }
+
+  void _showToast(String msg) {
+    CommonFunctions.showWarningToast(msg);
   }
 
   @override
@@ -441,6 +499,9 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
                       ),
                       gap(10.sp),
                       CustomTextField(
+                        onTap: (){
+                          pickFile();
+                        },
                         hintText: 'Select file',
                         isReadonly: true,
                         controller: _UploadFileController,

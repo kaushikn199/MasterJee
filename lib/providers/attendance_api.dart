@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:masterjee/models/all_student/all_students_model.dart';
 import 'package:masterjee/models/attendance_report/attendance_report_model.dart';
+import 'package:masterjee/models/ptm/grouped_students_response.dart';
 import 'package:masterjee/others/ApiHelper.dart';
 
 class ClassAttendanceApi with ChangeNotifier {
@@ -33,19 +34,18 @@ class ClassAttendanceApi with ChangeNotifier {
     return AttendanceReportResponse.fromJson(responseData);
   }
 
-  Future<AttendanceReportResponse> saveStudentAttendance(
-      String userId, String classId, String sectionId, String date) async {
+  Future<AllStudentsResponse> saveStudentAttendance(
+      String userId, String classId,List<Map<String, String>> students) async {
     Map<String, dynamic> body = {
       'userId': userId,
-      'classId': classId,
-      'sectionId': sectionId,
-      'date': date
+      'date': classId,
+      'attendance': students
     };
     print("body : ${body}");
     final responseData =
     await ApiHelper.post(ApiHelper.saveStudentAttendance, body);
     print("responseData : ${responseData}");
-    return AttendanceReportResponse.fromJson(responseData);
+    return AllStudentsResponse.fromJson(responseData);
   }
 
 }
