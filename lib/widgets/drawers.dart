@@ -175,12 +175,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   final items = [
     const DrawerItem(title: AppTags.home, icon: Icons.home, size: 30),
-    const DrawerItem(
-        title: AppTags.profile, icon: Icons.account_circle_outlined, size: 30),
-    const DrawerItem(
-        title: AppTags.aboutSchool,
-        icon: Icons.account_balance_outlined,
-        size: 30),
     const DrawerItem(title: AppTags.logout, icon: Icons.logout_rounded, size: 30),
   ];
 

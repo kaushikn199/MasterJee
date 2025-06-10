@@ -21,8 +21,13 @@ class ApiHelper {
   static const saveLeaveApplication = 'saveLeaveApplication';
   static const getSubordinateStaff = 'getSubordinateStaff';
   static const getAllStudents = 'getAllStudents';
+  static const getStudentTemplates = 'cbseReportCardTemplate';
   static const getAttendanceReport = 'getAttendanceReport';
   static const saveStudentAttendance = 'saveStudentAttendance';
+  static const studentMarksheet = 'studentMarksheet';
+  static const studentProgressAssessmentWise = 'studentProgressAssessmentWise';
+  static const studentProgressTermWise = 'studentProgressTermWise';
+  static const studentProgressSubjectWise = 'studentProgressSubjectWise';
   static const getHomeworkList = 'getHomeworkList';
   static const getSubmittedHomeworkInfo = 'getSubmittedHomeworkInfo';
   static const saveHomeworkScore = 'saveHomeworkScore';
@@ -34,6 +39,10 @@ class ApiHelper {
   static const saveIncidentComment = 'saveIncidentComment';
   static const studentAssessment = 'studentAssessment';
   static const saveStudentAssessment = 'saveStudentAssessment';
+  static const String qrAttendance = "qr_mark_attendance";
+  static const String faceAuthentication = "face_authentication";
+  static const String markAttendance = "mark_attendance";
+  static const String usersInfo = "users_info";
   static const leads = 'leads';
   static const allFollowup = 'allFollowup';
   static const missedLeads = 'missedLeads';

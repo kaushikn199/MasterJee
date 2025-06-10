@@ -26,7 +26,9 @@ const kSecondBackgroundColor = Color(0xFFF5F9FF);
 const kDarkGreyColor = Color(0xFF757575);
 const kYellowColor = Color(0xFFDCB300);
 const kDeepBlueColor = Color(0xFF594CF5);
-
+const Color scaffoldTopGradientClr = Color(0xff1ec209);
+const Color overlayContainerClr = Color(0xff2E2E2E);
+const Color scaffoldBottomGradientClr = Color(0xffb1fba7);
 
 const kDefaultInputBorder = OutlineInputBorder(
   borderRadius: BorderRadius.all(Radius.circular(12.0)),

@@ -15,6 +15,7 @@ import 'package:masterjee/providers/homework_api.dart';
 import 'package:masterjee/providers/leads_api.dart';
 import 'package:masterjee/providers/ptm_api.dart';
 import 'package:masterjee/providers/student_behavior_api.dart';
+import 'package:masterjee/providers/student_progress_api.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
@@ -42,9 +43,11 @@ import 'package:masterjee/screens/student_behaviour/comment_screen.dart';
 import 'package:masterjee/screens/student_behaviour/incident_screen.dart';
 import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
 import 'package:masterjee/screens/student_behaviour/view_screen.dart';
+import 'package:masterjee/screens/student_progress/assessment_wise_screen.dart';
 import 'package:masterjee/screens/student_progress/marksheet_screen.dart';
 import 'package:masterjee/screens/student_progress/overall_screen.dart';
 import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
+import 'package:masterjee/screens/student_progress/subject_wise_screen.dart';
 import 'package:masterjee/screens/timetable/timetable_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:provider/provider.dart';
@@ -102,6 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => StudentBehaviorApi()),
           ChangeNotifierProvider(create: (ctx) => AssesmentApi()),
           ChangeNotifierProvider(create: (ctx) => LeadsApi()),
+          ChangeNotifierProvider(create: (ctx) => StudentProgressApi()),
           ChangeNotifierProvider(create: (ctx) => PtmApi()),
         ],
         child: Consumer<Auth>(
@@ -170,6 +174,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         EditLeadsScreen.routeName: (ctx) => const EditLeadsScreen(),
                         CampaignLeadsScreen.routeName: (ctx) => const CampaignLeadsScreen(),
                         LeadsViewScreen.routeName: (ctx) => const LeadsViewScreen(),
+                        SubjectWiseScreen.routeName: (ctx) => const SubjectWiseScreen(),
+                        AssessmentWiseScreen.routeName: (ctx) => const AssessmentWiseScreen(),
                       },
                       home: const SplashScreen()),
                 );

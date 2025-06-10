@@ -11,6 +11,7 @@ class StorageHelper {
   static const String userKey = 'USER_DATA';
   static const String classListKey = 'CLASS_DATA';
   static const String classIdKey = 'CLASS_ID';
+  static const String sessionIdKey = 'SESSION_ID';
   static const String sectionIdKey = 'SECTION_ID';
   static const String selectedClassDataKey = 'SELECTED_CLASS_DATA';
   static const String selectedSectionDataKey = 'SELECTED_SECTION_DATA';

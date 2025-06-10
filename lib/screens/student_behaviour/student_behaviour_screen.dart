@@ -42,7 +42,7 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
           StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
           StorageHelper.getStringData(StorageHelper.sectionIdKey)
               .toString());
-      if (data.result) {
+      if (data.result!) {
         setState(() {
           studentList = data.data ?? [];
           _isLoading = false;
@@ -173,7 +173,7 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 2),
                         child: DropdownButton(
-                          hint: const CommonText('Subject',
+                          hint: const CommonText(AppTags.student,
                               size: 14, color: Colors.black54),
                           value: _selectedSubject,
                           icon: const Card(

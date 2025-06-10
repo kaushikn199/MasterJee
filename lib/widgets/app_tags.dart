@@ -7,9 +7,11 @@ class AppTags {
   static const String attendance = "Attendance";
   static const String duesReport = "Dues Report";
   static const String timetable = "Timetable";
+  static const String template = "Template";
   static const String approveleave = "Approve Leave";
   static const String homework = "Homework";
   static const String studentBehavior = "Student Behavior";
+  static const String student = "Student";
   static const String assesment = "Assesment";
   static const String studentProgress = "Student Progress";
   static const String ptm = "PTM";
@@ -25,10 +27,15 @@ class AppTags {
   static const String submit = "Submit";
   static const String leave = "Leave";
   static const String pTM = "PTM";
+  static const String qrAttendance = "QR Attendance";
+  static const String faceAttendance = "Face Attendance";
+  static const String faceAuth = "Face Auth";
   static const String biometricAttendance = "Biometric Attendance";
   static const String leadSection = "Lead Section";
   static const String overall = "Overall";
   static const String markSheet = "MarkSheet";
+  static const String assessmentWise = "Assessment Wise";
+  static const String subjectWise = "Subject Wise";
   static const String behaviour = "Behaviour";
   static const String progress  = "Progress";
   static const String gmeetLiveClasses  = "Gmeet Live Classes";
@@ -43,6 +50,8 @@ class AppTags {
   static const String minutebook  = "Minutebook";
   static const String addMoreSlot  = "Add More slot";
   static const String incident  = "Incident";
+  static const String faceAuthScreenTitle = "Face Attendance";
+  static const String registerFaceScreenTitle = "Register Face";
   static const String save  = "Save";
   static const String followUp  = "FollowUp";
   static const String transferThisLead  = "Transfer this lead";

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/all_student/all_students_model.dart';
+import 'package:masterjee/models/all_student/student_template_model.dart';
+import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/attendance_api.dart';
+import 'package:masterjee/providers/student_progress_api.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class MarkSheetScreen extends StatefulWidget {
   const MarkSheetScreen({super.key});
@@ -15,36 +22,126 @@ class MarkSheetScreen extends StatefulWidget {
 }
 
 class _MarkSheetScreenState extends State<MarkSheetScreen> {
-
-  String? _selectedSubject;
+  String? _selectedStudent;
   String? _selectedTemplate;
-  String? _selectedDownload;
+  String _selectedDownload = "Download";
 
-  List<String> subjectData = [
-    "abc133 - venkatesh",
-    "1001 - ABC",
-    "1 Raj L",
-    "Savitha",
-    "Mona d"
-  ];
+  List<StudentData> studentList = [];
+  List<Template> template = [];
 
-  List<String> template = [
-    "CBSE Examination template",
-    "CBSE Exam template",
-    "Examination",
-    "Performance Profile",
-    "UT Template"
-  ];
+  Future<void> callApiGetAllStudents() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AllStudentsResponse data = await Provider.of<ClassAttendanceApi>(context, listen: false).getAllStudents(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString());
+      if (data.result) {
+        setState(() {
+          studentList = data.data ?? [];
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> callApiGetAllTemplate(id) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AllStudentsTemplateResponse data =
+          await Provider.of<StudentProgressApi>(context, listen: false).getAllTemplate(id.toString());
+      if (data.result!) {
+        setState(() {
+          template = data.data ?? [];
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> callApiToSaveRequest(Map<String, dynamic> body) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final data = await Provider.of<StudentProgressApi>(context, listen: false).submitMarkSheet(body);
+      if (data.status == "success") {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showSuccessToast("Requested successfully");
+        });
+        return;
+      } else {
+        setState(() {
+          CommonFunctions.showWarningToast("Something went wrong.");
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   List<String> download = [
     "Download",
     "Email/Whatsapp",
   ];
 
-  String? _selectedSubjectId;
+  String? _selectedStudentId;
+  String? _selectedTemplateId;
   bool _isLoading = false;
 
-  Future<void> _submit() async {}
+  Future<void> _submit() async {
+    if (_selectedStudentId == null || _selectedStudentId == "") {
+      CommonFunctions.showWarningToast("Select Student");
+    } else if (_selectedTemplateId == null || _selectedTemplateId == "") {
+      CommonFunctions.showWarningToast("Select Template");
+    } else {
+      String downloadValue = "download";
+      if (_selectedDownload.toLowerCase() == "download") {
+        downloadValue = "download";
+      } else if (_selectedDownload.toLowerCase() == "email/whatsapp") {
+        downloadValue = "email";
+      }
+      Map<String, dynamic> body = {
+        "userId": StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+        "studentId": _selectedStudentId,
+        "templateId": _selectedTemplateId,
+        "type": downloadValue
+      };
+      callApiToSaveRequest(body);
+    }
+  }
+
+  @override
+  void initState() {
+    callApiGetAllStudents();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,56 +151,43 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
           children: [
             gap(10.sp),
             Card(
-              margin: EdgeInsets.only(left: 15, right: 15),
+              margin: const EdgeInsets.only(left: 15, right: 15),
               elevation: 0.1,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               color: kBackgroundColor,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                 child: DropdownButton(
-                  hint: const CommonText('Student',
-                      size: 14, color: Colors.black54),
-                  value: _selectedSubject,
+                  hint: const CommonText(AppTags.student, size: 14, color: Colors.black54),
+                  value: _selectedStudent,
                   icon: const Card(
                     elevation: 0.1,
                     color: kBackgroundColor,
                     child: Icon(Icons.keyboard_arrow_down_outlined),
                   ),
                   underline: const SizedBox(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedSubject = null;
-                      _selectedSubject = value.toString();
-                      for (int i = 0; i < subjectData.length; i++) {
-                        if (subjectData[i].toString().toLowerCase() ==
-                            value.toString().toLowerCase()) {
-                          _selectedSubjectId = subjectData[i].toString();
-                          break;
-                        }
-                      }
-                    });
-                  },
+                  onChanged: (value) {},
                   isExpanded: true,
-                  items: subjectData.map((cd) {
+                  items: studentList.map((cd) {
                     return DropdownMenuItem(
-                      value: cd,
+                      value: cd.firstname,
                       onTap: () {
                         setState(() {
-                          _selectedSubject = cd;
-                          for (int i = 0; i < subjectData.length; i++) {
-                            if (subjectData[i].toString().toLowerCase() ==
-                                cd.toString().toLowerCase()) {
-                              _selectedSubjectId = subjectData[i].toString();
+                          _selectedStudent = cd.firstname;
+                          for (int i = 0; i < studentList.length; i++) {
+                            if (studentList[i].firstname.toString().toLowerCase() ==
+                                cd.firstname.toString().toLowerCase()) {
+                              _selectedStudentId = studentList[i].id.toString();
                               break;
                             }
                           }
+                          callApiGetAllTemplate(_selectedStudentId.toString());
                         });
                       },
                       child: Text(
-                        cd.toString(),
+                        "${cd.admissionNo} - ${cd.firstname} ${cd.lastname}".toString(),
                         style: const TextStyle(
                           color: colorBlack,
                           fontSize: 14,
@@ -116,56 +200,41 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
             ),
             gap(10.sp),
             Card(
-              margin: EdgeInsets.only(left: 15, right: 15),
+              margin: const EdgeInsets.only(left: 15, right: 15),
               elevation: 0.1,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               color: kBackgroundColor,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                 child: DropdownButton(
-                  hint: const CommonText('Template',
-                      size: 14, color: Colors.black54),
-                  value: _selectedTemplate,
+                  hint: const CommonText(AppTags.template, size: 14, color: Colors.black54),
+                  value: _selectedTemplateId,
                   icon: const Card(
                     elevation: 0.1,
                     color: kBackgroundColor,
                     child: Icon(Icons.keyboard_arrow_down_outlined),
                   ),
                   underline: const SizedBox(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedTemplate = null;
-                      _selectedTemplate = value.toString();
-                      for (int i = 0; i < template.length; i++) {
-                        if (template[i].toString().toLowerCase() ==
-                            value.toString().toLowerCase()) {
-                          _selectedSubjectId = template[i].toString();
-                          break;
-                        }
-                      }
-                    });
-                  },
+                  onChanged: (value) {},
                   isExpanded: true,
                   items: template.map((cd) {
                     return DropdownMenuItem(
-                      value: cd,
+                      value: cd.id,
                       onTap: () {
                         setState(() {
-                          _selectedTemplate = cd;
+                          _selectedTemplate = cd.name;
                           for (int i = 0; i < template.length; i++) {
-                            if (template[i].toString().toLowerCase() ==
-                                cd.toString().toLowerCase()) {
-                             // _selectedSubjectId = template[i].toString();
+                            if (template[i].id == cd.id) {
+                              _selectedTemplateId = cd.id.toString();
                               break;
                             }
                           }
                         });
                       },
                       child: Text(
-                        cd.toString(),
+                        "${cd.id} - ${cd.name}",
                         style: const TextStyle(
                           color: colorBlack,
                           fontSize: 14,
@@ -178,18 +247,16 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
             ),
             gap(10.sp),
             Card(
-              margin: EdgeInsets.only(left: 15, right: 15),
+              margin: const EdgeInsets.only(left: 15, right: 15),
               elevation: 0.1,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               color: kBackgroundColor,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                 child: DropdownButton(
-                  hint: const CommonText('Download',
-                      size: 14, color: Colors.black54),
+                  hint: const CommonText('Download', size: 14, color: Colors.black54),
                   value: _selectedDownload,
                   icon: const Card(
                     elevation: 0.1,
@@ -199,15 +266,7 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
                   underline: const SizedBox(),
                   onChanged: (value) {
                     setState(() {
-                      _selectedDownload = null;
-                      _selectedDownload = value.toString();
-                      for (int i = 0; i < download.length; i++) {
-                        if (download[i].toString().toLowerCase() ==
-                            value.toString().toLowerCase()) {
-                         // _selectedSubjectId = download[i].toString();
-                          break;
-                        }
-                      }
+                      _selectedDownload = value ?? "Download";
                     });
                   },
                   isExpanded: true,
@@ -217,13 +276,6 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
                       onTap: () {
                         setState(() {
                           _selectedDownload = cd;
-                          for (int i = 0; i < download.length; i++) {
-                            if (download[i].toString().toLowerCase() ==
-                                cd.toString().toLowerCase()) {
-                             // _selectedSubjectId = download[i].toString();
-                              break;
-                            }
-                          }
                         });
                       },
                       child: Text(
@@ -250,8 +302,7 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
                         elevation: 0,
                         color: colorGreen,
                         onPressed: _submit,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadiusDirectional.circular(10),
                           // side: const BorderSide(color: kRedColor),

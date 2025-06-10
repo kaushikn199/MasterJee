@@ -3,8 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_common/get_reset.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/screens/student_progress/assessment_wise_screen.dart';
 import 'package:masterjee/screens/student_progress/marksheet_screen.dart';
 import 'package:masterjee/screens/student_progress/overall_screen.dart';
+import 'package:masterjee/screens/student_progress/subject_wise_screen.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
@@ -21,7 +23,7 @@ class StudentProgressScreen extends StatefulWidget {
 class _StudentProgressScreenState extends State<StudentProgressScreen> {
 
   var _isLoading = false;
-  List<String> resultData = [AppTags.overall.toString(), AppTags.markSheet.toString()];
+  List<String> resultData = [AppTags.overall.toString(),AppTags.assessmentWise.toString(),AppTags.subjectWise.toString(), AppTags.markSheet.toString()];
 
   @override
   void initState() {
@@ -65,8 +67,11 @@ class _StudentProgressScreenState extends State<StudentProgressScreen> {
                     return InkWell(splashColor: Colors.transparent,
                     child: assignmentCard(resultData[index], false).paddingOnly(top: 5,bottom: 10),onTap: () {
                       if(resultData[index] == AppTags.overall){
-                        print(AppTags.overall);
                         Navigator.pushNamed(context,OverallScreen.routeName);
+                      }else if(resultData[index] == AppTags.assessmentWise){
+                        Navigator.pushNamed(context,AssessmentWiseScreen.routeName);
+                      }else if(resultData[index] == AppTags.subjectWise){
+                        Navigator.pushNamed(context,SubjectWiseScreen.routeName);
                       }else if(resultData[index] == AppTags.markSheet){
                         Navigator.pushNamed(context,MarkSheetScreen.routeName);
                       }

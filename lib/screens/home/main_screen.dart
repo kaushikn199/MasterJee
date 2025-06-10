@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/class_section/class_section_response.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/login/login_data.dart';
 import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/attendance_api.dart';
 import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/face_attendance/mark_attendance/face_screen.dart';
+import 'package:masterjee/screens/face_attendance/register/register_face_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
@@ -18,11 +24,13 @@ import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dar
 import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
 import 'package:masterjee/screens/timetable/timetable_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
+import 'package:masterjee/widgets/app_loader.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/cardHomeWidget.dart';
 import 'package:masterjee/widgets/drawers.dart';
 import 'package:masterjee/widgets/home_app_bar.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
@@ -60,18 +68,23 @@ class _MainScreenState extends State<MainScreen> {
     });
 
     print("userData: ${userData?.firstName}");
+    print("className: ${classData?.className}");
+    print("sectionData: ${sectionData?.section}");
+    print("loadedClassList: ${list.length}");
   }
 
   @override
   void initState() {
     loadUserData();
-    callApiClassSection().then((value) {
-        setState(() {
+    callApiClassSection().then(
+      (value) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           if (isClassOrSectionIdMissing()) {
             openDialog();
           }
         });
-    },);
+      },
+    );
 
     super.initState();
   }
@@ -79,10 +92,7 @@ class _MainScreenState extends State<MainScreen> {
   static bool isClassOrSectionIdMissing() {
     final classId = StorageHelper.getStringData(StorageHelper.classIdKey);
     final sectionId = StorageHelper.getStringData(StorageHelper.sectionIdKey);
-    return classId == null ||
-        classId.isEmpty ||
-        sectionId == null ||
-        sectionId.isEmpty;
+    return classId == null || classId.isEmpty || sectionId == null || sectionId.isEmpty;
   }
 
   openDialog() {
@@ -94,9 +104,8 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> callApiClassSection() async {
     try {
-      ClassSectionResponse userData =
-          await Provider.of<Auth>(context, listen: false).getClassSection(
-              StorageHelper.getStringData(StorageHelper.userIdKey).toString());
+      ClassSectionResponse userData = await Provider.of<Auth>(context, listen: false)
+          .getClassSection(StorageHelper.getStringData(StorageHelper.userIdKey).toString());
       if (userData.result && userData.data != null) {
         await StorageHelper.saveClassList(userData.data);
         loadedClassList = [];
@@ -109,19 +118,47 @@ class _MainScreenState extends State<MainScreen> {
     } catch (error) {}
   }
 
+  Future scanAdd() async {
+    await Permission.camera.request();
+    String? barcode = await FlutterBarcodeScanner.scanBarcode("#ff6666", "Cancel", true, ScanMode.QR);
+    if (barcode.isEmpty) {
+      CommonFunctions.showWarningToast("Scan Valid QR Code");
+    } else {
+      if (barcode == "-1") {
+      } else {
+        if (barcode != "") {
+          markQRAttendance();
+        } else {
+          CommonFunctions.showWarningToast("Scan Valid QR Code");
+        }
+      }
+    }
+  }
+
+  Future scanFace() async {
+    Get.to(AuthenticateFaceView());
+  }
+
+  Future addFace() async {
+    Get.to(RegisterFaceScreen());
+  }
+
+  Future markQRAttendance() async {
+    AppLoader.show(context);
+    Map<String, String> data = {
+      "id": "2".toString(),
+    };
+    await ClassAttendanceApi.qrAttendance(data).then((value) {
+      if (value.status == "success") {
+        CommonFunctions.showSuccessToast(value.message ?? "Success");
+      } else {
+        CommonFunctions.showWarningToast(value.message ?? "Failed");
+      }
+    });
+  }
+
   int selectedIndex = 0;
 
-  final List<Map<String, String>> items = [
-    {'image': AssetsUtils.logoIcon, 'name': 'Attendance'},
-    {'image': AssetsUtils.logoIcon, 'name': 'Dues Report'},
-    {'image': AssetsUtils.logoIcon, 'name': 'Timetable'},
-    {'image': AssetsUtils.logoIcon, 'name': 'Leave'},
-    {'image': AssetsUtils.logoIcon, 'name': 'Homework'},
-    {'image': AssetsUtils.logoIcon, 'name': 'Assessment'},
-    {'image': AssetsUtils.logoIcon, 'name': 'PTM'},
-    {'image': AssetsUtils.logoIcon, 'name': 'Biometric Attendance'},
-    {'image': AssetsUtils.logoIcon, 'name': 'Lead Section'},
-  ];
 
   void onDrawerItemClicked(int index) {
     setState(() {
@@ -136,8 +173,7 @@ class _MainScreenState extends State<MainScreen> {
       backgroundColor: kSecondBackgroundColor,
       surfaceTintColor: kSecondBackgroundColor,
       insetPadding: const EdgeInsets.only(left: 10, right: 10),
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
       content: StatefulBuilder(
         builder: (context, setState) {
           return SizedBox(
@@ -147,204 +183,143 @@ class _MainScreenState extends State<MainScreen> {
               children: <Widget>[
                 const Text(
                   "Choose Class Section",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
                 ),
                 gap(10.0),
                 loadedClassList.isEmpty
-                    ?
-               const Text('No class data available')
-                   :
-                Card(
-                  elevation: 0.1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  color: colorWhite,
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                    child: DropdownButton(
-                      hint: const CommonText('Select class',
-                          size: 14, color: Colors.black54),
-                      value: _selectedClass,
-                      icon: const Card(
+                    ? const Text('No class data available')
+                    : Card(
                         elevation: 0.1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         color: colorWhite,
-                        child: Icon(Icons.keyboard_arrow_down_outlined),
-                      ),
-                      underline: const SizedBox(),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedClass = null;
-                          _selectedClass = value.toString();
-                          for (int i = 0; i < loadedClassList.length; i++) {
-                            if (loadedClassList[i]
-                                    .className
-                                    .toString()
-                                    .toLowerCase() ==
-                                value.toString().toLowerCase()) {
-                              //_classId = loadedClassList[i].classId;
-                              classData = loadedClassList[i];
-                              _selectedSection = null;
-                              break;
-                            }
-                          }
-                        });
-                      },
-                      isExpanded: true,
-                      items: loadedClassList.map((cd) {
-                        return DropdownMenuItem(
-                          value: cd.className,
-                          onTap: () {
-                            setState(() {
-                              _selectedClass = cd.className;
-                              /*for (int i = 0; i < loadedClassList.length; i++) {
-                                if (loadedClassList[i]
-                                        .className
-                                        .toString()
-                                        .toLowerCase() ==
-                                    cd.className.toString().toLowerCase()) {
-                                  _classId = loadedClassList[i].classId;
-                                  dropDownIndex = i;
-                                  classData = loadedClassList[i];
-                                  break;
-                                }
-                              }
-                              _selectedSection = null;*/
-                            });
-                          },
-                          child: Text(
-                            cd.className,
-                            style: const TextStyle(
-                              color: colorBlack,
-                              fontSize: 14,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          child: DropdownButton(
+                            hint: const CommonText('Select class', size: 14, color: Colors.black54),
+                            value: _selectedClass,
+                            icon: const Card(
+                              elevation: 0.1,
+                              color: colorWhite,
+                              child: Icon(Icons.keyboard_arrow_down_outlined),
                             ),
+                            underline: const SizedBox(),
+                            onChanged: (value) {
+
+                            },
+                            isExpanded: true,
+                            items: loadedClassList.map((cd) {
+                              return DropdownMenuItem(
+                                value: cd.className,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedClass = null;
+                                    _selectedClass = cd.className.toString();
+                                    for (int i = 0; i < loadedClassList.length; i++) {
+                                      if (loadedClassList[i].className.toString().toLowerCase() ==
+                                          cd.className.toString().toLowerCase()) {
+                                        //_classId = loadedClassList[i].classId;
+                                        classData = loadedClassList[i];
+                                        _selectedSection = null;
+                                        break;
+                                      }
+                                    }
+                                  });
+                                },
+                                child: Text(
+                                  cd.className,
+                                  style: const TextStyle(
+                                    color: colorBlack,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
+                        ),
+                      ),
                 gap(10.0),
                 loadedClassList.isEmpty
-                    ?
-                const Text('No Section data available')
-                    :
-                Card(
-                  elevation: 0.1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  color: colorWhite,
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                    child: DropdownButton(
-                      hint: const CommonText('Select section',
-                          size: 14, color: Colors.black54),
-                      value: _selectedSection,
-                      icon: const Card(
+                    ? const Text('No Section data available')
+                    : Card(
                         elevation: 0.1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         color: colorWhite,
-                        child: Icon(Icons.keyboard_arrow_down_outlined),
-                      ),
-                      underline: const SizedBox(),
-                      onChanged: (value) {
-                        setState(() {
-                          if (dropDownIndex != -1) {
-                            _selectedSection = null;
-                            _selectedSection = value.toString();
-                            for (int i = 0;
-                                i <
-                                    loadedClassList[dropDownIndex]
-                                        .sections[i]
-                                        .section
-                                        .length;
-                                i++) {
-                              if (loadedClassList[dropDownIndex]
-                                      .sections[i]
-                                      .section
-                                      .toString()
-                                      .toLowerCase() ==
-                                  value.toString().toLowerCase()) {
-                                //_sectionId = loadedClassList[dropDownIndex].sections[i].sectionId.toString();
-                                sectionData =
-                                    loadedClassList[dropDownIndex].sections[i];
-                                break;
-                              }
-                            }
-                          }
-                        });
-                      },
-                      isExpanded: true,
-                      items: loadedClassList[dropDownIndex].sections.map((cd) {
-                        return DropdownMenuItem(
-                          value: cd.section,
-                          onTap: () {
-                            if (dropDownIndex != -1) {
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          child: DropdownButton(
+                            hint: const CommonText('Select section', size: 14, color: Colors.black54),
+                            value: _selectedSection,
+                            icon: const Card(
+                              elevation: 0.1,
+                              color: colorWhite,
+                              child: Icon(Icons.keyboard_arrow_down_outlined),
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (value) {
                               setState(() {
-                                _selectedSection = cd.section;
-                                /*for (int i = 0;
-                                    i <
-                                        loadedUsers[dropDownIndex]
-                                            .sections
-                                            .length;
-                                    i++) {
-                                  print("section data _0 : ${loadedUsers[dropDownIndex]
-                                      .sections[i].sectionId
-                                      .toString()
-                                      .toLowerCase()} , ${cd.section.toString().toLowerCase()}");
-                                  if (loadedUsers[dropDownIndex]
-                                          .sections[i].sectionId
-                                          .toString()
-                                          .toLowerCase() ==
-                                      cd.section.toString().toLowerCase()) {
-                                    _sectionId = loadedUsers[dropDownIndex]
-                                        .sections[i].sectionId.toString();
-                                    print("section data : ${sectionData?.section}");
-                                    break;
+                                if (dropDownIndex != -1) {
+                                  _selectedSection = null;
+                                  _selectedSection = value.toString();
+                                  for (int i = 0; i < loadedClassList[dropDownIndex].sections[i].section.length; i++) {
+                                    if (loadedClassList[dropDownIndex].sections[i].section.toString().toLowerCase() ==
+                                        value.toString().toLowerCase()) {
+                                      //_sectionId = loadedClassList[dropDownIndex].sections[i].sectionId.toString();
+                                      sectionData = loadedClassList[dropDownIndex].sections[i];
+                                      break;
+                                    }
                                   }
-                                }*/
+                                }
                               });
-                            }
-                          },
-                          child: Text(
-                            cd.section.toString(),
-                            style: const TextStyle(
-                              color: colorBlack,
-                              fontSize: 14,
-                            ),
+                            },
+                            isExpanded: true,
+                            items: loadedClassList[dropDownIndex].sections.map((cd) {
+                              return DropdownMenuItem(
+                                value: cd.section,
+                                onTap: () {
+                                  setState(() {
+                                    if (dropDownIndex != -1) {
+                                      _selectedSection = null;
+                                      _selectedSection = cd.section.toString();
+                                      for (int i = 0; i < loadedClassList[dropDownIndex].sections[i].section.length; i++) {
+                                        if (loadedClassList[dropDownIndex].sections[i].section.toString().toLowerCase() ==
+                                            cd.section.toString().toLowerCase()) {
+                                          //_sectionId = loadedClassList[dropDownIndex].sections[i].sectionId.toString();
+                                          sectionData = loadedClassList[dropDownIndex].sections[i];
+                                          break;
+                                        }
+                                      }
+                                    }
+                                  });
+                                },
+                                child: Text(
+                                  cd.section.toString(),
+                                  style: const TextStyle(
+                                    color: colorBlack,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
+                        ),
+                      ),
                 gap(20.0),
                 CommonButton(
                   cornersRadius: 30,
                   text: AppTags.submit,
                   onPressed: () {
                     if (classData != null && sectionData != null) {
-                      StorageHelper.setStringData(StorageHelper.classIdKey,
-                          classData?.classId.toString() ?? "");
-                      StorageHelper.setStringData(StorageHelper.sectionIdKey,
-                          sectionData?.sectionId.toString() ?? "");
-                      print(
-                          "classIdKey : ${StorageHelper.getStringData(StorageHelper.classIdKey)}");
-                      print(
-                          "sectionIdKey : ${StorageHelper.getStringData(StorageHelper.sectionIdKey)}");
                       StorageHelper.saveSelectedClass(classData!);
                       StorageHelper.saveSelectedSectionData(sectionData!);
-                      print(
-                          "getSelectedClass : ${StorageHelper.getSelectedClass()}");
-                      print(
-                          "getSelectedSection : ${StorageHelper.getSelectedSection()}");
-                      Navigator.of(context).pop();
+                      StorageHelper.setStringData(StorageHelper.classIdKey, classData?.classId.toString() ?? "");
+                      StorageHelper.setStringData(StorageHelper.sessionIdKey, classData?.sessionId.toString() ?? "");
+                      StorageHelper.setStringData(StorageHelper.sectionIdKey, sectionData?.sectionId.toString() ?? "");
                       loadUserData();
+                      Navigator.of(context).pop();
                     }
                   },
                 )
@@ -376,19 +351,12 @@ class _MainScreenState extends State<MainScreen> {
             case 0:
               break;
             case 1:
-              // Navigator.of(context).pushNamed(MyProfileScreen.routeName,);
-              break;
-            case 2:
-              //Navigator.of(context).pushNamed(AboutSchoolScreen.routeName,);
-              break;
-            case 3:
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return logOutPopup(this.context, () async {
                     await StorageHelper.clearUserData();
-                    Navigator.pushNamedAndRemoveUntil(
-                        this.context, SignupScreen.routeName, (r) => false);
+                    Navigator.pushNamedAndRemoveUntil(this.context, SignupScreen.routeName, (r) => false);
                   });
                 },
               );
@@ -411,8 +379,7 @@ class _MainScreenState extends State<MainScreen> {
                     onTap: () {
                       showDialog(
                         context: context,
-                        builder: (BuildContext context) =>
-                            _changeUserPopup(context),
+                        builder: (BuildContext context) => _changeUserPopup(context),
                       );
                     },
                     child: Row(
@@ -438,10 +405,7 @@ class _MainScreenState extends State<MainScreen> {
                           ),
                           child: ClipRRect(
                               borderRadius: BorderRadius.circular(34.r),
-                              child: Image.asset(AssetsUtils.logoIcon,
-                                  fit: BoxFit.cover,
-                                  width: 50.w,
-                                  height: 50.h)),
+                              child: Image.asset(AssetsUtils.logoIcon, fit: BoxFit.cover, width: 50.w, height: 50.h)),
                         )*/,
                         SizedBox(
                           width: 10.w,
@@ -461,8 +425,7 @@ class _MainScreenState extends State<MainScreen> {
                               height: 6.h,
                             ),
                             SizedBox(
-                              width:
-                                  MediaQuery.of(context).size.width * 0.50.sp,
+                              width: MediaQuery.of(context).size.width * 0.50.sp,
                               child: CommonText.medium(
                                 "${classData?.className ?? ""} (${sectionData?.section ?? ""})",
                                 size: 12.sp,
@@ -513,8 +476,7 @@ class _MainScreenState extends State<MainScreen> {
                           if (isClassOrSectionIdMissing()) {
                             openDialog();
                           } else {
-                            Navigator.pushNamed(
-                                context, DuesReportScreen.routeName);
+                            Navigator.pushNamed(context, DuesReportScreen.routeName);
                           }
                         }),
                     cardHomeWidget(
@@ -577,9 +539,23 @@ class _MainScreenState extends State<MainScreen> {
                           }
                         }),
                     cardHomeWidget(
-                        name: AppTags.biometricAttendance,
+                        name: AppTags.qrAttendance,
                         image: AssetsUtils.biometricAttendanceIcon,
-                        onTap: () {}),
+                        onTap: () {
+                          scanAdd();
+                        }),
+                    cardHomeWidget(
+                        name: AppTags.faceAttendance,
+                        image: AssetsUtils.biometricAttendanceIcon,
+                        onTap: () {
+                          scanFace();
+                        }),
+                    cardHomeWidget(
+                        name: AppTags.faceAuth,
+                        image: AssetsUtils.biometricAttendanceIcon,
+                        onTap: () {
+                          addFace();
+                        }),
                     cardHomeWidget(
                         name: AppTags.studentProgress,
                         image: AssetsUtils.studentProgressIcon,
@@ -587,8 +563,7 @@ class _MainScreenState extends State<MainScreen> {
                           if (isClassOrSectionIdMissing()) {
                             openDialog();
                           } else {
-                            Navigator.pushNamed(
-                                context, StudentProgressScreen.routeName);
+                            Navigator.pushNamed(context, StudentProgressScreen.routeName);
                           }
                         }),
                     cardHomeWidget(
@@ -608,8 +583,7 @@ class _MainScreenState extends State<MainScreen> {
                           if (isClassOrSectionIdMissing()) {
                             openDialog();
                           } else {
-                            Navigator.pushNamed(
-                                context, GMeetLiveClassesScreen.routeName);
+                            Navigator.pushNamed(context, GMeetLiveClassesScreen.routeName);
                           }
                         }),
                     cardHomeWidget(
