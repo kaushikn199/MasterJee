@@ -18,12 +18,12 @@ class StudentProgressApi with ChangeNotifier {
     return AllStudentsTemplateResponse.fromJson(responseData);
   }
 
-  Future<ErrorMessageModel> submitMarkSheet(
+  Future<SuccessTempleteData> submitMarkSheet(
       Map<String, dynamic> body) async {
     print("body : ${body}");
     final responseData = await ApiHelper.post(ApiHelper.studentMarksheet, body);
     print("responseData : ${responseData}");
-    return ErrorMessageModel.fromJson(responseData);
+    return SuccessTempleteData.fromJson(responseData);
   }
 
   Future<OverallResponseData> getOverAllProgress(String studentId) async {

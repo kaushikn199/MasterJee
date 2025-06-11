@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/all_student/all_students_model.dart';
 import 'package:masterjee/models/all_student/student_template_model.dart';
@@ -7,6 +8,7 @@ import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/attendance_api.dart';
 import 'package:masterjee/providers/student_progress_api.dart';
+import 'package:masterjee/screens/download_controller/download_controller.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
@@ -25,6 +27,8 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
   String? _selectedStudent;
   String? _selectedTemplate;
   String _selectedDownload = "Download";
+  final DownloadFileController downloadController = Get.put(DownloadFileController());
+
 
   List<StudentData> studentList = [];
   List<Template> template = [];
@@ -90,7 +94,11 @@ class _MarkSheetScreenState extends State<MarkSheetScreen> {
       if (data.status == "success") {
         setState(() {
           _isLoading = false;
-          CommonFunctions.showSuccessToast("Requested successfully");
+          if(_selectedDownload == "Download") {
+            downloadController.requestDownload(data.data!.fileUrl.toString());
+          }else {
+            CommonFunctions.showSuccessToast("Requested successfully");
+          }
         });
         return;
       } else {
