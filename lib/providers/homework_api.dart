@@ -61,5 +61,33 @@ class HomeworkApi with ChangeNotifier {
     return SubjectResponse.fromJson(responseData);
   }
 
+  Future<SubjectResponse> saveHomework(String userId,
+      String classId,String sectionId,String subjectGroupId,
+      String subjectGroupSubjectId,
+      String subjectId,
+      String homeworkDate,
+      String submissionDate,
+      String maxMarks,
+      String description,
+
+      ) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'classId': classId,
+      'sectionId': sectionId,
+      'subjectGroupId': subjectGroupId,
+      'subjectGroupSubjectId': subjectGroupSubjectId,
+      'subjectId': subjectId,
+      'homeworkDate': homeworkDate,
+      'submissionDate': submissionDate,
+      'maxMarks': maxMarks,
+      'description': description,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveHomework, body);
+    print("responseData : ${responseData}");
+    return SubjectResponse.fromJson(responseData);
+  }
+
 
 }

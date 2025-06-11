@@ -1,10 +1,10 @@
-class AssesmentResponse{
+class AssesmentResponse {
   final String status;
   final String message;
-  final Data data;
+  final Data? data;
   final bool result;
 
-AssesmentResponse({
+  AssesmentResponse({
     required this.status,
     required this.message,
     required this.data,
@@ -15,7 +15,7 @@ AssesmentResponse({
     return AssesmentResponse(
       status: json['status'] ?? '',
       message: json['message'] ?? '',
-      data: Data.fromJson(json['data']),
+      data: json['data'] != null ? Data.fromJson(json['data']) : null,
       result: json['result'] ?? false,
     );
   }

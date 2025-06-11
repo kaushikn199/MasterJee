@@ -155,9 +155,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   students.add({
                     "student_id": studentList[i].studentId,
                     "attendance_status": type == present ? "1"
-                        : type == leave ? "2"
-                        : type == absent ? "3"
-                        : type == halfDay ? "4" : "0"
+                        : type == leave ? "3"
+                        : type == absent ? "4"
+                        : type == halfDay ? "6" : "0"
                   });
                 }
               }

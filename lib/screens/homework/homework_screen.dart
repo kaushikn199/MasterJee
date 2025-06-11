@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,9 +25,8 @@ class HomeworkScreen extends StatefulWidget {
   State<HomeworkScreen> createState() => _HomeworkScreenState();
 }
 
-class _HomeworkScreenState extends State<HomeworkScreen> with
-    WidgetsBindingObserver, SingleTickerProviderStateMixin {
-
+class _HomeworkScreenState extends State<HomeworkScreen>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   bool _isLoading = false;
   late TabController tabController;
   final formKey = GlobalKey<FormState>();
@@ -38,10 +35,11 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
   DateTime? _selectedFromDate;
   DateTime? _selectedToDate;
   String? _selectedSubject;
-  String? _selectedSubjectId;
+  int _selectedSubjectIndex = 0;
   final _homeworkDateController = TextEditingController();
   final _submissionDateController = TextEditingController();
   final _maxMarkController = TextEditingController();
+  final _descriptionController = TextEditingController();
   final _UploadFileController = TextEditingController();
 
   Future<void> callApiHomeworkList(String type) async {
@@ -81,15 +79,63 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
     });
     try {
       SubjectResponse data = await Provider.of<HomeworkApi>(context,
-          listen: false)
+              listen: false)
           .getTeachersSubject(
-          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
-          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString());
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+              StorageHelper.getStringData(StorageHelper.sectionIdKey)
+                  .toString());
       if (data.result) {
         setState(() {
           subjectList = data.data;
           _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+
+  Future<void> callApiSaveHomework() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      SubjectResponse data = await Provider.of<HomeworkApi>(context,
+          listen: false)
+          .saveHomework(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString(),
+        subjectList[_selectedSubjectIndex].subjectGroupId.toString(),
+        subjectList[_selectedSubjectIndex].subjectGroupSubjectId.toString(),
+        subjectList[_selectedSubjectIndex].subjectId.toString(),
+        _homeworkDateController.text,
+        _submissionDateController.text,
+        _maxMarkController.text,
+        _descriptionController.text);
+      if (data.result) {
+        setState(() {
+          _selectedSubject = null;
+          _selectedSubjectIndex = 0;
+          _homeworkDateController.text = "";
+          _submissionDateController.text = "";
+          _maxMarkController.text = "";
+          _descriptionController.text = "";
+          Navigator.pop(context);
+          FocusScope.of(context).unfocus();
+          CommonFunctions.showWarningToast(data.message);
+          _isLoading = false;
+          tabController.index = 0;
+          callApiHomeworkList(HomeworkListType.upcoming.name);
         });
         return;
       } else {
@@ -166,7 +212,16 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'xls', 'xlsx'],
+      allowedExtensions: [
+        'jpg',
+        'jpeg',
+        'png',
+        'pdf',
+        'doc',
+        'docx',
+        'xls',
+        'xlsx'
+      ],
     );
 
     if (result != null) {
@@ -198,7 +253,6 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
       body: Stack(
         children: [
           Builder(builder: (context) {
-
             return Container(
               padding: EdgeInsets.only(top: 10.sp),
               child: Column(children: [
@@ -395,29 +449,18 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
                               setState(() {
                                 _selectedSubject = null;
                                 _selectedSubject = value.toString();
-                                for (int i = 0; i < subjectList.length; i++) {
-                                  if (subjectList[i].name.toString().toLowerCase() ==
-                                      value.toString().toLowerCase()) {
-                                    _selectedSubjectId = subjectList[i].id.toString();
-                                    break;
-                                  }
-                                }
                               });
                             },
                             isExpanded: true,
                             items: subjectList.map((cd) {
                               return DropdownMenuItem(
-                                value: cd.name,
+                                value: cd.id,
                                 onTap: () {
                                   setState(() {
                                     _selectedSubject = cd.name;
-                                    for (int i = 0;
-                                        i < subjectList.length;
-                                        i++) {
-                                      if (subjectList[i].name.toString()
-                                              .toLowerCase() == cd.name.toString().toLowerCase()) {
-                                        _selectedSubjectId =
-                                            subjectList[i].id.toString();
+                                    for (int i = 0; i < subjectList.length; i++) {
+                                      if (subjectList[i].id == cd.id) {
+                                        _selectedSubjectIndex = i;
                                         break;
                                       }
                                     }
@@ -486,7 +529,7 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
                       CustomTextField(
                         hintText: 'Max mark',
                         controller: _maxMarkController,
-                        keyboardType: TextInputType.text,
+                        keyboardType: TextInputType.number,
                         validate: (value) {
                           if (value!.isEmpty) {
                             return 'Max mark cannot be empty';
@@ -499,6 +542,15 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
                       ),
                       gap(10.sp),
                       CustomTextField(
+                        hintText: 'Description',
+                        controller: _descriptionController,
+                        keyboardType: TextInputType.text,
+                        onSave: (value) {
+                          _descriptionController.text = value as String;
+                        },
+                      ),
+                      gap(10.sp),
+                      /*CustomTextField(
                         onTap: (){
                           pickFile();
                         },
@@ -519,7 +571,7 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
                         onSave: (value) {
                           _UploadFileController.text = value as String;
                         },
-                      ),
+                      ),*/
                       gap(10.sp),
                       // Submit Button
                       CommonButton(
@@ -549,9 +601,11 @@ class _HomeworkScreenState extends State<HomeworkScreen> with
       CommonFunctions.showWarningToast("Please select submission");
     } else if (_maxMarkController.text == "") {
       CommonFunctions.showWarningToast("Please enter max mark");
-    }  else {
-      Navigator.pop(context);
-      FocusScope.of(context).unfocus();
+    } else if (_descriptionController.text == "") {
+      CommonFunctions.showWarningToast("Please enter Description");
+    } else {
+      callApiSaveHomework();
+
     }
   }
 

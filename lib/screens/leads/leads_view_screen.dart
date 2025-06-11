@@ -272,8 +272,9 @@ class _LeadsViewScreenState extends State<LeadsViewScreen> {
                     const Expanded(child: SizedBox()),
                     InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context, EditLeadsScreen.routeName,
-                            arguments: viewData?.data);
+                          Navigator.pushNamed(
+                              context, EditLeadsScreen.routeName,
+                              arguments: viewData?.data);
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -837,8 +838,8 @@ class _LeadsViewScreenState extends State<LeadsViewScreen> {
                       print("transferTo ${campainUserList[_transferIndexStatus].staffId} ");
                       print("level ${_selectedLevelIndex} ");
                       callApiSaveLeadTransfer(
-                         campainUserList[_transferIndexStatus].id,
-                          campainUserList[_transferIndexStatus].cId,
+                          viewData!.data!.lId,
+                          viewData!.data!.cId,
                           campainUserList[_transferIndexStatus].staffId,
                           _selectedLevelIndex.toString());
                       Navigator.of(context).pop();

@@ -27,7 +27,6 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
 
   String? _selectedSubject;
   String? _selectedTemplate;
-  String _selectedValue = 'Option 1';
   late List<Student> studentsList = [];
   late List<ExamType> examTypeList = [];
   late List<Subject> subjectsList = [];
@@ -51,9 +50,9 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
               StorageHelper.getStringData(StorageHelper.sectionIdKey).toString());
       if (data.result) {
         setState(() {
-          studentsList = data.data.students ?? [];
-          examTypeList = data.data.examType ?? [];
-          subjectsList = data.data.subjects ?? [];
+          studentsList = data.data?.students ?? [];
+          examTypeList = data.data?.examType ?? [];
+          subjectsList = data.data?.subjects ?? [];
           for (int i = 0; i < studentsList.length; i++) {
             scoreControllers.add(TextEditingController());
             noteControllers.add(TextEditingController());
@@ -91,10 +90,15 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
           assessmentsList);
       if (data.result) {
         setState(() {
-          studentsList = data.data.students ?? [];
-          examTypeList = data.data.examType ?? [];
-          subjectsList = data.data.subjects ?? [];
+          _selectedSubjectId = null;
+          scoreControllers.clear();
+          noteControllers.clear();
+          _selectedExamId = null;
+          _selectedTemplate = null;
+          _selectedSubject = null;
           _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+         callApiStudentAssessment();
         });
         return;
       } else {
@@ -103,6 +107,7 @@ class _AssesmentScreenState extends State<AssesmentScreen> {
         });
       }
     } catch (error) {
+      print("error : ${error}");
       setState(() {
         _isLoading = false;
       });
