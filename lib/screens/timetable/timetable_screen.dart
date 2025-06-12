@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/class_timetable/add_lesson_plan_response.dart';
 import 'package:masterjee/models/class_timetable/class_time_table_response.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/teachers_subject/teachers_subject_response.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/class_timetable.dart';
@@ -24,27 +26,24 @@ class TimetableScreen extends StatefulWidget {
 
 class _TimetableScreenState extends State<TimetableScreen> {
   var _isLoading = false;
+  var _isLoadingBootomSheet = false;
   late List<ClassTimetableData> timeTableList = [];
 
   String? _selectedLesson;
+  int _indexLesson = 0;
   List<SubjectData> lessonList = [];
-  String? _selectedLessonId;
 
   String? _selectedTopic;
   List<SubjectData> topicList = [];
-  String? _selectedTopicId;
+  int _indexTopic = 0;
 
   DateTime? _selectedFromDate;
 
   final _homeworkDateController = TextEditingController();
-
   final _maxMarkController = TextEditingController();
-
   final _startTimeController = TextEditingController();
   final _endTimeController = TextEditingController();
-
   late var dayController = TextEditingController();
-
   final _lectureYouTubeUrlController = TextEditingController();
   final _teachingMethodController = TextEditingController();
   final _generalObjectiveController = TextEditingController();
@@ -59,6 +58,9 @@ class _TimetableScreenState extends State<TimetableScreen> {
   }
 
   Future<void> callApiGetClassTimetable() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       ClassTimetableResponse data = await Provider.of<ClassTimetable>(context,
               listen: false)
@@ -83,45 +85,149 @@ class _TimetableScreenState extends State<TimetableScreen> {
     }
   }
 
+  List<Lesson> lessonsMainList = [];
+
+  Future<void> callApiAddLessonPlan(String sgsid, String ttid) async {
+    setState(() {
+      _isLoadingBootomSheet = true;
+    });
+    try {
+      AddLessonPlanResponse data = await Provider.of<ClassTimetable>(context,
+              listen: false)
+          .addLessonPlan(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              sgsid,
+              ttid);
+      if (data.result) {
+        setState(() {
+          lessonsMainList = data.data?.lessons ?? [];
+          _isLoadingBootomSheet = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoadingBootomSheet = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoadingBootomSheet = false;
+      });
+      print("callApiAddLessonPlan error : $error");
+    }
+  }
+
+  Future<void> callApiSaveLessonPlan(
+      String lessonId,
+      String topicId,
+      String subTopic,
+      String date,
+      String timeFrom,
+      String timeTo,
+      String lactureYoutubeUrl,
+      String teachingMethod,
+      String generalObjectives,
+      String previousKnowledge,
+      String comprehensiveQuestions) async {
+    setState(() {
+      _isLoadingBootomSheet = true;
+    });
+    try {
+      AddLessonPlanResponse data = await Provider.of<ClassTimetable>(context,
+          listen: false)
+          .saveLessonPlan(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+           lessonId,
+           topicId,
+           subTopic,
+           date,
+           timeFrom,
+           timeTo,
+           lactureYoutubeUrl,
+           teachingMethod,
+           generalObjectives,
+           previousKnowledge,
+           comprehensiveQuestions);
+      if (data.result) {
+        setState(() {
+          _selectedLesson = null;
+          _selectedTopic = null;
+          _indexLesson = 0;
+          _indexTopic = 0;
+          _homeworkDateController.text = "";
+          _lectureYouTubeUrlController.text = "";
+          _teachingMethodController.text = "";
+          _generalObjectiveController.text = "";
+          _previousKnowledgeController.text = "";
+          _comprehensiveQuestionsController.text = "";
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoadingBootomSheet = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoadingBootomSheet = false;
+      });
+      print("callApiSaveLessonPlan error : $error");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarTwo(title: AppTags.timetable),
-      body: Builder(builder: (context) {
-        if (_isLoading) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * .5,
-            child: const Center(
-              child: CircularProgressIndicator(),
+      body: Stack(
+        children: [
+          Builder(builder: (context) {
+            if (_isLoading) {
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * .5,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            if (timeTableList.isEmpty) {
+              return Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.hourglass_empty_outlined, size: 100.sp),
+                    CommonText.medium('No Record Found',
+                        size: 16.sp,
+                        color: kDarkGreyColor,
+                        overflow: TextOverflow.fade),
+                  ],
+                ),
+              );
+            }
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.sp),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: timeTableList.length,
+                padding: EdgeInsets.only(top: 10.sp),
+                itemBuilder: (BuildContext context, int index) {
+                  return cardWidget(context, timeTableList[index]);
+                },
+              ),
+            );
+          }),
+          if (_isLoadingBootomSheet)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
             ),
-          );
-        }
-        if (timeTableList.isEmpty) {
-          return Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-                CommonText.medium('No Record Found',
-                    size: 16.sp,
-                    color: kDarkGreyColor,
-                    overflow: TextOverflow.fade),
-              ],
-            ),
-          );
-        }
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.sp),
-          child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: timeTableList.length,
-              padding: EdgeInsets.only(top: 10.sp),
-              itemBuilder: (BuildContext context, int index) {
-                return cardWidget(context, timeTableList[index]);
-              }),
-        );
-      }),
+        ],
+      ),
     );
   }
 
@@ -152,6 +258,29 @@ class _TimetableScreenState extends State<TimetableScreen> {
         bottom: Radius.circular(12.r),
       )),
       builder: (BuildContext context) {
+        if (_isLoadingBootomSheet) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * .5,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (lessonsMainList.isEmpty) {
+          return Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.hourglass_empty_outlined, size: 100.sp),
+                CommonText.medium('No Record Found',
+                    size: 16.sp,
+                    color: kDarkGreyColor,
+                    overflow: TextOverflow.fade),
+              ],
+            ),
+          );
+        }
         return Padding(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -219,40 +348,24 @@ class _TimetableScreenState extends State<TimetableScreen> {
                                     setState(() {
                                       _selectedLesson = null;
                                       _selectedLesson = value.toString();
-                                      for (int i = 0;
-                                          i < lessonList.length;
-                                          i++) {
-                                        if (lessonList[i]
-                                                .name
-                                                .toString()
-                                                .toLowerCase() ==
-                                            value.toString().toLowerCase()) {
-                                          _selectedLessonId =
-                                              lessonList[i].id.toString();
-                                          break;
-                                        }
-                                      }
+                                      _selectedTopic = null;
                                     });
                                   },
                                   isExpanded: true,
-                                  items: lessonList.map((cd) {
+                                  items: lessonsMainList.map((cd) {
                                     return DropdownMenuItem(
-                                      value: cd.name,
+                                      value: cd.id,
                                       onTap: () {
                                         setState(() {
                                           _selectedLesson = cd.name;
                                           for (int i = 0;
-                                              i < lessonList.length;
+                                              i < lessonsMainList.length;
                                               i++) {
-                                            if (lessonList[i]
-                                                    .name
-                                                    .toString()
-                                                    .toLowerCase() ==
-                                                cd.name
-                                                    .toString()
-                                                    .toLowerCase()) {
-                                              _selectedLessonId =
-                                                  lessonList[i].id.toString();
+                                            if (lessonsMainList[i].id ==
+                                                cd.id) {
+                                              _indexLesson = i;
+                                              _selectedTopic = null;
+                                              //_selectedLessonId = lessonsMainList[i].id;
                                               break;
                                             }
                                           }
@@ -295,40 +408,28 @@ class _TimetableScreenState extends State<TimetableScreen> {
                                     setState(() {
                                       _selectedTopic = null;
                                       _selectedTopic = value.toString();
-                                      for (int i = 0;
-                                          i < topicList.length;
-                                          i++) {
-                                        if (topicList[i]
-                                                .name
-                                                .toString()
-                                                .toLowerCase() ==
-                                            value.toString().toLowerCase()) {
-                                          _selectedTopicId =
-                                              topicList[i].id.toString();
-                                          break;
-                                        }
-                                      }
                                     });
                                   },
                                   isExpanded: true,
-                                  items: topicList.map((cd) {
+                                  items: lessonsMainList[_indexLesson]
+                                      .topics
+                                      .map((cd) {
                                     return DropdownMenuItem(
-                                      value: cd.name,
+                                      value: cd.id,
                                       onTap: () {
                                         setState(() {
                                           _selectedTopic = cd.name;
                                           for (int i = 0;
-                                              i < topicList.length;
+                                              i <
+                                                  lessonsMainList[_indexLesson]
+                                                      .topics
+                                                      .length;
                                               i++) {
-                                            if (topicList[i]
-                                                    .name
-                                                    .toString()
-                                                    .toLowerCase() ==
-                                                cd.name
-                                                    .toString()
-                                                    .toLowerCase()) {
-                                              _selectedTopicId =
-                                                  topicList[i].id.toString();
+                                            if (lessonsMainList[_indexLesson]
+                                                    .topics[i]
+                                                    .id ==
+                                                cd.id) {
+                                              _indexTopic = i;
                                               break;
                                             }
                                           }
@@ -388,7 +489,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
                               hintText: 'Lecture youtube url',
                               isReadonly: false,
                               controller: _lectureYouTubeUrlController,
-                              keyboardType: TextInputType.text,
+                              keyboardType: TextInputType.url,
                               onSave: (value) {
                                 _lectureYouTubeUrlController.text =
                                     value as String;
@@ -450,7 +551,25 @@ class _TimetableScreenState extends State<TimetableScreen> {
                   cornersRadius: 30,
                   text: AppTags.submit,
                   onPressed: () {
-                    // checkValidation(context);
+                    if(_selectedLesson == null){
+                      CommonFunctions.showWarningToast("Please select lesson");
+                    }else if(_selectedTopic == null){
+                      CommonFunctions.showWarningToast("Please select topic");
+                    }else if(_homeworkDateController.text == ""){
+                      CommonFunctions.showWarningToast("Please select date");
+                    }else if(_lectureYouTubeUrlController.text == ""){
+                      CommonFunctions.showWarningToast("Please enter lectureYouTubeUrl");
+                    }else if(_teachingMethodController.text == ""){
+                      CommonFunctions.showWarningToast("Please enter teachingMethod");
+                    }else if(_generalObjectiveController.text == ""){
+                      CommonFunctions.showWarningToast("Please enter generalObjective");
+                    }else if(_previousKnowledgeController.text == ""){
+                      CommonFunctions.showWarningToast("Please enter previousKnowledge");
+                    }else if(_comprehensiveQuestionsController.text == ""){
+                      CommonFunctions.showWarningToast("Please enter comprehensiveQuestions");
+                    }else{
+
+                    }
                   },
                 )
               ],
@@ -514,7 +633,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
                   itemCount: dayList.dayTimetable.length,
                   physics: const NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.only(top: 10.sp),
-                  itemBuilder: (BuildContext context, int index) {
+                  itemBuilder: (BuildContext c, int index) {
                     return cardChildWidget(
                         context, dayList.dayTimetable[index], dayList);
                   }),
@@ -559,7 +678,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
               itemCount: data.lessonPlans.length,
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.only(top: 0),
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (BuildContext c, int index) {
                 return cardLessonPlansWidget(
                     context, data.lessonPlans[index], data, dayList);
               },
@@ -584,12 +703,21 @@ class _TimetableScreenState extends State<TimetableScreen> {
             size: 13.sp, color: colorGaryText),
         gap(10.0),
         InkWell(
-          onTap: () {
+          onTap: () async {
             dayController.text = dayList.day.toString();
             _startTimeController.text = dayTime.timeFrom.toString();
             _endTimeController.text = dayTime.timeTo.toString();
             _selectedFromDate = DateTime.now();
             _homeworkDateController.text = '';
+
+            // Show loading first
+            _isLoadingBootomSheet = true;
+            await callApiAddLessonPlan(
+              dayList.ttData?.subjectGroupSubjectId ?? "0",
+              dayList.ttData?.id ?? "0",
+            );
+
+            // Then open the bottom sheet AFTER API call is done
             _showBottomSheet(context, data, dayList);
           },
           child: Container(

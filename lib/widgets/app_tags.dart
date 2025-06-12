@@ -81,4 +81,6 @@ class AssetsUtils {
   static const String minutebookIcon = "assets/images/ic_minutebook.png";
   static const String addPtmIcon = "assets/images/ic_ptm_add.png";
   static const String sheduleIcon = "assets/images/ic_shedule.png";
+  static const String faceAttendance = "assets/images/ic_face_attendance.png";
+  static const String faceAuth = "assets/images/ic_face_auth.png";
 }

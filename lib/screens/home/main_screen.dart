@@ -546,13 +546,13 @@ class _MainScreenState extends State<MainScreen> {
                         }),
                     cardHomeWidget(
                         name: AppTags.faceAttendance,
-                        image: AssetsUtils.biometricAttendanceIcon,
+                        image: AssetsUtils.faceAttendance,
                         onTap: () {
                           scanFace();
                         }),
                     cardHomeWidget(
                         name: AppTags.faceAuth,
-                        image: AssetsUtils.biometricAttendanceIcon,
+                        image: AssetsUtils.faceAuth,
                         onTap: () {
                           addFace();
                         }),

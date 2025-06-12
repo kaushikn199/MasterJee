@@ -58,6 +58,8 @@ class ApiHelper {
   static const savePtmAttendance = 'savePtmAttendance';
   static const saveLead = 'saveLead';
   static const saveHomework = 'saveHomework';
+  static const addLessonPlan = 'addLessonPlan';
+  static const saveLessonPlan = 'saveLessonPlan';
 
 
   static const Map<String, String> defaultHeaders = {
