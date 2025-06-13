@@ -108,6 +108,19 @@ String formatTime(String time) {
 
 
 
+String formatTo24Hour(String time) {
+  try {
+    DateFormat inputFormat = DateFormat("HH:mm:ss"); // Original format
+    DateFormat outputFormat = DateFormat("HH:mm");   // Desired format
+    DateTime dateTime = inputFormat.parse(time);
+    return outputFormat.format(dateTime);
+  } catch (e) {
+    return "Invalid time";
+  }
+}
+
+
+
 
 String formatFollowUpDate(String date, String time) {
   DateTime dateTime = DateTime.parse('$date $time');

@@ -99,7 +99,8 @@ class ApiHelper {
         return responseData;
       } else {
         CommonFunctions.showWarningToast((responseData['message'] ?? 'Something went wrong'));
-        throw Exception(responseData['message'] ?? 'Something went wrong');
+        //throw Exception(responseData['message'] ?? 'Something went wrong');
+        return responseData;
       }
     } catch (e) {
       print('API ERROR: $e');

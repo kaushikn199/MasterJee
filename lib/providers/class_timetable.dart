@@ -46,7 +46,7 @@ class ClassTimetable with ChangeNotifier {
     Map<String, dynamic> body = {
       'userId': userId,
       'lessonId': lessonId,
-      'topicId': topicId,
+      'topicid': topicId,
       'subTopic': subTopic,
       'date': date,
       'timeFrom': timeFrom,

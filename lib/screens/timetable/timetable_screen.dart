@@ -86,6 +86,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
   }
 
   List<Lesson> lessonsMainList = [];
+  late TtInfo ttInfo;
 
   Future<void> callApiAddLessonPlan(String sgsid, String ttid) async {
     setState(() {
@@ -100,6 +101,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
               ttid);
       if (data.result) {
         setState(() {
+          ttInfo = data.data!.ttInfo!;
           lessonsMainList = data.data?.lessons ?? [];
           _isLoadingBootomSheet = false;
         });
@@ -128,38 +130,33 @@ class _TimetableScreenState extends State<TimetableScreen> {
       String teachingMethod,
       String generalObjectives,
       String previousKnowledge,
-      String comprehensiveQuestions) async {
+      String comprehensiveQuestions,
+      BuildContext context) async {
     setState(() {
       _isLoadingBootomSheet = true;
     });
     try {
       AddLessonPlanResponse data = await Provider.of<ClassTimetable>(context,
-          listen: false)
+              listen: false)
           .saveLessonPlan(
-          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-           lessonId,
-           topicId,
-           subTopic,
-           date,
-           timeFrom,
-           timeTo,
-           lactureYoutubeUrl,
-           teachingMethod,
-           generalObjectives,
-           previousKnowledge,
-           comprehensiveQuestions);
-      if (data.result) {
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              lessonId,
+              topicId,
+              subTopic,
+              date,
+              timeFrom,
+              timeTo,
+              lactureYoutubeUrl,
+              teachingMethod,
+              generalObjectives,
+              previousKnowledge,
+              comprehensiveQuestions);
+      if (data != null && data.result) {
         setState(() {
-          _selectedLesson = null;
-          _selectedTopic = null;
-          _indexLesson = 0;
-          _indexTopic = 0;
-          _homeworkDateController.text = "";
-          _lectureYouTubeUrlController.text = "";
-          _teachingMethodController.text = "";
-          _generalObjectiveController.text = "";
-          _previousKnowledgeController.text = "";
-          _comprehensiveQuestionsController.text = "";
+          _isLoadingBootomSheet = false;
+          clearData();
+          Navigator.pop(context);
+          FocusScope.of(context).unfocus();
         });
         return;
       } else {
@@ -173,6 +170,19 @@ class _TimetableScreenState extends State<TimetableScreen> {
       });
       print("callApiSaveLessonPlan error : $error");
     }
+  }
+
+  void clearData() {
+    _selectedLesson = null;
+    _selectedTopic = null;
+    _indexLesson = 0;
+    _indexTopic = 0;
+    _homeworkDateController.text = "";
+    _lectureYouTubeUrlController.text = "";
+    _teachingMethodController.text = "";
+    _generalObjectiveController.text = "";
+    _previousKnowledgeController.text = "";
+    _comprehensiveQuestionsController.text = "";
   }
 
   @override
@@ -258,29 +268,8 @@ class _TimetableScreenState extends State<TimetableScreen> {
         bottom: Radius.circular(12.r),
       )),
       builder: (BuildContext context) {
-        if (_isLoadingBootomSheet) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * .5,
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-        if (lessonsMainList.isEmpty) {
-          return Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-                CommonText.medium('No Record Found',
-                    size: 16.sp,
-                    color: kDarkGreyColor,
-                    overflow: TextOverflow.fade),
-              ],
-            ),
-          );
-        }
+        return StatefulBuilder(
+          builder: (BuildContext context,setState) {
         return Padding(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -547,35 +536,109 @@ class _TimetableScreenState extends State<TimetableScreen> {
                     }),
                   ),
                 ),
-                CommonButton(
-                  cornersRadius: 30,
-                  text: AppTags.submit,
-                  onPressed: () {
-                    if(_selectedLesson == null){
-                      CommonFunctions.showWarningToast("Please select lesson");
-                    }else if(_selectedTopic == null){
-                      CommonFunctions.showWarningToast("Please select topic");
-                    }else if(_homeworkDateController.text == ""){
-                      CommonFunctions.showWarningToast("Please select date");
-                    }else if(_lectureYouTubeUrlController.text == ""){
-                      CommonFunctions.showWarningToast("Please enter lectureYouTubeUrl");
-                    }else if(_teachingMethodController.text == ""){
-                      CommonFunctions.showWarningToast("Please enter teachingMethod");
-                    }else if(_generalObjectiveController.text == ""){
-                      CommonFunctions.showWarningToast("Please enter generalObjective");
-                    }else if(_previousKnowledgeController.text == ""){
-                      CommonFunctions.showWarningToast("Please enter previousKnowledge");
-                    }else if(_comprehensiveQuestionsController.text == ""){
-                      CommonFunctions.showWarningToast("Please enter comprehensiveQuestions");
-                    }else{
+                SizedBox(
+                  child: _isLoadingBootomSheet ? CircularProgressIndicator() : CommonButton(
+                    cornersRadius: 30,
+                    text: AppTags.submit,
+                    onPressed: () async {
+                      if (_selectedLesson == null) {
+                        CommonFunctions.showWarningToast("Please select lesson");
+                      } else if (_selectedTopic == null) {
+                        CommonFunctions.showWarningToast("Please select topic");
+                      } else if (_homeworkDateController.text == "") {
+                        CommonFunctions.showWarningToast("Please select date");
+                      } else if (_lectureYouTubeUrlController.text == "") {
+                        CommonFunctions.showWarningToast(
+                            "Please enter lectureYouTubeUrl");
+                      } else if (_teachingMethodController.text == "") {
+                        CommonFunctions.showWarningToast(
+                            "Please enter teachingMethod");
+                      } else if (_generalObjectiveController.text == "") {
+                        CommonFunctions.showWarningToast(
+                            "Please enter generalObjective");
+                      } else if (_previousKnowledgeController.text == "") {
+                        CommonFunctions.showWarningToast(
+                            "Please enter previousKnowledge");
+                      } else if (_comprehensiveQuestionsController.text == "") {
+                        CommonFunctions.showWarningToast(
+                            "Please enter comprehensiveQuestions");
+                      } else {
+                        setState(() {
+                          _isLoadingBootomSheet = true;
+                        });
+                        print(
+                            "_startTimeController.text : ${_startTimeController.text}");
+                        print(
+                            "_endTimeController.text : ${_endTimeController.text}");
+                        /*callApiSaveLessonPlan(
+                            lessonsMainList[_indexLesson].id,
+                            lessonsMainList[_indexLesson].topics[_indexTopic].id,
+                            lessonsMainList[_indexLesson]
+                                .topics[_indexTopic]
+                                .name,
+                            _homeworkDateController.text,
+                            formatTo24Hour(ttInfo.startTime),
+                            formatTo24Hour(ttInfo.endTime),
+                            _lectureYouTubeUrlController.text,
+                            _teachingMethodController.text,
+                            _generalObjectiveController.text,
+                            _previousKnowledgeController.text,
+                            _comprehensiveQuestionsController.text,
+                            context);*/
+                        setState(() {
+                          _isLoadingBootomSheet = true;
+                        });
+                        try {
+                          AddLessonPlanResponse data = await Provider.of<ClassTimetable>(context,
+                              listen: false)
+                              .saveLessonPlan(
+                              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+                            lessonsMainList[_indexLesson].id,
+                            lessonsMainList[_indexLesson].topics[_indexTopic].id,
+                            lessonsMainList[_indexLesson]
+                                .topics[_indexTopic]
+                                .name,
+                            _homeworkDateController.text,
+                            formatTo24Hour(ttInfo.startTime),
+                            formatTo24Hour(ttInfo.endTime),
+                            _lectureYouTubeUrlController.text,
+                            _teachingMethodController.text,
+                            _generalObjectiveController.text,
+                            _previousKnowledgeController.text,
+                            _comprehensiveQuestionsController.text);
+                          if (data != null && data.result) {
+                            setState(() {
+                              callApiGetClassTimetable();
+                              _isLoadingBootomSheet = false;
+                              clearData();
+                              Navigator.pop(context);
+                              FocusScope.of(context).unfocus();
+                            });
+                            return;
+                          } else {
+                            setState(() {
+                              _isLoadingBootomSheet = false;
+                            });
+                          }
+                        } catch (error) {
+                          setState(() {
+                            _isLoadingBootomSheet = false;
+                          });
+                          print("callApiSaveLessonPlan error : $error");
+                        }
 
-                    }
-                  },
-                )
+                      }
+                    },
+                  ),
+                ),
+
               ],
             ),
           ),
         );
+          },
+        );
+
       },
     );
   }
@@ -704,11 +767,11 @@ class _TimetableScreenState extends State<TimetableScreen> {
         gap(10.0),
         InkWell(
           onTap: () async {
+            clearData();
             dayController.text = dayList.day.toString();
             _startTimeController.text = dayTime.timeFrom.toString();
             _endTimeController.text = dayTime.timeTo.toString();
             _selectedFromDate = DateTime.now();
-            _homeworkDateController.text = '';
 
             // Show loading first
             _isLoadingBootomSheet = true;
@@ -716,8 +779,6 @@ class _TimetableScreenState extends State<TimetableScreen> {
               dayList.ttData?.subjectGroupSubjectId ?? "0",
               dayList.ttData?.id ?? "0",
             );
-
-            // Then open the bottom sheet AFTER API call is done
             _showBottomSheet(context, data, dayList);
           },
           child: Container(
