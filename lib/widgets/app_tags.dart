@@ -45,6 +45,7 @@ class AppTags {
   static const String chooseClassSection  = "Choose Class & Section";
   static const String applyLeave  = "Apply Leave";
   static const String upcoming  = "Upcoming";
+  static const String content  = "Content";
   static const String add  = "Add";
   static const String schedule  = "Schedule";
   static const String minutebook  = "Minutebook";
