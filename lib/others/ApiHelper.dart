@@ -29,6 +29,7 @@ class ApiHelper {
   static const studentProgressTermWise = 'studentProgressTermWise';
   static const studentProgressSubjectWise = 'studentProgressSubjectWise';
   static const getHomeworkList = 'getHomeworkList';
+  static const getContent = 'getContent';
   static const getSubmittedHomeworkInfo = 'getSubmittedHomeworkInfo';
   static const saveHomeworkScore = 'saveHomeworkScore';
   static const getTeachersSubject = 'getTeachersSubject';

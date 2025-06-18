@@ -9,6 +9,7 @@ import 'package:masterjee/providers/assesment_api.dart';
 import 'package:masterjee/providers/attendance_api.dart';
 import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/providers/class_timetable.dart';
+import 'package:masterjee/providers/content_api.dart';
 import 'package:masterjee/providers/dues_report.dart';
 import 'package:masterjee/providers/g_meet.dart';
 import 'package:masterjee/providers/homework_api.dart';
@@ -19,6 +20,7 @@ import 'package:masterjee/providers/student_progress_api.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
+import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/forgot_password_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
@@ -107,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => LeadsApi()),
           ChangeNotifierProvider(create: (ctx) => StudentProgressApi()),
           ChangeNotifierProvider(create: (ctx) => PtmApi()),
+          ChangeNotifierProvider(create: (ctx) => ContentProvider()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>
@@ -146,6 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MainScreen.routeName: (ctx) =>  const MainScreen(),
                         ForgotPassword.routeName: (ctx) =>  ForgotPassword(),
                         AttendanceScreen.routeName: (ctx) =>  AttendanceScreen(),
+                        ContentScreen.routeName: (ctx) =>  ContentScreen(),
                         DuesReportScreen.routeName: (ctx) =>  DuesReportScreen(),
                         LeadsScreen.routeName: (ctx) => const LeadsScreen(),
                         HomeworkScreen.routeName: (ctx) => const HomeworkScreen(),

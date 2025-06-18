@@ -12,6 +12,7 @@ import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
+import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/face_attendance/mark_attendance/face_screen.dart';
 import 'package:masterjee/screens/face_attendance/register/register_face_screen.dart';
@@ -527,6 +528,13 @@ class _MainScreenState extends State<MainScreen> {
                                 context, HomeworkScreen.routeName);
                           }
                         }),
+                    cardHomeWidget(
+                      name: AppTags.content,
+                      image: AssetsUtils.upcomingIcon,
+                      onTap: () {
+                        Navigator.pushNamed(context, ContentScreen.routeName);
+                      },
+                    ),
                     cardHomeWidget(
                         name: AppTags.studentBehavior,
                         image: AssetsUtils.studentBehaviourIcon,
