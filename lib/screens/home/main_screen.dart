@@ -18,6 +18,7 @@ import 'package:masterjee/screens/face_attendance/mark_attendance/face_screen.da
 import 'package:masterjee/screens/face_attendance/register/register_face_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
+import 'package:masterjee/screens/hostel/hostel_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/ptm/ptm.dart';
 import 'package:masterjee/screens/signup_screen.dart';
@@ -530,7 +531,7 @@ class _MainScreenState extends State<MainScreen> {
                         }),
                     cardHomeWidget(
                       name: AppTags.content,
-                      image: AssetsUtils.upcomingIcon,
+                      image: AssetsUtils.contentIcon,
                       onTap: () {
                         Navigator.pushNamed(context, ContentScreen.routeName);
                       },
@@ -594,6 +595,13 @@ class _MainScreenState extends State<MainScreen> {
                             Navigator.pushNamed(context, GMeetLiveClassesScreen.routeName);
                           }
                         }),
+                    cardHomeWidget(
+                      name: AppTags.hostel,
+                      image: AssetsUtils.hostelIcon,
+                      onTap: () {
+                        Navigator.pushNamed(context, HostelRoomsScreen.routeName);
+                      },
+                    ),
                     cardHomeWidget(
                         name: AppTags.leads,
                         image: AssetsUtils.leadIcon,
