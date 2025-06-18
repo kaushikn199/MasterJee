@@ -119,8 +119,10 @@ String formatTo24Hour(String time) {
   }
 }
 
-
-
+String formatMMMMYYYYDate(String date) {
+  DateTime dateTime = DateTime.parse(date);
+  return DateFormat('MMMM yyyy').format(dateTime);
+}
 
 String formatFollowUpDate(String date, String time) {
   DateTime dateTime = DateTime.parse('$date $time');

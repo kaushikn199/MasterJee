@@ -113,7 +113,7 @@ class _CampaignLeadsScreenState extends State<CampaignLeadsScreen> {
                     onTap: () {
                       Navigator.pushNamed(context,
                           LeadsViewScreen.routeName,
-                          arguments:followUpData?.lId);
+                          arguments:data.lId);
                     },
                       child: leadsCard(data, followUpData, context));
                 }),

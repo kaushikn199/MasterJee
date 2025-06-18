@@ -57,6 +57,7 @@ class AppTags {
   static const String transferThisLead  = "Transfer this lead";
   static const String transfer = "Transfer";
   static const String followUpHistory = 'Follow-up history';
+  static const String paySlip = 'PaySlip';
 
 }
 

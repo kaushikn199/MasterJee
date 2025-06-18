@@ -15,6 +15,7 @@ import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/face_attendance/mark_attendance/face_screen.dart';
 import 'package:masterjee/screens/face_attendance/register/register_face_screen.dart';
+import 'package:masterjee/screens/face_auth/face_auth_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
@@ -32,6 +33,8 @@ import 'package:masterjee/widgets/home_app_bar.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+
+import '../pay_slip/pay_slip_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -75,6 +78,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
+    pages = [
+      page1(),
+      const FaceAuthScreen(),
+      const PaySlipScreen(),
+    ];
     loadUserData();
     callApiClassSection().then(
       (value) {
@@ -89,10 +97,16 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
   }
 
+  List<Widget> pages = [];
+
+
   static bool isClassOrSectionIdMissing() {
     final classId = StorageHelper.getStringData(StorageHelper.classIdKey);
     final sectionId = StorageHelper.getStringData(StorageHelper.sectionIdKey);
-    return classId == null || classId.isEmpty || sectionId == null || sectionId.isEmpty;
+    return classId == null ||
+        classId.isEmpty ||
+        sectionId == null ||
+        sectionId.isEmpty;
   }
 
   openDialog() {
@@ -104,8 +118,9 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> callApiClassSection() async {
     try {
-      ClassSectionResponse userData = await Provider.of<Auth>(context, listen: false)
-          .getClassSection(StorageHelper.getStringData(StorageHelper.userIdKey).toString());
+      ClassSectionResponse userData =
+          await Provider.of<Auth>(context, listen: false).getClassSection(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString());
       if (userData.result && userData.data != null) {
         await StorageHelper.saveClassList(userData.data);
         loadedClassList = [];
@@ -120,7 +135,8 @@ class _MainScreenState extends State<MainScreen> {
 
   Future scanAdd() async {
     await Permission.camera.request();
-    String? barcode = await FlutterBarcodeScanner.scanBarcode("#ff6666", "Cancel", true, ScanMode.QR);
+    String? barcode = await FlutterBarcodeScanner.scanBarcode(
+        "#ff6666", "Cancel", true, ScanMode.QR);
     if (barcode.isEmpty) {
       CommonFunctions.showWarningToast("Scan Valid QR Code");
     } else {
@@ -159,7 +175,6 @@ class _MainScreenState extends State<MainScreen> {
 
   int selectedIndex = 0;
 
-
   void onDrawerItemClicked(int index) {
     setState(() {
       selectedIndex = index;
@@ -173,7 +188,8 @@ class _MainScreenState extends State<MainScreen> {
       backgroundColor: kSecondBackgroundColor,
       surfaceTintColor: kSecondBackgroundColor,
       insetPadding: const EdgeInsets.only(left: 10, right: 10),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
       content: StatefulBuilder(
         builder: (context, setState) {
           return SizedBox(
@@ -183,7 +199,10 @@ class _MainScreenState extends State<MainScreen> {
               children: <Widget>[
                 const Text(
                   "Choose Class Section",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
                 ),
                 gap(10.0),
                 loadedClassList.isEmpty
@@ -195,9 +214,11 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                         color: colorWhite,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 2),
                           child: DropdownButton(
-                            hint: const CommonText('Select class', size: 14, color: Colors.black54),
+                            hint: const CommonText('Select class',
+                                size: 14, color: Colors.black54),
                             value: _selectedClass,
                             icon: const Card(
                               elevation: 0.1,
@@ -205,9 +226,7 @@ class _MainScreenState extends State<MainScreen> {
                               child: Icon(Icons.keyboard_arrow_down_outlined),
                             ),
                             underline: const SizedBox(),
-                            onChanged: (value) {
-
-                            },
+                            onChanged: (value) {},
                             isExpanded: true,
                             items: loadedClassList.map((cd) {
                               return DropdownMenuItem(
@@ -216,9 +235,16 @@ class _MainScreenState extends State<MainScreen> {
                                   setState(() {
                                     _selectedClass = null;
                                     _selectedClass = cd.className.toString();
-                                    for (int i = 0; i < loadedClassList.length; i++) {
-                                      if (loadedClassList[i].className.toString().toLowerCase() ==
-                                          cd.className.toString().toLowerCase()) {
+                                    for (int i = 0;
+                                        i < loadedClassList.length;
+                                        i++) {
+                                      if (loadedClassList[i]
+                                              .className
+                                              .toString()
+                                              .toLowerCase() ==
+                                          cd.className
+                                              .toString()
+                                              .toLowerCase()) {
                                         //_classId = loadedClassList[i].classId;
                                         classData = loadedClassList[i];
                                         _selectedSection = null;
@@ -249,9 +275,11 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                         color: colorWhite,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 2),
                           child: DropdownButton(
-                            hint: const CommonText('Select section', size: 14, color: Colors.black54),
+                            hint: const CommonText('Select section',
+                                size: 14, color: Colors.black54),
                             value: _selectedSection,
                             icon: const Card(
                               elevation: 0.1,
@@ -264,11 +292,23 @@ class _MainScreenState extends State<MainScreen> {
                                 if (dropDownIndex != -1) {
                                   _selectedSection = null;
                                   _selectedSection = value.toString();
-                                  for (int i = 0; i < loadedClassList[dropDownIndex].sections[i].section.length; i++) {
-                                    if (loadedClassList[dropDownIndex].sections[i].section.toString().toLowerCase() ==
+                                  for (int i = 0;
+                                      i <
+                                          loadedClassList[dropDownIndex]
+                                              .sections[i]
+                                              .section
+                                              .length;
+                                      i++) {
+                                    if (loadedClassList[dropDownIndex]
+                                            .sections[i]
+                                            .section
+                                            .toString()
+                                            .toLowerCase() ==
                                         value.toString().toLowerCase()) {
                                       //_sectionId = loadedClassList[dropDownIndex].sections[i].sectionId.toString();
-                                      sectionData = loadedClassList[dropDownIndex].sections[i];
+                                      sectionData =
+                                          loadedClassList[dropDownIndex]
+                                              .sections[i];
                                       break;
                                     }
                                   }
@@ -276,7 +316,9 @@ class _MainScreenState extends State<MainScreen> {
                               });
                             },
                             isExpanded: true,
-                            items: loadedClassList[dropDownIndex].sections.map((cd) {
+                            items: loadedClassList[dropDownIndex]
+                                .sections
+                                .map((cd) {
                               return DropdownMenuItem(
                                 value: cd.section,
                                 onTap: () {
@@ -284,11 +326,25 @@ class _MainScreenState extends State<MainScreen> {
                                     if (dropDownIndex != -1) {
                                       _selectedSection = null;
                                       _selectedSection = cd.section.toString();
-                                      for (int i = 0; i < loadedClassList[dropDownIndex].sections[i].section.length; i++) {
-                                        if (loadedClassList[dropDownIndex].sections[i].section.toString().toLowerCase() ==
-                                            cd.section.toString().toLowerCase()) {
+                                      for (int i = 0;
+                                          i <
+                                              loadedClassList[dropDownIndex]
+                                                  .sections[i]
+                                                  .section
+                                                  .length;
+                                          i++) {
+                                        if (loadedClassList[dropDownIndex]
+                                                .sections[i]
+                                                .section
+                                                .toString()
+                                                .toLowerCase() ==
+                                            cd.section
+                                                .toString()
+                                                .toLowerCase()) {
                                           //_sectionId = loadedClassList[dropDownIndex].sections[i].sectionId.toString();
-                                          sectionData = loadedClassList[dropDownIndex].sections[i];
+                                          sectionData =
+                                              loadedClassList[dropDownIndex]
+                                                  .sections[i];
                                           break;
                                         }
                                       }
@@ -315,9 +371,12 @@ class _MainScreenState extends State<MainScreen> {
                     if (classData != null && sectionData != null) {
                       StorageHelper.saveSelectedClass(classData!);
                       StorageHelper.saveSelectedSectionData(sectionData!);
-                      StorageHelper.setStringData(StorageHelper.classIdKey, classData?.classId.toString() ?? "");
-                      StorageHelper.setStringData(StorageHelper.sessionIdKey, classData?.sessionId.toString() ?? "");
-                      StorageHelper.setStringData(StorageHelper.sectionIdKey, sectionData?.sectionId.toString() ?? "");
+                      StorageHelper.setStringData(StorageHelper.classIdKey,
+                          classData?.classId.toString() ?? "");
+                      StorageHelper.setStringData(StorageHelper.sessionIdKey,
+                          classData?.sessionId.toString() ?? "");
+                      StorageHelper.setStringData(StorageHelper.sectionIdKey,
+                          sectionData?.sectionId.toString() ?? "");
                       loadUserData();
                       Navigator.of(context).pop();
                     }
@@ -331,11 +390,69 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  int pageIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: Container(
+          height: 60,
+          decoration: BoxDecoration(
+            color: colorGreen,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                enableFeedback: false,
+                onPressed: () {
+                  setState(() {
+                    pageIndex = 0;
+                    print("pageIndex : ${pageIndex}");
+                  });
+                },
+                icon: const Icon(
+                  Icons.home_outlined,
+                  color: Colors.white,
+                  size: 35,
+                ),
+              ),
+              IconButton(
+                enableFeedback: false,
+                onPressed: () {
+                  setState(() {
+                    pageIndex = 1;
+                    print("pageIndex : ${pageIndex}");
+                  });
+                },
+                icon: const Icon(
+                  Icons.article,
+                  color: Colors.white,
+                  size: 35,
+                ),
+              ),
+              IconButton(
+                enableFeedback: false,
+                onPressed: () {
+                  setState(() {
+                    pageIndex = 2;
+                    print("pageIndex : ${pageIndex}");
+                  });
+                },
+                icon: const Icon(
+                  Icons.credit_card,
+                  color: Colors.white,
+                  size: 35,
+                ),
+              ),
+            ],
+          )),
       backgroundColor: kBackgroundColor,
-      appBar: CustomHomeAppBar(),
+      appBar: CustomHomeAppBar(title:pageIndex == 1 ? AppTags.faceAuth : pageIndex == 2 ? AppTags.paySlip : ""),
       drawer: DrawerWidget(
         data: userData ?? UserData(),
         onPressed: (p0) {
@@ -356,7 +473,8 @@ class _MainScreenState extends State<MainScreen> {
                 builder: (BuildContext context) {
                   return logOutPopup(this.context, () async {
                     await StorageHelper.clearUserData();
-                    Navigator.pushNamedAndRemoveUntil(this.context, SignupScreen.routeName, (r) => false);
+                    Navigator.pushNamedAndRemoveUntil(
+                        this.context, SignupScreen.routeName, (r) => false);
                   });
                 },
               );
@@ -367,7 +485,13 @@ class _MainScreenState extends State<MainScreen> {
           }
         },
       ),
-      body: SingleChildScrollView(
+      body: pages[pageIndex]
+      ,
+    );
+  }
+
+  Widget page1(){
+    return SingleChildScrollView(
         child: Builder(builder: (context) {
           return Padding(
             padding: const EdgeInsets.all(9.0),
@@ -388,25 +512,7 @@ class _MainScreenState extends State<MainScreen> {
                         Icon( Icons.account_circle,
                           color: kDarkGreyColor,
                           size: 60.sp,
-                           )
-                        /*Container(
-                          width: 60.sp,
-                          height: 60.sp,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(width: 1, color: Colors.white),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.blueGrey.withOpacity(0.2),
-                                blurRadius: 12.r,
-                                spreadRadius: 8.r,
-                              )
-                            ],
-                          ),
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(34.r),
-                              child: Image.asset(AssetsUtils.logoIcon, fit: BoxFit.cover, width: 50.w, height: 50.h)),
-                        )*/,
+                           ),
                         SizedBox(
                           width: 10.w,
                         ),
@@ -602,7 +708,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           );
         }),
-      ),
-    );
+      );
   }
+
 }

@@ -53,7 +53,7 @@ class _LeadsViewScreenState extends State<LeadsViewScreen> {
   @override
   void didChangeDependencies() {
     if (!_isInitialized) {
-      leadId = ModalRoute.of(context)!.settings.arguments as String;
+      leadId = ModalRoute.of(context)?.settings.arguments as String ?? "";
       callApiLeadsView();
       _isInitialized = true;
     }
@@ -836,7 +836,7 @@ class _LeadsViewScreenState extends State<LeadsViewScreen> {
                       print("tlid ${campainUserList[_transferIndexStatus].id} ");
                       print("tcid ${campainUserList[_transferIndexStatus].cId} ");
                       print("transferTo ${campainUserList[_transferIndexStatus].staffId} ");
-                      print("level ${_selectedLevelIndex} ");
+                      print("level $_selectedLevelIndex ");
                       callApiSaveLeadTransfer(
                           viewData!.data!.lId,
                           viewData!.data!.cId,

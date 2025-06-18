@@ -13,6 +13,7 @@ import 'package:masterjee/providers/dues_report.dart';
 import 'package:masterjee/providers/g_meet.dart';
 import 'package:masterjee/providers/homework_api.dart';
 import 'package:masterjee/providers/leads_api.dart';
+import 'package:masterjee/providers/pay_slip_api.dart';
 import 'package:masterjee/providers/ptm_api.dart';
 import 'package:masterjee/providers/student_behavior_api.dart';
 import 'package:masterjee/providers/student_progress_api.dart';
@@ -20,6 +21,7 @@ import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/face_auth/face_auth_screen.dart';
 import 'package:masterjee/screens/forgot_password_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
@@ -30,6 +32,7 @@ import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/leads/leads_view_screen.dart';
 import 'package:masterjee/screens/leads/missed_screen.dart';
 import 'package:masterjee/screens/leads/walk_in_screen.dart';
+import 'package:masterjee/screens/pay_slip/pay_slip_screen.dart';
 import 'package:masterjee/screens/ptm/add/add_screen.dart';
 import 'package:masterjee/screens/ptm/minutebook/minutebook_screen.dart';
 import 'package:masterjee/screens/ptm/ptm.dart';
@@ -107,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => LeadsApi()),
           ChangeNotifierProvider(create: (ctx) => StudentProgressApi()),
           ChangeNotifierProvider(create: (ctx) => PtmApi()),
+          ChangeNotifierProvider(create: (ctx) => PaySlipApi()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>
@@ -176,6 +180,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         LeadsViewScreen.routeName: (ctx) => const LeadsViewScreen(),
                         SubjectWiseScreen.routeName: (ctx) => const SubjectWiseScreen(),
                         AssessmentWiseScreen.routeName: (ctx) => const AssessmentWiseScreen(),
+                        PaySlipScreen.routeName: (ctx) => const PaySlipScreen(),
+                        FaceAuthScreen.routeName: (ctx) => const FaceAuthScreen(),
                       },
                       home: const SplashScreen()),
                 );
