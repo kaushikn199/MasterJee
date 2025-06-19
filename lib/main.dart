@@ -13,6 +13,7 @@ import 'package:masterjee/providers/content_api.dart';
 import 'package:masterjee/providers/dues_report.dart';
 import 'package:masterjee/providers/g_meet.dart';
 import 'package:masterjee/providers/homework_api.dart';
+import 'package:masterjee/providers/hostel_api.dart';
 import 'package:masterjee/providers/leads_api.dart';
 import 'package:masterjee/providers/pay_slip_api.dart';
 import 'package:masterjee/providers/ptm_api.dart';
@@ -27,6 +28,7 @@ import 'package:masterjee/screens/face_auth/face_auth_screen.dart';
 import 'package:masterjee/screens/forgot_password_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
+import 'package:masterjee/screens/hostel/hostel_screen.dart';
 import 'package:masterjee/screens/leads/campaign_leads_screen.dart';
 import 'package:masterjee/screens/leads/edit_leads_screen.dart';
 import 'package:masterjee/screens/leads/followups_screen.dart';
@@ -114,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => PtmApi()),
           ChangeNotifierProvider(create: (ctx) => ContentProvider()),
           ChangeNotifierProvider(create: (ctx) => PaySlipApi()),
+          ChangeNotifierProvider(create: (ctx) => HostelRooms()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>
@@ -154,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ForgotPassword.routeName: (ctx) =>  ForgotPassword(),
                         AttendanceScreen.routeName: (ctx) =>  AttendanceScreen(),
                         ContentScreen.routeName: (ctx) =>  ContentScreen(),
+                        HostelRoomsScreen.routeName: (ctx) =>  HostelRoomsScreen(),
                         DuesReportScreen.routeName: (ctx) =>  DuesReportScreen(),
                         LeadsScreen.routeName: (ctx) => const LeadsScreen(),
                         HomeworkScreen.routeName: (ctx) => const HomeworkScreen(),
