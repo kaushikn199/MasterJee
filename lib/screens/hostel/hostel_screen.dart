@@ -15,7 +15,7 @@ import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
 
 class HostelRoomsScreen extends StatefulWidget {
-  const HostelRoomsScreen({Key? key}) : super(key: key);
+  const HostelRoomsScreen({super.key});
   static String routeName = 'hostelRoomsScreen';
 
   @override
@@ -34,9 +34,6 @@ class _HostelRoomsScreenState extends State<HostelRoomsScreen> with SingleTicker
     tabController = TabController(length: 2, vsync: this);
     getData();
     tabController.addListener(() {
-      print("object");
-      print(tabController.indexIsChanging);
-      print(tabController.index);
       if (tabController.index == 0) {
         getData();
       } else if (tabController.index == 1) {
@@ -388,7 +385,7 @@ class _HostelRoomsScreenState extends State<HostelRoomsScreen> with SingleTicker
     try {
       Map<String, String> body = {
         'userId': StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-        "hid": '',
+        "hid": hostel,
         "roomNo": number,
         "hostelId": hostel,
         "roomTypeId": roomType, //1=ac, 2 non-ac
@@ -397,6 +394,7 @@ class _HostelRoomsScreenState extends State<HostelRoomsScreen> with SingleTicker
         "costTerm": period,
         "description": description
       };
+      debugPrint(body.toString());
       ErrorMessageModel data = await Provider.of<HostelRooms>(context, listen: false).saveHostelRooms(body);
       if (data.status == "success") {
         setState(() {
@@ -744,7 +742,7 @@ class _HostelRoomsScreenState extends State<HostelRoomsScreen> with SingleTicker
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CommonText.bold(AppTags.add + AppTags.space + AppTags.hostel, size: 18.sp),
+                          CommonText.bold(AppTags.add + AppTags.space + AppTags.hostelRooms, size: 18.sp),
                           GestureDetector(
                               onTap: () {
                                 Navigator.pop(context);

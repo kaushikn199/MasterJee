@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:masterjee/models/class_section/class_section_response.dart';
 import 'package:masterjee/providers/apply_leave_api.dart';
 import 'package:masterjee/providers/assesment_api.dart';
 import 'package:masterjee/providers/attendance_api.dart';
@@ -148,13 +147,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       initialRoute: SplashScreen.routeName,
                       routes: {
-                        SignupScreen.routeName: (ctx) =>  SignupScreen(),
+                        SignupScreen.routeName: (ctx) =>  const SignupScreen(),
                         MainScreen.routeName: (ctx) =>  const MainScreen(),
-                        ForgotPassword.routeName: (ctx) =>  ForgotPassword(),
-                        AttendanceScreen.routeName: (ctx) =>  AttendanceScreen(),
-                        ContentScreen.routeName: (ctx) =>  ContentScreen(),
-                        HostelRoomsScreen.routeName: (ctx) =>  HostelRoomsScreen(),
-                        DuesReportScreen.routeName: (ctx) =>  DuesReportScreen(),
+                        ForgotPassword.routeName: (ctx) =>  const ForgotPassword(),
+                        AttendanceScreen.routeName: (ctx) =>  const AttendanceScreen(),
+                        ContentScreen.routeName: (ctx) =>  const ContentScreen(),
+                        HostelRoomsScreen.routeName: (ctx) =>  const HostelRoomsScreen(),
+                        DuesReportScreen.routeName: (ctx) =>  const DuesReportScreen(),
                         LeadsScreen.routeName: (ctx) => const LeadsScreen(),
                         HomeworkScreen.routeName: (ctx) => const HomeworkScreen(),
                         StudentBehaviourScreen.routeName: (ctx) => const StudentBehaviourScreen(),
