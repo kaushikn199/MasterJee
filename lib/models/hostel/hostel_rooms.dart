@@ -26,7 +26,7 @@ class HostelRoomsData {
 }
 
 class Data {
-  List<Hostels>? hostels;
+  List<HostelsForRooms>? hostels;
   List<HRooms>? rooms;
   List<Roomtypes>? roomtypes;
   List<Staffs>? staffs;
@@ -35,9 +35,9 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     if (json['hostels'] != null) {
-      hostels = <Hostels>[];
+      hostels = <HostelsForRooms>[];
       json['hostels'].forEach((v) {
-        hostels!.add(Hostels.fromJson(v));
+        hostels!.add(HostelsForRooms.fromJson(v));
       });
     }
     if (json['rooms'] != null) {
@@ -78,7 +78,7 @@ class Data {
   }
 }
 
-class Hostels {
+class HostelsForRooms {
   String? id;
   String? hostelName;
   String? type;
@@ -149,7 +149,7 @@ class Hostels {
   String? hid;
   List<HRooms>? hRooms;
 
-  Hostels(
+  HostelsForRooms(
       {this.id,
         this.hostelName,
         this.type,
@@ -220,7 +220,7 @@ class Hostels {
         this.hid,
         this.hRooms});
 
-  Hostels.fromJson(Map<String, dynamic> json) {
+  HostelsForRooms.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     hostelName = json['hostel_name'];
     type = json['type'];

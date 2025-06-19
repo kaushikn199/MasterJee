@@ -85,8 +85,9 @@ class _HostelRoomsScreenState extends State<HostelRoomsScreen> with SingleTicker
         onPressed: () {
           if (tabController.index == 0) {
             _showBottomSheet(context);
-          } else {}
-          // Add your onPressed code here!
+          } else {
+            _showBottomSheetForRooms(context);
+          }
         },
         label: CommonText(
           "${AppTags.add}${AppTags.space}${tabController.index == 0 ? AppTags.hostel : AppTags.hostelRooms}",
@@ -341,7 +342,7 @@ class _HostelRoomsScreenState extends State<HostelRoomsScreen> with SingleTicker
     );
   }
 
-  Future<void> callApiSaveHostel(String name,type,address,intake,inCharge,description,meals) async {
+  Future<void> callApiSaveHostel(String name, type, address, intake, inCharge, description, meals) async {
     setState(() {
       _isLoading = true;
     });
@@ -362,14 +363,53 @@ class _HostelRoomsScreenState extends State<HostelRoomsScreen> with SingleTicker
         setState(() {
           Navigator.pop(context);
           FocusScope.of(context).unfocus();
-          CommonFunctions.showSuccessToast(data.message??"");
+          CommonFunctions.showSuccessToast(data.message ?? "");
           _isLoading = false;
           getData();
         });
         return;
       } else {
         setState(() {
-          CommonFunctions.showWarningToast(data.message??"");
+          CommonFunctions.showWarningToast(data.message ?? "");
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> callApiSaveHostelRoom(String number, hostel, roomType, noBed, costPerBed, period, description) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      Map<String, String> body = {
+        'userId': StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+        "hid": '',
+        "roomNo": number,
+        "hostelId": hostel,
+        "roomTypeId": roomType, //1=ac, 2 non-ac
+        "noOfBed":noBed,
+        "costPerBed": costPerBed,
+        "costTerm": period,
+        "description": description
+      };
+      ErrorMessageModel data = await Provider.of<HostelRooms>(context, listen: false).saveHostelRooms(body);
+      if (data.status == "success") {
+        setState(() {
+          Navigator.pop(context);
+          FocusScope.of(context).unfocus();
+          CommonFunctions.showSuccessToast(data.message ?? "");
+          _isLoading = false;
+          getHostelRooms();
+        });
+        return;
+      } else {
+        setState(() {
+          CommonFunctions.showWarningToast(data.message ?? "");
           _isLoading = false;
         });
       }
@@ -407,7 +447,8 @@ class _HostelRoomsScreenState extends State<HostelRoomsScreen> with SingleTicker
       } else if (selectedMeals.isEmpty) {
         CommonFunctions.showWarningToast("Please select at least one meal");
       } else {
-        await callApiSaveHostel(nameController.text,selectedType,addressController.text,intakeController.text,selectedInChargeId,descriptionController.text,selectedMeals.join(", "));
+        await callApiSaveHostel(nameController.text, selectedType, addressController.text, intakeController.text,
+            selectedInChargeId, descriptionController.text, selectedMeals.join(", "));
       }
     }
 
@@ -623,6 +664,285 @@ class _HostelRoomsScreenState extends State<HostelRoomsScreen> with SingleTicker
                         }).toList(),
                       ),
                       gap(10.sp),
+                      // Submit Button
+                      CommonButton(
+                        cornersRadius: 30,
+                        text: AppTags.submit,
+                        onPressed: () {
+                          checkValidation(context);
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetForRooms(BuildContext mainCon) {
+    final numberController = TextEditingController();
+    final numberOfBedController = TextEditingController();
+    final costOfBedControllerController = TextEditingController();
+    final descriptionController = TextEditingController();
+    String? selectedType;
+    String? selectedTypeId;
+    String? selectedHostelId;
+    String? selectedHostel;
+    List<Roomtypes> typeList = hostelRoomsData.data?.roomtypes ?? [];
+    List<HostelsForRooms> hostelList = hostelRoomsData.data?.hostels ?? [];
+    final List<String> period = ['Monthly', 'Annually'];
+    String selectedPeriod = "Monthly";
+
+    checkValidation(BuildContext context) async {
+      if (numberController.text == "") {
+        CommonFunctions.showWarningToast("Please enter ${AppTags.roomNumber}");
+      } else if (selectedHostel == null || selectedHostelId == "") {
+        CommonFunctions.showWarningToast("Please select hostel");
+      } else if (selectedType == null || selectedType == "") {
+        CommonFunctions.showWarningToast("Please select room type");
+      } else if (numberOfBedController.text == "") {
+        CommonFunctions.showWarningToast("Please enter ${AppTags.numberOfBed}");
+      } else if (costOfBedControllerController.text == "") {
+        CommonFunctions.showWarningToast("Please enter ${AppTags.costPerBed}");
+      } else if (selectedPeriod == "") {
+        CommonFunctions.showWarningToast("Please select at period");
+      } else {
+        await callApiSaveHostelRoom(numberController.text, selectedHostelId, selectedTypeId, numberOfBedController.text,costOfBedControllerController.text,
+            selectedPeriod, descriptionController.text);
+      }
+    }
+
+    showModalBottomSheet(
+      backgroundColor: kSecondBackgroundColor,
+      context: mainCon,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+        top: Radius.circular(12.r),
+        bottom: Radius.circular(12.r),
+      )),
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: StatefulBuilder(builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CommonText.bold(AppTags.add + AppTags.space + AppTags.hostel, size: 18.sp),
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Icon(Icons.close, color: Colors.black, size: 24))
+                        ],
+                      ),
+                      gap(10.sp),
+                      CustomTextField(
+                        hintText: AppTags.roomNumber,
+                        controller: numberController,
+                        keyboardType: TextInputType.name,
+                        validate: (value) {
+                          if (value!.isEmpty) {
+                            return '${AppTags.roomNumber} cannot be empty';
+                          }
+                          return null;
+                        },
+                        onSave: (value) {
+                          numberController.text = value as String;
+                        },
+                      ),
+                      gap(10.sp),
+                      Card(
+                        elevation: 0.1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.sp),
+                        ),
+                        color: colorWhite,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          child: DropdownButton(
+                            hint: const CommonText(AppTags.hostel, size: 14, color: Colors.black54),
+                            value: selectedHostel,
+                            icon: const Card(
+                              elevation: 0.1,
+                              color: colorWhite,
+                              child: Icon(Icons.keyboard_arrow_down_outlined),
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedHostel = value.toString();
+                              });
+                            },
+                            isExpanded: true,
+                            items: hostelList.map((cd) {
+                              return DropdownMenuItem(
+                                value: cd.hostelName,
+                                onTap: () {
+                                  setState(() {
+                                    selectedHostelId = cd.id.toString();
+                                  });
+                                },
+                                child: Text(
+                                  cd.hostelName.toString(),
+                                  style: const TextStyle(
+                                    color: colorBlack,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      gap(10.sp),
+                      Card(
+                        elevation: 0.1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.sp),
+                        ),
+                        color: colorWhite,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          child: DropdownButton(
+                            hint: const CommonText(AppTags.roomTypeHint, size: 14, color: Colors.black54),
+                            value: selectedType,
+                            icon: const Card(
+                              elevation: 0.1,
+                              color: colorWhite,
+                              child: Icon(Icons.keyboard_arrow_down_outlined),
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedType = null;
+                                selectedType = value.toString();
+                              });
+                            },
+                            isExpanded: true,
+                            items: typeList.map((cd) {
+                              return DropdownMenuItem(
+                                value: cd.roomType,
+                                onTap: () {
+                                  setState(() {
+                                    selectedType = cd.roomType;
+                                    selectedTypeId = cd.id.toString();
+                                  });
+                                },
+                                child: Text(
+                                  cd.roomType.toString(),
+                                  style: const TextStyle(
+                                    color: colorBlack,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      gap(10.sp),
+                      CustomTextField(
+                        hintText: AppTags.numberOfBed,
+                        controller: numberOfBedController,
+                        keyboardType: TextInputType.number,
+                        validate: (value) {
+                          if (value!.isEmpty) {
+                            return '${AppTags.numberOfBed} cannot be empty';
+                          }
+                          return null;
+                        },
+                        onSave: (value) {
+                          numberOfBedController.text = value as String;
+                        },
+                      ),
+                      gap(10.sp),
+                      CustomTextField(
+                        hintText: AppTags.costPerBed,
+                        controller: costOfBedControllerController,
+                        keyboardType: TextInputType.number,
+                        validate: (value) {
+                          if (value!.isEmpty) {
+                            return '${AppTags.costPerBed} cannot be empty';
+                          }
+                          return null;
+                        },
+                        onSave: (value) {
+                          costOfBedControllerController.text = value as String;
+                        },
+                      ),
+                      gap(10.sp),
+                      Card(
+                        elevation: 0.1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.sp),
+                        ),
+                        color: colorWhite,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          child: DropdownButton(
+                            hint: const CommonText("Period....", size: 14, color: Colors.black54),
+                            value: selectedPeriod,
+                            icon: const Card(
+                              elevation: 0.1,
+                              color: colorWhite,
+                              child: Icon(Icons.keyboard_arrow_down_outlined),
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedPeriod = value.toString();
+                              });
+                            },
+                            isExpanded: true,
+                            items: period.map((cd) {
+                              return DropdownMenuItem(
+                                value: cd,
+                                onTap: () {
+                                  setState(() {
+                                    selectedPeriod = cd.toString();
+                                  });
+                                },
+                                child: Text(
+                                  cd.toString(),
+                                  style: const TextStyle(
+                                    color: colorBlack,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      gap(10.sp),
+                      CustomTextField(
+                        hintText: AppTags.description,
+                        controller: descriptionController,
+                        keyboardType: TextInputType.text,
+                        maxLines: 2,
+                        onSave: (value) {
+                          descriptionController.text = value as String;
+                        },
+                      ),
+                      gap(10.sp),
+
                       // Submit Button
                       CommonButton(
                         cornersRadius: 30,

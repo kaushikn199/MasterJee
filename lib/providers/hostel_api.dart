@@ -43,4 +43,13 @@ class HostelRooms with ChangeNotifier {
       rethrow;
     }
   }
+  Future<ErrorMessageModel> saveHostelRooms( Map<String, String> body) async {
+    try {
+      final responseData = await ApiHelper.post(ApiHelper.saveHostelRoom, body);
+      return ErrorMessageModel.fromJson(responseData);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
 }

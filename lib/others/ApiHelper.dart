@@ -32,6 +32,7 @@ class ApiHelper {
   static const getContent = 'getContent';
   static const getHostels = 'hostels';
   static const saveHostel = 'saveHostel';
+  static const saveHostelRoom = 'saveHostelRoom';
   static const getHostelRooms = 'hostelRooms';
   static const getSubmittedHomeworkInfo = 'getSubmittedHomeworkInfo';
   static const saveHomeworkScore = 'saveHomeworkScore';

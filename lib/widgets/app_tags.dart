@@ -51,6 +51,11 @@ class AppTags {
   static const String hostelName  = "Hostel Name";
   static const String hostelAddress  = "Hostel Address";
   static const String hostelIntake  = "Hostel Intake";
+  static const String roomNumber  = "Room Number";
+  static const String roomType  = "Room Type";
+  static const String roomTypeHint  = "Room Type..";
+  static const String numberOfBed  = "Number of Bed";
+  static const String costPerBed  = "Cost Per Bed";
   static const String description  = "Description";
   static const String mealType  = "Meal Type";
   static const String add  = "Add";
