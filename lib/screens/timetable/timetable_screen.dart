@@ -8,6 +8,7 @@ import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/teachers_subject/teachers_subject_response.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/class_timetable.dart';
+import 'package:masterjee/screens/timetable/time_table_students_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
@@ -537,7 +538,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
                   ),
                 ),
                 SizedBox(
-                  child: _isLoadingBootomSheet ? CircularProgressIndicator() : CommonButton(
+                  child: _isLoadingBootomSheet ? const CircularProgressIndicator() : CommonButton(
                     cornersRadius: 30,
                     text: AppTags.submit,
                     onPressed: () async {
@@ -700,6 +701,36 @@ class _TimetableScreenState extends State<TimetableScreen> {
                     return cardChildWidget(
                         context, dayList.dayTimetable[index], dayList);
                   }),
+
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: () async {
+                      print("ttId : ${dayList.ttData?.ttId}");
+                      print("subjectGroupId : ${dayList.ttData?.subjectGroupId}");
+                      Navigator.pushNamed(
+                        context,
+                        TimeTableStudentsScreen.routeName,
+                        arguments: { "timetableId" : dayList.ttData?.ttId,
+                          "subjectGroupId" : dayList.ttData?.subjectGroupId},
+                      );
+
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: colorGreen),
+                      child: CommonText.medium("Attendance", size: 13.sp, color: colorWhite)
+                          .paddingOnly(left: 30, right: 30, top: 5, bottom: 5),
+                    ),
+                  ).paddingOnly(left: 10,bottom: 10),
+                  gap(30.0)
+                ],
+              ),
+
+
         ],
       ),
     );
@@ -747,6 +778,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
               },
             ),
           ),
+
         ],
       ),
     );

@@ -55,6 +55,7 @@ import 'package:masterjee/screens/student_progress/marksheet_screen.dart';
 import 'package:masterjee/screens/student_progress/overall_screen.dart';
 import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
 import 'package:masterjee/screens/student_progress/subject_wise_screen.dart';
+import 'package:masterjee/screens/timetable/time_table_students_screen.dart';
 import 'package:masterjee/screens/timetable/timetable_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:provider/provider.dart';
@@ -192,6 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         PaySlipScreen.routeName: (ctx) => const PaySlipScreen(),
                         FaceAuthScreen.routeName: (ctx) => const FaceAuthScreen(),
                         PaySlipInfoScreen.routeName: (ctx) => const PaySlipInfoScreen(),
+                        TimeTableStudentsScreen.routeName: (ctx) => const TimeTableStudentsScreen(),
                       },
                       home: const SplashScreen()),
                 );

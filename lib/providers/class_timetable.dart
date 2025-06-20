@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:masterjee/models/class_timetable/add_lesson_plan_response.dart';
 import 'package:masterjee/models/class_timetable/class_time_table_response.dart';
+import 'package:masterjee/models/timetable_students/TimetableStudentsResponse.dart';
 import 'package:masterjee/others/ApiHelper.dart';
 
 class ClassTimetable with ChangeNotifier {
@@ -61,6 +62,18 @@ class ClassTimetable with ChangeNotifier {
     final responseData = await ApiHelper.post(ApiHelper.saveLessonPlan, body);
     print("saveLessonPlan Api : ${responseData}");
     return AddLessonPlanResponse.fromJson(responseData);
+  }
+
+  Future<TimetableStudentsResponse> getTimetableStudents(String userId,String timetableId,String subjectGroupId) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'timetableId': timetableId,
+      'subjectGroupId': subjectGroupId
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.getTimetableStudents, body);
+    print("responseData : ${responseData}");
+    return TimetableStudentsResponse.fromJson(responseData);
   }
 
 }
