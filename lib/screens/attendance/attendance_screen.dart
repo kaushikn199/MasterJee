@@ -210,7 +210,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     // Border color and width
                     borderRadius: BorderRadius.circular(20), // Rounded corners
                   ),
-                  child: CommonText.medium("Attendance report",
+                  child: const CommonText.medium("Attendance report",
                       size: 13, color: colorWhite)
                       .paddingOnly(top: 5, bottom: 5, left: 20, right: 20),
                 ),
@@ -277,7 +277,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     title: present,
                                     value: 1,
                                     groupValue:
-                                    studentList[index].selectedValue ?? 0,
+                                    studentList[index].selectedValue ?? 1,
                                     onChanged: (value) {
                                       setState(() {
                                         studentList[index].selectedValueText =

@@ -80,11 +80,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    pages = [
-      page1(),
-      const FaceAuthScreen(),
-      const PaySlipScreen(),
-    ];
     loadUserData();
     callApiClassSection().then(
       (value) {
@@ -95,7 +90,11 @@ class _MainScreenState extends State<MainScreen> {
         });
       },
     );
-
+    pages = [
+      const SizedBox(),
+      const FaceAuthScreen(),
+      const PaySlipScreen(),
+    ];
     super.initState();
   }
 
@@ -399,9 +398,9 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       bottomNavigationBar: Container(
           height: 60,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: colorGreen,
-            borderRadius: const BorderRadius.only(
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
@@ -454,7 +453,7 @@ class _MainScreenState extends State<MainScreen> {
             ],
           )),
       backgroundColor: kBackgroundColor,
-      appBar: CustomHomeAppBar(title:pageIndex == 1 ? AppTags.faceAuth : pageIndex == 2 ? AppTags.paySlip : ""),
+      appBar: CustomHomeAppBar(title:pageIndex == 1 ? AppTags.leaveStatus : pageIndex == 2 ? AppTags.paySlip : ""),
       drawer: DrawerWidget(
         data: userData ?? UserData(),
         onPressed: (p0) {
@@ -468,6 +467,9 @@ class _MainScreenState extends State<MainScreen> {
               );
               break;
             case 0:
+              setState(() {
+                pageIndex = 0;
+              });
               break;
             case 1:
               showDialog(
@@ -487,244 +489,259 @@ class _MainScreenState extends State<MainScreen> {
           }
         },
       ),
-      body: pages[pageIndex]
-      ,
-    );
-  }
-
-  Widget page1(){
-    return SingleChildScrollView(
-        child: Builder(builder: (context) {
-          return Padding(
-            padding: const EdgeInsets.all(9.0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(20.sp),
-                  child: InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => _changeUserPopup(context),
-                      );
-                    },
-                    child: Row(
+      body: pageIndex == 0 ?
+      SingleChildScrollView(
+    child: Builder(builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.all(9.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(20.sp),
+              child: InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => _changeUserPopup(context),
+                  );
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                ClipRRect(
+                borderRadius: BorderRadius.circular(30.sp), // Makes the image rounded
+                child: userData?.userImage != null && userData?.userImage != ""
+                    ? Image.network(
+                  userData?.userImage ?? "",
+                  width: 60.sp,
+                  height: 60.sp,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.account_circle,
+                      color: kDarkGreyColor,
+                      size: 60.sp,
+                    );
+                  },
+                )
+                    : Icon(
+                  Icons.account_circle,
+                  color: kDarkGreyColor,
+                  size: 60.sp,
+                ),
+              ),
+                    SizedBox(
+                      width: 10.w,
+                    ),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon( Icons.account_circle,
-                          color: kDarkGreyColor,
-                          size: 60.sp,
-                           ),
-                        SizedBox(
-                          width: 10.w,
+                        Text(
+                          "${userData?.firstName ?? ""} ${userData?.lastName ?? ""}",
+                          style: TextStyle(
+                            fontSize: 25.sp,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0XFF343E87),
+                          ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${userData?.firstName ?? ""} ${userData?.lastName ?? ""}",
-                              style: TextStyle(
-                                fontSize: 25.sp,
-                                fontWeight: FontWeight.w900,
-                                color: const Color(0XFF343E87),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 6.h,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.50.sp,
-                              child: CommonText.medium(
-                                "${classData?.className ?? ""} (${sectionData?.section ?? ""})",
-                                size: 12.sp,
-                                color: Colors.blueGrey,
-                              ),
-                            ),
-                          ],
-                        )
+                        SizedBox(
+                          height: 6.h,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.50.sp,
+                          child: CommonText.medium(
+                            "${classData?.className ?? ""} (${sectionData?.section ?? ""})",
+                            size: 12.sp,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
                       ],
-                    ),
-                  ),
-                ),
-                const Divider(
-                  color: colorBlack,
-                  thickness: 0.2,
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                GridView.count(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  crossAxisCount: 4,
-                  childAspectRatio: 0.8,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  children: <Widget>[
-                    cardHomeWidget(
-                      name: AppTags.attendance,
-                      image: AssetsUtils.attendanceIcon,
-                      onTap: () {
-                        if (isClassOrSectionIdMissing()) {
-                          openDialog();
-                        } else {
-                          Navigator.pushNamed(
-                            context,
-                            AttendanceScreen.routeName,
-                            arguments: {'header': AppTags.attendance},
-                          );
-                        }
-                      },
-                    ),
-                    cardHomeWidget(
-                        name: AppTags.duesReport,
-                        image: AssetsUtils.duesReportIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(context, DuesReportScreen.routeName);
-                          }
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.timetable,
-                        image: AssetsUtils.timeTableIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(
-                              context,
-                              TimetableScreen.routeName,
-                              arguments: {'header': AppTags.timetable},
-                            );
-                          }
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.applyLeave,
-                        image: AssetsUtils.leaveIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(
-                                context, ApplyLeaveScreen.routeName);
-                          }
-                        }),
-
-                    cardHomeWidget(
-                        name: AppTags.assesment,
-                        image: AssetsUtils.attendanceIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(
-                                context, AssesmentScreen.routeName);
-                          }
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.homework,
-                        image: AssetsUtils.homeworkIcIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(
-                                context, HomeworkScreen.routeName);
-                          }
-                        }),
-                    cardHomeWidget(
-                      name: AppTags.content,
-                      image: AssetsUtils.contentIcon,
-                      onTap: () {
-                        Navigator.pushNamed(context, ContentScreen.routeName);
-                      },
-                    ),
-                    cardHomeWidget(
-                        name: AppTags.studentBehavior,
-                        image: AssetsUtils.studentBehaviourIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(
-                                context, StudentBehaviourScreen.routeName);
-                          }
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.qrAttendance,
-                        image: AssetsUtils.biometricAttendanceIcon,
-                        onTap: () {
-                          scanAdd();
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.faceAttendance,
-                        image: AssetsUtils.faceAttendance,
-                        onTap: () {
-                          scanFace();
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.faceAuth,
-                        image: AssetsUtils.faceAuth,
-                        onTap: () {
-                          addFace();
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.studentProgress,
-                        image: AssetsUtils.studentProgressIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(context, StudentProgressScreen.routeName);
-                          }
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.ptm,
-                        image: AssetsUtils.ptmIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(context, PTMScreen.routeName);
-                          }
-                        }),
-                    cardHomeWidget(
-                        name: AppTags.gmeetLiveClasses,
-                        image: AssetsUtils.gmeetliveIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(context, GMeetLiveClassesScreen.routeName);
-                          }
-                        }),
-                    cardHomeWidget(
-                      name: AppTags.hostel,
-                      image: AssetsUtils.hostelIcon,
-                      onTap: () {
-                        Navigator.pushNamed(context, HostelRoomsScreen.routeName);
-                      },
-                    ),
-                    cardHomeWidget(
-                        name: AppTags.leads,
-                        image: AssetsUtils.leadIcon,
-                        onTap: () {
-                          if (isClassOrSectionIdMissing()) {
-                            openDialog();
-                          } else {
-                            Navigator.pushNamed(context, LeadsScreen.routeName);
-                          }
-                        }),
+                    )
                   ],
                 ),
+              ),
+            ),
+            const Divider(
+              color: colorBlack,
+              thickness: 0.2,
+            ),
+            const SizedBox(
+              height: 25,
+            ),
+            GridView.count(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              crossAxisCount: 4,
+              childAspectRatio: 0.8,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              children: <Widget>[
+                cardHomeWidget(
+                  name: AppTags.attendance,
+                  image: AssetsUtils.attendanceIcon,
+                  onTap: () {
+                    if (isClassOrSectionIdMissing()) {
+                      openDialog();
+                    } else {
+                      Navigator.pushNamed(
+                        context,
+                        AttendanceScreen.routeName,
+                        arguments: {'header': AppTags.attendance},
+                      );
+                    }
+                  },
+                ),
+                cardHomeWidget(
+                    name: AppTags.duesReport,
+                    image: AssetsUtils.duesReportIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(context, DuesReportScreen.routeName);
+                      }
+                    }),
+                cardHomeWidget(
+                    name: AppTags.timetable,
+                    image: AssetsUtils.timeTableIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(
+                          context,
+                          TimetableScreen.routeName,
+                          arguments: {'header': AppTags.timetable},
+                        );
+                      }
+                    }),
+                cardHomeWidget(
+                    name: AppTags.applyLeave,
+                    image: AssetsUtils.leaveIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(
+                            context, ApplyLeaveScreen.routeName);
+                      }
+                    }),
+
+                cardHomeWidget(
+                    name: AppTags.assesment,
+                    image: AssetsUtils.attendanceIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(
+                            context, AssesmentScreen.routeName);
+                      }
+                    }),
+                cardHomeWidget(
+                    name: AppTags.homework,
+                    image: AssetsUtils.homeworkIcIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(
+                            context, HomeworkScreen.routeName);
+                      }
+                    }),
+                cardHomeWidget(
+                  name: AppTags.content,
+                  image: AssetsUtils.contentIcon,
+                  onTap: () {
+                    Navigator.pushNamed(context, ContentScreen.routeName);
+                  },
+                ),
+                cardHomeWidget(
+                    name: AppTags.studentBehavior,
+                    image: AssetsUtils.studentBehaviourIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(
+                            context, StudentBehaviourScreen.routeName);
+                      }
+                    }),
+                cardHomeWidget(
+                    name: AppTags.qrAttendance,
+                    image: AssetsUtils.biometricAttendanceIcon,
+                    onTap: () {
+                      scanAdd();
+                    }),
+                cardHomeWidget(
+                    name: AppTags.faceAttendance,
+                    image: AssetsUtils.faceAttendance,
+                    onTap: () {
+                      scanFace();
+                    }),
+                cardHomeWidget(
+                    name: AppTags.faceAuth,
+                    image: AssetsUtils.faceAuth,
+                    onTap: () {
+                      addFace();
+                    }),
+                cardHomeWidget(
+                    name: AppTags.studentProgress,
+                    image: AssetsUtils.studentProgressIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(context, StudentProgressScreen.routeName);
+                      }
+                    }),
+                cardHomeWidget(
+                    name: AppTags.ptm,
+                    image: AssetsUtils.ptmIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(context, PTMScreen.routeName);
+                      }
+                    }),
+                cardHomeWidget(
+                    name: AppTags.gmeetLiveClasses,
+                    image: AssetsUtils.gmeetliveIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(context, GMeetLiveClassesScreen.routeName);
+                      }
+                    }),
+                cardHomeWidget(
+                  name: AppTags.hostel,
+                  image: AssetsUtils.hostelIcon,
+                  onTap: () {
+                    Navigator.pushNamed(context, HostelRoomsScreen.routeName);
+                  },
+                ),
+                cardHomeWidget(
+                    name: AppTags.leads,
+                    image: AssetsUtils.leadIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(context, LeadsScreen.routeName);
+                      }
+                    }),
               ],
             ),
-          );
-        }),
+          ],
+        ),
       );
+    }),
+    )  :
+      pages[pageIndex],
+    );
   }
 
 }

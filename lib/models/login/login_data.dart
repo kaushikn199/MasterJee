@@ -28,8 +28,29 @@ class LoginData {
   };
 }
 
-
 class UserData {
+  final String? userid;
+  final String? userId;
+  final String? staffId;
+  final String? username;
+  final String? firstName;
+  final String? lastName;
+  final String? mobile;
+  final String? email;
+  final String? classId;
+  final String? sectionId;
+  final String? pushToken;
+  final bool? isLoggedIn;
+  final bool? isSectionIn;
+  final bool? isLibrn;
+  final bool? isRcptn;
+  final bool? isTechr;
+  final bool? isClInc;
+  final bool? isCoord;
+  final bool? isAdmin;
+  final String? sessionId;
+  final String? userImage; // ✅ Added this
+
   UserData({
     this.userid,
     this.userId,
@@ -51,28 +72,8 @@ class UserData {
     this.isCoord,
     this.isAdmin,
     this.sessionId,
+    this.userImage,
   });
-
-  final String? userid;
-  final String? userId;
-  final String? staffId;
-  final String? username;
-  final String? firstName;
-  final String? lastName;
-  final String? mobile;
-  final String? email;
-  final String? classId;
-  final String? sectionId;
-  final String? pushToken;
-  final bool? isLoggedIn;
-  final bool? isSectionIn;
-  final bool? isLibrn;
-  final bool? isRcptn;
-  final bool? isTechr;
-  final bool? isClInc;
-  final bool? isCoord;
-  final bool? isAdmin;
-  final String? sessionId;
 
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
@@ -96,6 +97,7 @@ class UserData {
       isCoord: json['isCoord'],
       isAdmin: json['isAdmin'],
       sessionId: json['sessionId'],
+      userImage: json['userImage'], // ✅ Added this
     );
   }
 
@@ -120,5 +122,6 @@ class UserData {
     'isCoord': isCoord,
     'isAdmin': isAdmin,
     'sessionId': sessionId,
+    'userImage': userImage,
   };
 }

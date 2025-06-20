@@ -115,41 +115,37 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
+      gap(20.w),
       Padding(
         padding: EdgeInsets.all(10.sp),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            /*Container(
-              width: 60.sp,
-              height: 60.sp,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(width: 1, color: Colors.white),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blueGrey.withOpacity(0.2),
-                    blurRadius: 12,
-                    spreadRadius: 8,
-                  )
-                ],
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30.sp), // Makes the image rounded
+              child: data.userImage != null && data.userImage != ""
+                  ? Image.network(
+                data.userImage ?? "",
+                width: 60.sp,
+                height: 60.sp,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.account_circle,
+                    color: kDarkGreyColor,
+                    size: 60.sp,
+                  );
+                },
+              )
+                  : Icon(
+                Icons.account_circle,
+                color: kDarkGreyColor,
+                size: 60.sp,
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(34.0),
-                child: Image.asset(
-                    width: 50,
-                    height: 50,
-                    AssetsUtils.logoIcon,
-                    fit: BoxFit.cover),
-              ),
-            )*/
-            Icon( Icons.account_circle,
-              color: kDarkGreyColor,
-              size: 60.sp,
             ),
             SizedBox(
-              width: 10.sp,
+              width: 20.sp,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

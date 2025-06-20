@@ -36,6 +36,7 @@ import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/leads/leads_view_screen.dart';
 import 'package:masterjee/screens/leads/missed_screen.dart';
 import 'package:masterjee/screens/leads/walk_in_screen.dart';
+import 'package:masterjee/screens/pay_slip/pay_slip_info_screen.dart';
 import 'package:masterjee/screens/pay_slip/pay_slip_screen.dart';
 import 'package:masterjee/screens/ptm/add/add_screen.dart';
 import 'package:masterjee/screens/ptm/minutebook/minutebook_screen.dart';
@@ -78,6 +79,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -152,13 +154,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       initialRoute: SplashScreen.routeName,
                       routes: {
-                        SignupScreen.routeName: (ctx) =>  SignupScreen(),
+                        SignupScreen.routeName: (ctx) =>  const SignupScreen(),
                         MainScreen.routeName: (ctx) =>  const MainScreen(),
-                        ForgotPassword.routeName: (ctx) =>  ForgotPassword(),
-                        AttendanceScreen.routeName: (ctx) =>  AttendanceScreen(),
-                        ContentScreen.routeName: (ctx) =>  ContentScreen(),
-                        HostelRoomsScreen.routeName: (ctx) =>  HostelRoomsScreen(),
-                        DuesReportScreen.routeName: (ctx) =>  DuesReportScreen(),
+                        ForgotPassword.routeName: (ctx) =>  const ForgotPassword(),
+                        AttendanceScreen.routeName: (ctx) =>  const AttendanceScreen(),
+                        ContentScreen.routeName: (ctx) =>  const ContentScreen(),
+                        HostelRoomsScreen.routeName: (ctx) =>  const HostelRoomsScreen(),
+                        DuesReportScreen.routeName: (ctx) =>  const DuesReportScreen(),
                         LeadsScreen.routeName: (ctx) => const LeadsScreen(),
                         HomeworkScreen.routeName: (ctx) => const HomeworkScreen(),
                         StudentBehaviourScreen.routeName: (ctx) => const StudentBehaviourScreen(),
@@ -190,6 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         AssessmentWiseScreen.routeName: (ctx) => const AssessmentWiseScreen(),
                         PaySlipScreen.routeName: (ctx) => const PaySlipScreen(),
                         FaceAuthScreen.routeName: (ctx) => const FaceAuthScreen(),
+                        PaySlipInfoScreen.routeName: (ctx) => const PaySlipInfoScreen(),
                       },
                       home: const SplashScreen()),
                 );

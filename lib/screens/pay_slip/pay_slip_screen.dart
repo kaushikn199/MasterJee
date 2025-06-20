@@ -4,6 +4,7 @@ import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/pay_slip/pay_slip_response.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/pay_slip_api.dart';
+import 'package:masterjee/screens/pay_slip/pay_slip_info_screen.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
@@ -85,7 +86,16 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
                   itemCount: paySlipList.length,
                   padding: EdgeInsets.only(top: 10.sp),
                   itemBuilder: (BuildContext context, int index) {
-                    return assignmentCard(paySlipList[index]);
+                    return InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          PaySlipInfoScreen.routeName,
+                          arguments: paySlipList[index].id,
+                        );
+                      },
+                        child: assignmentCard(paySlipList[index])
+                    );
                   }),
             );
           }),

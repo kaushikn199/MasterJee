@@ -72,6 +72,7 @@ class AppTags {
   static const String transfer = "Transfer";
   static const String followUpHistory = 'Follow-up history';
   static const String paySlip = 'PaySlip';
+  static const String leaveStatus = 'Leave status';
 
 }
 
