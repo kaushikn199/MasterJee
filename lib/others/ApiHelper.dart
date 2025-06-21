@@ -68,6 +68,7 @@ class ApiHelper {
   static const getAllPayslip = 'getAllPayslip';
   static const getPayslipInfo = 'getPayslipInfo';
   static const getTimetableStudents = 'getTimetableStudents';
+  static const saveStudentPeriodAttendance = 'saveStudentPeriodAttendance';
 
 
   static const Map<String, String> defaultHeaders = {

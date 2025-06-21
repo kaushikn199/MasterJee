@@ -76,4 +76,18 @@ class ClassTimetable with ChangeNotifier {
     return TimetableStudentsResponse.fromJson(responseData);
   }
 
+  Future<TimetableStudentsResponse> saveStudentPeriodAttendance(
+      String userId, String timetableId,String date,List<Map<String, String>> attendance) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'timetableId': timetableId,
+      'date': date,
+      'attendance': attendance
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveStudentPeriodAttendance, body);
+    print("responseData : ${responseData}");
+    return TimetableStudentsResponse.fromJson(responseData);
+  }
+
 }

@@ -1,3 +1,5 @@
+import 'package:masterjee/screens/timetable/time_table_students_screen.dart';
+
 class TimetableStudentsResponse {
   final String status;
   final String message;
@@ -275,8 +277,8 @@ class TimetableStudentsData {
       faceAuth: json['face_auth'] ?? '',
       ssid: json['ssid'] ?? '',
       attendance: json['attendance'] ?? '',
-      selectedValue: json['selectedValue'],
-      selectedValueText: json['selectedValueText'] ?? '',
+      selectedValue: json['selectedValue'] ,
+      selectedValueText: json['selectedValueText'] ?? "Present",
     );
   }
 }

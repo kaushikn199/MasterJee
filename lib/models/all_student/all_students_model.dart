@@ -279,7 +279,7 @@ class StudentData {
     faceAuth: json["face_auth"],
     ssid: json["ssid"],
     selectedValue: json["selectedValue"],
-    selectedValueText: json["selectedValueText"],
+    selectedValueText: json["selectedValueText"] ?? "Present",
   );
 
   Map<String, dynamic> toJson() => {

@@ -80,11 +80,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     }
   }
 
-  List<Map<String, String>> students = [
-    /* {
-            "student_id": 1
-        }*/
-  ];
+  List<Map<String, String>> students = [];
 
   String halfDay = "HalfDay";
   String absent = "Absent";
@@ -104,12 +100,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           students);
       if (data.result) {
         setState(() {
+          students = [];
           _isLoading = false;
-          setState(() {
-            _fromDateController.text = "";
-            CommonFunctions.showWarningToast(data.message);
-            callApiGetAllStudents();
-          });
+          _fromDateController.text = "";
+          CommonFunctions.showWarningToast(data.message);
+          callApiGetAllStudents();
         });
         return;
       } else {
@@ -139,7 +134,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           setState(() {
             int count = 0;
             for (int i = 0; i < studentList.length; i++) {
-              if (studentList[i].selectedValue == 1) {
+              if (studentList[i].selectedValue != 0 &&
+                  studentList[i].selectedValueText != null &&
+                  studentList[i].selectedValueText != "") {
                 count = count + 1;
               }
             }
@@ -151,7 +148,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             } else {
               for (int i = 0; i < studentList.length; i++) {
                 String type = studentList[i].selectedValueText ?? "";
-                if(studentList[i].selectedValue == 1) {
+                if(studentList[i].selectedValue != 0 &&
+                    studentList[i].selectedValueText != null &&
+                    studentList[i].selectedValueText != "") {
                   students.add({
                     "student_id": studentList[i].studentId,
                     "attendance_status": type == present ? "1"
@@ -280,10 +279,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     studentList[index].selectedValue ?? 1,
                                     onChanged: (value) {
                                       setState(() {
-                                        studentList[index].selectedValueText =
-                                            present;
-                                        studentList[index].selectedValue =
-                                        value!;
+                                        studentList[index].selectedValueText = present;
+                                        studentList[index].selectedValue = value;
                                       });
                                     },
                                   ),
@@ -293,13 +290,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     title: leave,
                                     value: 2,
                                     groupValue:
-                                    studentList[index].selectedValue ?? 0,
+                                    studentList[index].selectedValue ?? 1,
                                     onChanged: (value) {
                                       setState(() {
-                                        studentList[index].selectedValueText =
-                                            leave;
-                                        studentList[index].selectedValue =
-                                        value!;
+                                        studentList[index].selectedValueText = leave;
+                                        studentList[index].selectedValue = value;
                                       });
                                     },
                                   ),
@@ -315,13 +310,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     title: absent,
                                     value: 3,
                                     groupValue:
-                                    studentList[index].selectedValue ?? 0,
+                                    studentList[index].selectedValue ?? 1,
                                     onChanged: (value) {
                                       setState(() {
-                                        studentList[index].selectedValueText =
-                                            absent;
-                                        studentList[index].selectedValue =
-                                        value!;
+                                        studentList[index].selectedValueText = absent;
+                                        studentList[index].selectedValue = value;
                                       });
                                     },
                                   ),
@@ -331,13 +324,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     title: halfDay,
                                     value: 4,
                                     groupValue:
-                                    studentList[index].selectedValue ?? 0,
+                                    studentList[index].selectedValue ?? 1,
                                     onChanged: (value) {
                                       setState(() {
-                                        studentList[index].selectedValueText =
-                                            halfDay;
-                                        studentList[index].selectedValue =
-                                        value!;
+                                        studentList[index].selectedValueText = halfDay;
+                                        studentList[index].selectedValue = value;
                                       });
                                     },
                                   ),
