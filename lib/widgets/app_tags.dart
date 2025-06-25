@@ -73,6 +73,8 @@ class AppTags {
   static const String followUpHistory = 'Follow-up history';
   static const String paySlip = 'PaySlip';
   static const String leaveStatus = 'Leave status';
+  static const String assignment = 'Assignment';
+  static const String exam = 'Exam';
 
 }
 
@@ -101,4 +103,5 @@ class AssetsUtils {
   static const String sheduleIcon = "assets/images/ic_shedule.png";
   static const String faceAttendance = "assets/images/ic_face_attendance.png";
   static const String faceAuth = "assets/images/ic_face_auth.png";
+  static const String exam = "assets/images/ic_exam.png";
 }

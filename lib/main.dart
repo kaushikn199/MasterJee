@@ -21,8 +21,10 @@ import 'package:masterjee/providers/student_progress_api.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
+import 'package:masterjee/screens/attendance/homework_list/homework_list_screen.dart';
 import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/exam/exam_main_screen.dart';
 import 'package:masterjee/screens/face_auth/face_auth_screen.dart';
 import 'package:masterjee/screens/forgot_password_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
@@ -194,6 +196,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         FaceAuthScreen.routeName: (ctx) => const FaceAuthScreen(),
                         PaySlipInfoScreen.routeName: (ctx) => const PaySlipInfoScreen(),
                         TimeTableStudentsScreen.routeName: (ctx) => const TimeTableStudentsScreen(),
+                        HomeworkListScreen.routeName: (ctx) => const HomeworkListScreen(),
+                        ExamMainScreen.routeName: (ctx) => const ExamMainScreen(),
                       },
                       home: const SplashScreen()),
                 );

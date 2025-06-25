@@ -1,12 +1,14 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/homework_list/HomeworkListResponse.dart';
 import 'package:masterjee/models/teachers_subject/teachers_subject_response.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/homework_api.dart';
+import 'package:masterjee/screens/attendance/homework_list/homework_list_screen.dart';
 import 'package:masterjee/screens/homework/submitted_homework_info.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
@@ -255,7 +257,27 @@ class _HomeworkScreenState extends State<HomeworkScreen>
           Builder(builder: (context) {
             return Container(
               padding: EdgeInsets.only(top: 10.sp),
-              child: Column(children: [
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, HomeworkListScreen.routeName);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colorGreen,
+                      border: Border.all(color: colorGreen, width: 1),
+                      // Border color and width
+                      borderRadius: BorderRadius.circular(20), // Rounded corners
+                    ),
+                    child: const CommonText.medium("Assignment",
+                        size: 13, color: colorWhite)
+                        .paddingOnly(top: 5, bottom: 5, left: 20, right: 20),
+                  ),
+                ).paddingOnly(left: 15),
+                gap(10.0),
                 Container(
                   height: 50.sp,
                   margin: const EdgeInsets.symmetric(horizontal: 10),

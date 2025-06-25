@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/timetable_students/TimetableStudentsResponse.dart';
@@ -82,7 +83,7 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
     }
   }
 
-  final _fromDateController = TextEditingController();
+  /*final _fromDateController = TextEditingController();
   DateTime? _selectedFromDate;
 
   Future<void> _selectFromDate(BuildContext context) async {
@@ -98,7 +99,15 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
         _fromDateController.text = pickedDate.toLocalDMYDateString();
       });
     }
+  }*/
+
+
+  String getCurrentDate() {
+    final now = DateTime.now();
+    final formatter = DateFormat('yyyy-MM-dd');
+    return formatter.format(now);
   }
+
 
   List<Map<String, String>> students = [];
 
@@ -113,13 +122,13 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
                   StorageHelper.getStringData(StorageHelper.userIdKey)
                       .toString(),
                   timetableId,
-                  _fromDateController.text,
+                  /*_fromDateController.text*/getCurrentDate(),
                   students);
       if (data.result) {
         setState(() {
           _isLoading = false;
           students = [];
-          _fromDateController.text = "";
+          /*_fromDateController.text = "";*/
           CommonFunctions.showWarningToast(data.message);
           callApiTimetableStudents(timetableId, subjectGroupId);
         });
@@ -157,10 +166,10 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
                       count = count + 1;
                     }
                   }
-                  if (_fromDateController.text == null ||
+                  /*if (_fromDateController.text == null ||
                       _fromDateController.text == "") {
                     CommonFunctions.showWarningToast("Please select date");
-                  } else if (count == 0) {
+                  } else*/ if (count == 0) {
                     CommonFunctions.showWarningToast("Please select student");
                   } else {
                     for (int i = 0; i < timetableStudentsList.length; i++) {
@@ -220,7 +229,7 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               gap(10.0),
-              CustomTextField(
+              /*CustomTextField(
                 onTap: () {
                   _selectFromDate(context);
                 },
@@ -242,7 +251,7 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
                   // _authData['email'] = value.toString();
                   _fromDateController.text = value as String;
                 },
-              ),
+              ),*/
               gap(10.0),
               Expanded(
                 child: ListView.builder(
