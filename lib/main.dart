@@ -24,7 +24,11 @@ import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/attendance/homework_list/homework_list_screen.dart';
 import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/exam/assessment/assesment_screen.dart';
+import 'package:masterjee/screens/exam/exam/exam_screen.dart';
 import 'package:masterjee/screens/exam/exam_main_screen.dart';
+import 'package:masterjee/screens/exam/grades/grades_screen.dart';
+import 'package:masterjee/screens/exam/observation/observation_screen.dart';
 import 'package:masterjee/screens/face_auth/face_auth_screen.dart';
 import 'package:masterjee/screens/forgot_password_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
@@ -198,6 +202,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         TimeTableStudentsScreen.routeName: (ctx) => const TimeTableStudentsScreen(),
                         HomeworkListScreen.routeName: (ctx) => const HomeworkListScreen(),
                         ExamMainScreen.routeName: (ctx) => const ExamMainScreen(),
+                        AssessmentScreen.routeName: (ctx) => const AssessmentScreen(),
+                        ExamScreen.routeName: (ctx) => const ExamScreen(),
+                        GradesScreen.routeName: (ctx) => const GradesScreen(),
+                        ObservationScreen.routeName: (ctx) => const ObservationScreen(),
+                        ScheduleScreen.routeName: (ctx) => const ScheduleScreen(),
                       },
                       home: const SplashScreen()),
                 );

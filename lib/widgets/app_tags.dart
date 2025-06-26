@@ -75,6 +75,8 @@ class AppTags {
   static const String leaveStatus = 'Leave status';
   static const String assignment = 'Assignment';
   static const String exam = 'Exam';
+  static const String grades = 'Grades';
+  static const String observation = 'Observation';
 
 }
 
@@ -104,4 +106,10 @@ class AssetsUtils {
   static const String faceAttendance = "assets/images/ic_face_attendance.png";
   static const String faceAuth = "assets/images/ic_face_auth.png";
   static const String exam = "assets/images/ic_exam.png";
+  static const String delete = "assets/images/ic_delete.svg";
+  static const String tag = "assets/images/ic_tag.svg";
+  static const String book = "assets/images/ic_book.svg";
+  static const String news = "assets/images/ic_news.svg";
+  static const String newspaper = "assets/images/ic_newspaper.svg";
+  static const String calendar = "assets/images/ic_calendar.svg";
 }
