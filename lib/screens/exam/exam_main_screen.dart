@@ -65,8 +65,7 @@ class _ExamMainScreenState extends State<ExamMainScreen> with WidgetsBindingObse
                     unselectedLabelColor: Colors.black,
                     indicatorColor: kRedColor,
                     tabs: [
-                      Tab(
-                          icon: CommonText.medium(AppTags.exam,
+                      Tab(icon: CommonText.medium(AppTags.exam,
                               size: 12.sp, overflow: TextOverflow.fade)),
                       Tab(
                           icon: CommonText.medium(AppTags.assesment,
