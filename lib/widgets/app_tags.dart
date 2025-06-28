@@ -77,6 +77,8 @@ class AppTags {
   static const String exam = 'Exam';
   static const String grades = 'Grades';
   static const String observation = 'Observation';
+  static const String addSubject = 'Add subject';
+  static const String addScore = 'Add score';
 
 }
 
