@@ -70,6 +70,10 @@ class ApiHelper {
   static const getTimetableStudents = 'getTimetableStudents';
   static const saveStudentPeriodAttendance = 'saveStudentPeriodAttendance';
   static const getAssignmentList = 'getAssignmentList';
+  static const allExams = 'allExams';
+  static const allAssessments = 'allAssessments';
+  static const allGrades = 'allGrades';
+  static const allObservation = 'allObservation';
 
 
   static const Map<String, String> defaultHeaders = {

@@ -3,11 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/exam/ExamResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/screens/exam/exam/add_score_screen.dart';
 import 'package:masterjee/screens/exam/exam/add_subject_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class ExamScreen extends StatefulWidget {
   const ExamScreen({super.key});
@@ -19,8 +23,44 @@ class ExamScreen extends StatefulWidget {
 }
 
 class _ExamScreenState extends State<ExamScreen> {
+
   var _isLoading = false;
-  late List<int> followupList = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+ // late List<int> followupList = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  late List<Exam> examList = [];
+
+
+  @override
+  void initState() {
+    callApiAllExams();
+    super.initState();
+  }
+
+  Future<void> callApiAllExams() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      ExamResponse data =
+      await Provider.of<ExamApi>(context, listen: false).allExams(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString()
+      );
+      if (data.result) {
+        setState(() {
+          examList = data.data?.exams ?? [];
+          _isLoading = false;
+        });
+        return;
+      }else{
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      _isLoading = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +72,7 @@ class _ExamScreenState extends State<ExamScreen> {
         ),
       );
     }
-    if (followupList.isEmpty) {
+    if (examList.isEmpty) {
       return Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -54,10 +94,10 @@ class _ExamScreenState extends State<ExamScreen> {
         padding: EdgeInsets.symmetric(horizontal: 10.sp),
         child: ListView.builder(
             shrinkWrap: true,
-            itemCount: followupList.length,
+            itemCount: examList.length,
             padding: EdgeInsets.only(top: 10.sp),
             itemBuilder: (BuildContext c, int index) {
-              int data = followupList[index];
+              Exam data = examList[index];
               return InkWell(
                   onTap: () {
                     //Navigator.push(context);
@@ -68,7 +108,7 @@ class _ExamScreenState extends State<ExamScreen> {
     );
   }
 
-  Widget leadsCard(int data, BuildContext context) {
+  Widget leadsCard(Exam data, BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10.sp),
       decoration: BoxDecoration(
@@ -99,7 +139,7 @@ class _ExamScreenState extends State<ExamScreen> {
                             borderRadius: BorderRadius.all(Radius.circular(5)),
                             color: colorGaryText),
                         child: CommonText.regular(
-                                "Chapter Wise Weekly Test(Februar-2024)",
+                                data.ename ?? "",
                                 size: 10.sp,
                                 color: Colors.white,
                                 overflow: TextOverflow.fade)
@@ -111,7 +151,7 @@ class _ExamScreenState extends State<ExamScreen> {
                       decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(5)),
                           color: colorGaryText),
-                      child: CommonText.regular("Term 1",
+                      child: CommonText.regular(data.tname ?? "",
                               size: 10.sp,
                               color: Colors.white,
                               overflow: TextOverflow.fade)
@@ -122,7 +162,7 @@ class _ExamScreenState extends State<ExamScreen> {
                 SizedBox(
                   height: 5.h,
                 ),
-                CommonText.medium("Chapter Wise Weekly Test",
+                CommonText.medium(data.ced ?? "",
                     size: 13.sp,
                     color: Colors.black,
                     overflow: TextOverflow.fade),

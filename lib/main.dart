@@ -10,6 +10,7 @@ import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/providers/class_timetable.dart';
 import 'package:masterjee/providers/content_api.dart';
 import 'package:masterjee/providers/dues_report.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/providers/g_meet.dart';
 import 'package:masterjee/providers/homework_api.dart';
 import 'package:masterjee/providers/hostel_api.dart';
@@ -129,6 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => ContentProvider()),
           ChangeNotifierProvider(create: (ctx) => PaySlipApi()),
           ChangeNotifierProvider(create: (ctx) => HostelRooms()),
+          ChangeNotifierProvider(create: (ctx) => ExamApi()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>

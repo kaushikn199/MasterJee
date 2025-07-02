@@ -3,9 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/exam/AllAssessmentsResponse.dart';
+import 'package:masterjee/models/exam/ExamResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/screens/exam/grades/edit_uppdate_grade_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class AssessmentScreen extends StatefulWidget {
   const AssessmentScreen({super.key});
@@ -21,7 +26,43 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
 
 
   var _isLoading = false;
-  List<int> ptmList = [0,1,2,3,4];
+  //List<int> ptmList = [0,1,2,3,4];
+
+  late List<AssessmentModel> assessmentList = [];
+
+  @override
+  void initState() {
+    callApiAllAssessments();
+    super.initState();
+  }
+
+  Future<void> callApiAllAssessments() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AssessmentResponse data =
+      await Provider.of<ExamApi>(context, listen: false).allAssessments(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          StorageHelper.getStringData(StorageHelper.sectionIdKey).toString()
+      );
+      if (data.result) {
+        setState(() {
+          assessmentList = data.data ?? [];
+          _isLoading = false;
+        });
+        return;
+      }else{
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      _isLoading = false;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +74,7 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
         ),
       );
     }
-    if (ptmList.isEmpty) {
+    if (assessmentList.isEmpty) {
       return Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -52,15 +93,15 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       padding: EdgeInsets.symmetric(horizontal: 10.sp),
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: ptmList.length,
+          itemCount: assessmentList.length,
           padding: EdgeInsets.only(top: 10.sp),
           itemBuilder: (BuildContext context, int index) {
-            return assignmentCard(ptmList[index], false);
+            return assignmentCard(assessmentList[index], false);
           }),
     );
   }
 
-  Widget assignmentCard(int ptmData, bool isClosed) {
+  Widget assignmentCard(AssessmentModel data, bool isClosed) {
     return Container(
       margin: EdgeInsets.only(bottom: 15.sp),
       decoration: BoxDecoration(
@@ -92,7 +133,7 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                             borderRadius: BorderRadius.all(Radius.circular(5)),
                             color: colorGaryText
                         ),
-                        child: CommonText.regular("Regular Evaluation ",
+                        child: CommonText.regular(data.name,
                             size: 10.sp, color: Colors.white, overflow: TextOverflow.fade).paddingOnly(left: 5,right: 5,bottom: 2,top: 2),
                       ),
                     ),
@@ -113,16 +154,16 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                   ],
                 ),
                 gap(10.00),
-                CommonText.medium("Exams are formal assessments meant to demonstrate your proficiency in a subject or to help you earn a qualification. During a medical examination, a doctor examines, feels, or performs basic tests on your body to determine health.",
+                CommonText.medium(data.description,
                     size: 11.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),
                 gap(10.0),
                 ListView.builder(
                   padding: EdgeInsets.all(0),
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: ptmList.length,
+                    itemCount: data.types.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return studentList(ptmList[index]);
+                      return studentList(data.types[index]);
                     }),
               ],
             ),
@@ -132,7 +173,7 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
     );
   }
 
-  Widget studentList(int data) {
+  Widget studentList(AssessmentTypeModel data) {
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -143,10 +184,10 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(child: CommonText.medium('Theory', size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),flex: 10,),
-                Expanded(child: CommonText.medium('TH01', size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),flex: 3),
-                Expanded(child: CommonText.medium('100', size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),flex: 2),
-                Expanded(child: CommonText.medium('35', size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),flex: 2),
+                Expanded(flex: 10,child: CommonText.medium(data.name, size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade),),
+                Expanded(flex: 3, child: CommonText.medium(data.code, size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
+                Expanded(flex: 2, child: CommonText.medium(data.maximumMarks, size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
+                Expanded(flex: 2, child: CommonText.medium(data.passPercentage, size: 12.sp, color: kDarkGreyColor, overflow: TextOverflow.fade)),
               ],
             ),
           ),
