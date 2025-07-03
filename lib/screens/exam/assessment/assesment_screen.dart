@@ -3,10 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
-import 'package:masterjee/models/exam/AllAssessmentsResponse.dart';
+import 'package:masterjee/models/exam/assesment/AllAssessmentsResponse.dart';
 import 'package:masterjee/models/exam/ExamResponse.dart';
+import 'package:masterjee/models/exam/assesment/AssessmentModel.dart';
+import 'package:masterjee/models/exam/assesment/AssessmentTypeModel.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
+import 'package:masterjee/screens/exam/assessment/edit_update_assesment_screen.dart';
 import 'package:masterjee/screens/exam/grades/edit_uppdate_grade_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
@@ -140,7 +143,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                     gap(10.0),
                     InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context, EditUpdateGradeScreen.routeName);
+                        Navigator.pushNamed(context,
+                            EditUpdateAssessmentScreen.routeName,
+                            arguments:data.id);
                       },
                       child: Container(
                         decoration: BoxDecoration(
