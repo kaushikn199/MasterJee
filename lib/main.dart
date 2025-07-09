@@ -8,6 +8,7 @@ import 'package:masterjee/providers/assesment_api.dart';
 import 'package:masterjee/providers/attendance_api.dart';
 import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/providers/class_timetable.dart';
+import 'package:masterjee/providers/communication.dart';
 import 'package:masterjee/providers/content_api.dart';
 import 'package:masterjee/providers/dues_report.dart';
 import 'package:masterjee/providers/g_meet.dart';
@@ -21,6 +22,7 @@ import 'package:masterjee/providers/student_progress_api.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
+import 'package:masterjee/screens/communication/communication.dart';
 import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/face_auth/face_auth_screen.dart';
@@ -119,6 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => ContentProvider()),
           ChangeNotifierProvider(create: (ctx) => PaySlipApi()),
           ChangeNotifierProvider(create: (ctx) => HostelRooms()),
+          ChangeNotifierProvider(create: (ctx) => CommunicationProvider()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>
@@ -160,6 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         AttendanceScreen.routeName: (ctx) =>  const AttendanceScreen(),
                         ContentScreen.routeName: (ctx) =>  const ContentScreen(),
                         HostelRoomsScreen.routeName: (ctx) =>  const HostelRoomsScreen(),
+                        CommunicationScreen.routeName: (ctx) =>  const CommunicationScreen(),
                         DuesReportScreen.routeName: (ctx) =>  const DuesReportScreen(),
                         LeadsScreen.routeName: (ctx) => const LeadsScreen(),
                         HomeworkScreen.routeName: (ctx) => const HomeworkScreen(),

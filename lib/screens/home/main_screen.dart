@@ -12,6 +12,7 @@ import 'package:masterjee/providers/auth.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
+import 'package:masterjee/screens/communication/communication.dart';
 import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/face_attendance/mark_attendance/face_screen.dart';
@@ -655,6 +656,13 @@ class _MainScreenState extends State<MainScreen> {
                   image: AssetsUtils.contentIcon,
                   onTap: () {
                     Navigator.pushNamed(context, ContentScreen.routeName);
+                  },
+                ),
+                cardHomeWidget(
+                  name: AppTags.communication,
+                  image: AssetsUtils.communicationIcon,
+                  onTap: () {
+                    Navigator.pushNamed(context, CommunicationScreen.routeName);
                   },
                 ),
                 cardHomeWidget(

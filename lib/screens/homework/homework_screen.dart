@@ -550,7 +550,7 @@ class _HomeworkScreenState extends State<HomeworkScreen>
                         },
                       ),
                       gap(10.sp),
-                      /*CustomTextField(
+                      CustomTextField(
                         onTap: (){
                           pickFile();
                         },
@@ -571,7 +571,7 @@ class _HomeworkScreenState extends State<HomeworkScreen>
                         onSave: (value) {
                           _UploadFileController.text = value as String;
                         },
-                      ),*/
+                      ),
                       gap(10.sp),
                       // Submit Button
                       CommonButton(
