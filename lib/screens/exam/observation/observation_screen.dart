@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/class_timetable/add_lesson_plan_response.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/exam/ObservationResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
@@ -24,6 +25,7 @@ class ObservationScreen extends StatefulWidget {
 
 class _ObservationScreenState extends State<ObservationScreen> {
   var _isLoading = false;
+  var _dialogLoading = false;
 
   //List<int> ptmList = [0, 1, 2, 3, 4];
   late List<ObservationModel> observationList = [];
@@ -61,9 +63,42 @@ class _ObservationScreenState extends State<ObservationScreen> {
     }
   }
 
-  void showParameterDialog() {
+  Future<void> callApiSaveParameter(String paramName,BuildContext parentContext,BuildContext context) async {
+    setState(() {
+      _dialogLoading = true;
+    });
+    try {
+      ObservationResponse data =
+      await Provider.of<ExamApi>(parentContext, listen: false).saveParameter(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          paramName
+      );
+      if (data.result) {
+        setState(() {
+          _dialogLoading = false;
+          paramController.text = "";
+          Navigator.pop(context);
+          CommonFunctions.showWarningToast(data.message ?? "Something went wrong");
+        });
+        return;
+      } else {
+        setState(() {
+          _dialogLoading = false;
+          CommonFunctions.showWarningToast(data.message ?? "Something went wrong");
+        });
+      }
+
+    } catch (error) {
+      setState(() {
+        print(error.toString());
+        CommonFunctions.showWarningToast(error.toString());
+        _dialogLoading = false;
+      });
+    }
+  }
+  void showParameterDialog(BuildContext parentContext) {
     showDialog(
-      context: context,
+      context: parentContext,
       builder: (BuildContext context) {
         return Dialog(
           insetPadding: EdgeInsets.zero,
@@ -94,11 +129,21 @@ class _ObservationScreenState extends State<ObservationScreen> {
                       },
                     ),
                     gap(50.0),
-                    CommonButton(
-                      cornersRadius: 30,
-                      text: AppTags.add,
-                      onPressed: () {},
-                    ),
+                    SizedBox(
+                      child: _dialogLoading ? const Center(child: CircularProgressIndicator() ) :
+                      CommonButton(
+                        cornersRadius: 30,
+                        text: AppTags.add,
+                        onPressed: () {
+                          if(paramController.text == null || paramController.text == ""){
+                            CommonFunctions.showWarningToast("Please enter param name");
+                          }else{
+                            callApiSaveParameter(paramController.text,parentContext,context);
+                          }
+                        },
+                      ),
+                    )
+                    ,
                   ],
                 ),
               );
@@ -314,7 +359,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
               Flexible(
                   child: InkWell(
                 onTap: () {
-                  showParameterDialog();
+                  showParameterDialog(context);
                 },
                 child: Center(
                   child: Container(
@@ -416,7 +461,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
                     InkWell(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, EditUpdateObservationScreen.routeName);
+                            context, EditUpdateObservationScreen.routeName,arguments: data);
                       },
                       child: Container(
                         decoration: BoxDecoration(

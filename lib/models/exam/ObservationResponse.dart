@@ -65,22 +65,42 @@ class ObservationParamModel {
   final String pvid;
   final String pvcopid;
   final String pname;
+  String? selectedParam;
 
   ObservationParamModel({
-    required this.id,
-    required this.cbseExamObservationId,
-    required this.cbseObservationParameterId,
-    required this.maximumMarks,
-    required this.description,
-    required this.createdBy,
-    required this.createdAt,
-    required this.name,
-    required this.pvid,
-    required this.pvcopid,
-    required this.pname,
+     this.id = "",
+     this.cbseExamObservationId = "",
+     this.cbseObservationParameterId = "",
+     this.maximumMarks = "",
+     this.description = "",
+     this.createdBy = "",
+     this.createdAt = "",
+     this.name = "",
+     this.pvid = "",
+     this.pvcopid = "",
+     this.pname = "",
+     this.selectedParam = null,
   });
 
   factory ObservationParamModel.fromJson(Map<String, dynamic> json) {
+    String pname = json['pname'] ?? '';
+    return ObservationParamModel(
+      id: json['id'] ?? '',
+      cbseExamObservationId: json['cbse_exam_observation_id'] ?? '',
+      cbseObservationParameterId: json['cbse_observation_parameter_id'] ?? '',
+      maximumMarks: json['maximum_marks'] ?? '',
+      description: json['description'] ?? '',
+      createdBy: json['created_by'],
+      createdAt: json['created_at'] ?? '',
+      name: json['name'] ?? '',
+      pvid: json['pvid'] ?? '',
+      pvcopid: json['pvcopid'] ?? '',
+      pname: pname,
+      selectedParam: pname.isNotEmpty ? pname : null,
+    );
+  }
+
+/*  factory ObservationParamModel.fromJson(Map<String, dynamic> json) {
     return ObservationParamModel(
       id: json['id'] ?? '',
       cbseExamObservationId: json['cbse_exam_observation_id'] ?? '',
@@ -93,6 +113,7 @@ class ObservationParamModel {
       pvid: json['pvid'] ?? '',
       pvcopid: json['pvcopid'] ?? '',
       pname: json['pname'] ?? '',
+      selectedParam: json['selectedParam'] ?? null,
     );
-  }
+  }*/
 }

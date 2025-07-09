@@ -75,6 +75,9 @@ class ApiHelper {
   static const allGrades = 'allGrades';
   static const allObservation = 'allObservation';
   static const assessmentInfo = 'assessmentInfo';
+  static const saveParameter = 'saveParameter';
+  static const examSchedule = 'examSchedule';
+  static const observationInfo = 'observationInfo';
 
 
   static const Map<String, String> defaultHeaders = {

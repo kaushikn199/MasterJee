@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/class_timetable/add_lesson_plan_response.dart';
+import 'package:masterjee/models/exam/ObservationResponse.dart';
+import 'package:masterjee/models/exam/observation/ObservationInfoResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
+import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class EditUpdateObservationScreen extends StatefulWidget {
   const EditUpdateObservationScreen({super.key});
@@ -19,16 +26,73 @@ class EditUpdateObservationScreen extends StatefulWidget {
 
 class _EditUpdateObservationScreenState extends State<EditUpdateObservationScreen> {
 
+  bool _isInitialized = false;
+  late ObservationModel observationModel;
+  late List<ObservationParamModel> paramsList;
+  var _isLoading = false;
+
+  late List<Parameter> parameterList;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      observationModel = ModalRoute.of(context)!.settings.arguments as ObservationModel ;
+      if (observationModel != null && observationModel.id != null) {
+        callApiAllObservationInfo();
+        observationNameController.text = observationModel.name;
+        descriptionController.text = observationModel.description;
+        selectParameterController = [];
+        maxMarkController = [];
+        paramsList = observationModel.params;
+        _ensureSlotController(paramsList.length);
+      }
+      _isInitialized = true;
+    }
+  }
+
+  late List<TextEditingController> selectParameterController = [];
+  late List<TextEditingController> maxMarkController = [];
+
+  Future<void> callApiAllObservationInfo() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      ObservationInfoResponse data =
+      await Provider.of<ExamApi>(context, listen: false).observationInfo(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          observationModel.id);
+      if (data.result) {
+        setState(() {
+          parameterList = data.data.parameters ?? [];
+          _isLoading = false;
+
+
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        print("callApiAllObservationInfo_error : $error");
+        _isLoading = false;
+      });
+    }
+  }
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
 
   late var observationNameController = TextEditingController();
   late var descriptionController = TextEditingController();
 
-  List<int> resultData = [1];
+  //List<int> resultData = [1];
 
-  final List<TextEditingController> selectParameterController = [];
-  final List<TextEditingController> maxMarkController = [];
+
 
   void _ensureSlotController(int index) {
     while (selectParameterController.length <= index) {
@@ -36,20 +100,18 @@ class _EditUpdateObservationScreenState extends State<EditUpdateObservationScree
       maxMarkController.add(TextEditingController());
     }
   }
-  String? _selectedLesson;
-  String? _selectedTopic;
   List<Lesson> lessonsMainList = [];
   int _indexLesson = 0;
 
   @override
   void initState() {
-    _ensureSlotController(0);
+    //_ensureSlotController(0);
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBarTwo(title: AppTags.observation),
       backgroundColor: colorGaryBG,
       bottomNavigationBar: CommonButton(
         paddingHorizontal: 7,
@@ -58,7 +120,31 @@ class _EditUpdateObservationScreenState extends State<EditUpdateObservationScree
         onPressed: () {
         },
       ).paddingOnly(bottom: 30, left: 10, right: 10),
-      body: SingleChildScrollView(
+      body: Builder(builder: (context) {
+        if (_isLoading) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * .5,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (observationModel == null || observationModel.isBlank == true) {
+          return Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.hourglass_empty_outlined, size: 100.sp),
+                CommonText.medium('No Record Found',
+                    size: 16.sp,
+                    color: kDarkGreyColor,
+                    overflow: TextOverflow.fade),
+              ],
+            ),
+          );
+        }
+        return SingleChildScrollView(
         child: Column(
           children: [
             Center(
@@ -91,8 +177,8 @@ class _EditUpdateObservationScreenState extends State<EditUpdateObservationScree
                         },
                       ),
                       Column(
-                        children: List.generate(resultData.length, (index) {
-                          return assignmentCard(resultData[index], index);
+                        children: List.generate(paramsList.length, (index) {
+                          return assignmentCard(paramsList[index], index);
                         }),
                       ),
                       gap(10.0),
@@ -105,8 +191,10 @@ class _EditUpdateObservationScreenState extends State<EditUpdateObservationScree
                           text: "Add More",
                           onPressed: () {
                             setState(() {
-                              _ensureSlotController(resultData.length);
-                              resultData.add(1);
+                              _ensureSlotController(paramsList.length + 1);
+                              paramsList.add(ObservationParamModel());
+
+
                             });
                           },
                         ),
@@ -118,11 +206,14 @@ class _EditUpdateObservationScreenState extends State<EditUpdateObservationScree
             ),
           ],
         ),
-      ),
+      );
+      }),
     );
   }
 
-  Widget assignmentCard(int a, int index) {
+  Widget assignmentCard(ObservationParamModel a, int index) {
+    maxMarkController[index].text = a.maximumMarks.toString();
+  //  paramsList[index].selectedParam = paramsList[index].pname ?? "";
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,42 +228,44 @@ class _EditUpdateObservationScreenState extends State<EditUpdateObservationScree
           child: Padding(
             padding: const EdgeInsets.symmetric(
                 horizontal: 10, vertical: 2),
-            child: DropdownButton(
+            child:
+            DropdownButton(
               hint: const CommonText('Select parameter',
                   size: 14, color: Colors.black54),
-              value: _selectedLesson,
+              value:  parameterList.any((e) => e.name == paramsList[index].selectedParam)
+    ? paramsList[index].selectedParam
+        : null,
               icon: const Card(
                 elevation: 0.1,
                 color: colorWhite,
-                child: Icon(
-                    Icons.keyboard_arrow_down_outlined),
+                child: Icon(Icons.keyboard_arrow_down_outlined),
               ),
               underline: const SizedBox(),
               onChanged: (value) {
                 setState(() {
-                  _selectedLesson = null;
-                  _selectedLesson = value.toString();
-                  _selectedTopic = null;
+                  //observationModel.params[index].selectedParam = null;
+                  paramsList[index].selectedParam = value;
+                  print("selectedParam :  ${paramsList[index].selectedParam}");
                 });
               },
               isExpanded: true,
-              items: lessonsMainList.map((cd) {
+              items: parameterList.map((cd) {
                 return DropdownMenuItem(
-                  value: cd.id,
+                  value: cd.name,
                   onTap: () {
                     setState(() {
-                      _selectedLesson = cd.name;
-                      for (int i = 0;
-                      i < lessonsMainList.length;
-                      i++) {
-                        if (lessonsMainList[i].id ==
-                            cd.id) {
+                    //  _selectedLesson = cd.name;
+                     // observationModel.params[index].selectedParam = null;
+                      paramsList[index].selectedParam = cd.name;
+                      /*for (int i = 0; i < parameterList.length; i++) {
+                        if (parameterList[i].id == cd.id) {
                           _indexLesson = i;
-                          _selectedTopic = null;
+                          //_selectedTopic = null;
                           //_selectedLessonId = lessonsMainList[i].id;
                           break;
                         }
-                      }
+                      }*/
+                      print("selectedParam_0 :  ${paramsList[index].selectedParam}");
                     });
                   },
                   child: Text(
