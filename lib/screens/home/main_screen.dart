@@ -15,6 +15,7 @@ import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/communication/communication.dart';
 import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/exam/exam_main_screen.dart';
 import 'package:masterjee/screens/face_attendance/mark_attendance/face_screen.dart';
 import 'package:masterjee/screens/face_attendance/register/register_face_screen.dart';
 import 'package:masterjee/screens/face_auth/face_auth_screen.dart';
@@ -712,6 +713,16 @@ class _MainScreenState extends State<MainScreen> {
                         openDialog();
                       } else {
                         Navigator.pushNamed(context, PTMScreen.routeName);
+                      }
+                    }),
+                cardHomeWidget(
+                    name: AppTags.exam,
+                    image: AssetsUtils.exam,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(context, ExamMainScreen.routeName);
                       }
                     }),
                 cardHomeWidget(

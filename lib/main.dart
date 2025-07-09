@@ -11,6 +11,7 @@ import 'package:masterjee/providers/class_timetable.dart';
 import 'package:masterjee/providers/communication.dart';
 import 'package:masterjee/providers/content_api.dart';
 import 'package:masterjee/providers/dues_report.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/providers/g_meet.dart';
 import 'package:masterjee/providers/homework_api.dart';
 import 'package:masterjee/providers/hostel_api.dart';
@@ -22,9 +23,20 @@ import 'package:masterjee/providers/student_progress_api.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
+import 'package:masterjee/screens/attendance/homework_list/homework_list_screen.dart';
 import 'package:masterjee/screens/communication/communication.dart';
 import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/exam/assessment/assesment_screen.dart';
+import 'package:masterjee/screens/exam/assessment/edit_update_assesment_screen.dart';
+import 'package:masterjee/screens/exam/exam/add_score_screen.dart';
+import 'package:masterjee/screens/exam/exam/add_subject_screen.dart';
+import 'package:masterjee/screens/exam/exam/exam_screen.dart';
+import 'package:masterjee/screens/exam/exam_main_screen.dart';
+import 'package:masterjee/screens/exam/grades/edit_uppdate_grade_screen.dart';
+import 'package:masterjee/screens/exam/grades/grades_screen.dart';
+import 'package:masterjee/screens/exam/observation/edit_update_observation_screen.dart';
+import 'package:masterjee/screens/exam/observation/observation_screen.dart';
 import 'package:masterjee/screens/face_auth/face_auth_screen.dart';
 import 'package:masterjee/screens/forgot_password_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
@@ -121,6 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => ContentProvider()),
           ChangeNotifierProvider(create: (ctx) => PaySlipApi()),
           ChangeNotifierProvider(create: (ctx) => HostelRooms()),
+          ChangeNotifierProvider(create: (ctx) => ExamApi()),
           ChangeNotifierProvider(create: (ctx) => CommunicationProvider()),
         ],
         child: Consumer<Auth>(
@@ -198,6 +211,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         FaceAuthScreen.routeName: (ctx) => const FaceAuthScreen(),
                         PaySlipInfoScreen.routeName: (ctx) => const PaySlipInfoScreen(),
                         TimeTableStudentsScreen.routeName: (ctx) => const TimeTableStudentsScreen(),
+                        HomeworkListScreen.routeName: (ctx) => const HomeworkListScreen(),
+                        ExamMainScreen.routeName: (ctx) => const ExamMainScreen(),
+                        AssessmentScreen.routeName: (ctx) => const AssessmentScreen(),
+                        ExamScreen.routeName: (ctx) => const ExamScreen(),
+                        GradesScreen.routeName: (ctx) => const GradesScreen(),
+                        ObservationScreen.routeName: (ctx) => const ObservationScreen(),
+                        ScheduleScreen.routeName: (ctx) => const ScheduleScreen(),
+                        EditUpdateGradeScreen.routeName: (ctx) => const EditUpdateGradeScreen(),
+                        EditUpdateObservationScreen.routeName: (ctx) => const EditUpdateObservationScreen(),
+                        AddSubjectScreen.routeName: (ctx) => const AddSubjectScreen(),
+                        AddScoreScreen.routeName: (ctx) => const AddScoreScreen(),
+                        EditUpdateAssessmentScreen.routeName: (ctx) => const EditUpdateAssessmentScreen(),
                       },
                       home: const SplashScreen()),
                 );

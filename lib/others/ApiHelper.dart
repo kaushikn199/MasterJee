@@ -73,6 +73,15 @@ class ApiHelper {
   static const getPayslipInfo = 'getPayslipInfo';
   static const getTimetableStudents = 'getTimetableStudents';
   static const saveStudentPeriodAttendance = 'saveStudentPeriodAttendance';
+  static const getAssignmentList = 'getAssignmentList';
+  static const allExams = 'allExams';
+  static const allAssessments = 'allAssessments';
+  static const allGrades = 'allGrades';
+  static const allObservation = 'allObservation';
+  static const assessmentInfo = 'assessmentInfo';
+  static const saveParameter = 'saveParameter';
+  static const examSchedule = 'examSchedule';
+  static const observationInfo = 'observationInfo';
 
   static const Map<String, String> defaultHeaders = {
     'Client-Service': "smartschool",
