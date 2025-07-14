@@ -47,8 +47,6 @@ class ExamApi with ChangeNotifier {
     return GradeResponse.fromJson(responseData);
   }
 
-
-
   Future<ObservationResponse> allObservation(String userId) async {
     Map<String, dynamic> body = {
       'userId': userId,
@@ -102,5 +100,49 @@ class ExamApi with ChangeNotifier {
     print("responseData : ${responseData}");
     return ObservationInfoResponse.fromJson(responseData);
   }
+
+  Future<AssessmentInfoResponse> saveAssessment(String userId,
+      String assessmentId,
+      String assessmentName,
+      String assessmentDescription,
+      List<Map<String, String>> assessTypeData)
+  async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'assessmentId': assessmentId,
+      'assessmentName': assessmentName,
+      'assessmentDescription': assessmentDescription,
+      'assessTypeData': assessTypeData,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveAssessment, body);
+    print("responseData : ${responseData}");
+    return AssessmentInfoResponse.fromJson(responseData);
+  }
+
+  /*Future<PtmResponse> savePtm(
+      String userId,
+      String ptmTitle,
+      String date,
+      String remark,
+      List<Map<String, String>> slots) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'ptmTitle': ptmTitle,
+      'date': date,
+      'remark': remark,
+      'slots': slots, // <-- List of maps here
+    };
+
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.savePtm, body);
+    print("responseData : ${responseData}");
+    return PtmResponse.fromJson(responseData);
+  }*/
+
+
+
+
+
 
 }

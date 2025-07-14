@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/exam/assesment/AssessmentModel.dart';
+import 'package:masterjee/models/exam/assesment/assessment_info/AssessmentInfoResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
+import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
+import 'package:provider/provider.dart';
 
 class EditUpdateGradeScreen extends StatefulWidget {
   const EditUpdateGradeScreen({super.key});
@@ -41,6 +47,53 @@ class _EditUpdateGradeScreenState extends State<EditUpdateGradeScreen> {
     }
   }
 
+  var _isLoading = false;
+  AssessmentModel data = AssessmentModel();
+  bool _isInitialized = false;
+  String assessmentId = "";
+
+  @override
+  void didChangeDependencies() {
+    if (!_isInitialized) {
+      assessmentId =
+          ModalRoute.of(context)?.settings.arguments as String? ?? "";
+     // callApiAllGrades();
+      _isInitialized = true;
+    }
+    super.didChangeDependencies();
+  }
+
+  /*Future<void> callApiAllGrades() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AssessmentInfoResponse response =
+      await Provider.of<ExamApi>(context, listen: false).allGrades(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          );
+      if (response.result) {
+        setState(() {
+          data = response.data;
+          gradeNameController.text = data.name;
+          descriptionController.text = data.description;
+          _ensureSlotController(data.types.length);
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("callApiAssessmentInfo : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }*/
+
   @override
   void initState() {
     _ensureSlotController(0);
@@ -51,7 +104,7 @@ class _EditUpdateGradeScreenState extends State<EditUpdateGradeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBarTwo(title: AppTags.grades),
       backgroundColor: colorGaryBG,
       bottomNavigationBar: CommonButton(
         paddingHorizontal: 7,

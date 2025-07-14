@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/exam/assesment/AssessmentModel.dart';
 import 'package:masterjee/models/exam/assesment/AssessmentTypeModel.dart';
 import 'package:masterjee/models/exam/assesment/assessment_info/AssessmentInfoResponse.dart';
+import 'package:masterjee/models/exam/observation/ObservationInfoResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
@@ -93,6 +95,60 @@ class _EditUpdateAssessmentScreenState
     }
   }
 
+  List<Map<String, String>> assessTypeData = [
+    /*{
+      "fromTime": "09:00",
+      "toTime": "10:00",
+    },
+    {
+      "fromTime": "10:00",
+      "toTime": "11:00",
+    }*/
+  ];
+
+  Future<void> callApiSaveAssessment() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AssessmentInfoResponse data =
+      await Provider.of<ExamApi>(context, listen: false).saveAssessment(
+        StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+        assessmentId,
+        gradeNameController.text,
+        descriptionController.text,
+        assessTypeData
+      );
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+
+         // gradeNameController.clear();
+         // descriptionController.clear();
+        //  assessTypeData.clear();
+
+        //  rangeNameController.clear();
+        //  minimumPercentageController.clear();
+        //  maxPercentageController.clear();
+        //  description2Controller.clear();
+
+          CommonFunctions.showWarningToast(data.message);
+          Navigator.of(context).pop(true);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,7 +158,18 @@ class _EditUpdateAssessmentScreenState
         paddingHorizontal: 7,
         cornersRadius: 10,
         text: AppTags.add,
-        onPressed: () {},
+        onPressed: () {
+          for (int i = 0; i < data.types.length; i++) {
+            assessTypeData.add({
+                "typeId": data.types[i].id,
+                "assessType": rangeNameController[i].text,
+                "assessCode": data.types[i].code,
+                "assessMaxMarks": maxPercentageController[i].text,
+                "assessPassPercent": description2Controller[i].text
+            });
+          }
+          callApiSaveAssessment();
+        },
       ).paddingOnly(bottom: 30, left: 10, right: 10),
       body: Builder(builder: (context) {
         if (_isLoading) {
