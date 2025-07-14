@@ -68,6 +68,9 @@ dependencies:
   file_picker: ^6.1.1
   open_file_plus:
   webview_flutter: ^4.0.6
+  quill_html_editor:
+  flutter_widget_from_html: ^0.15.3
+
 
 
 dev_dependencies:

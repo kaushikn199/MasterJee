@@ -52,13 +52,13 @@ class AuthenticateFaceView extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  if (!faceController.canAuthenticate.value)
-                    CommonButton(
-                      text: "Mark Multiple Face",
-                      onPressed: () {
-                        Get.to(AuthenticateMultiFaceView());
-                      },
-                    ),
+                  // if (!faceController.canAuthenticate.value)
+                  //   CommonButton(
+                  //     text: "Mark Multiple Face",
+                  //     onPressed: () {
+                  //       Get.to(AuthenticateMultiFaceView());
+                  //     },
+                  //   ),
                   if (faceController.canAuthenticate.value)
                     CommonButton(
                       text: "Mark Attendance",

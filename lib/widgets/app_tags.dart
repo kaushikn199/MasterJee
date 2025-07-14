@@ -46,6 +46,8 @@ class AppTags {
   static const String applyLeave  = "Apply Leave";
   static const String upcoming  = "Upcoming";
   static const String content  = "Content";
+  static const String communication  = "Communication";
+  static const String notice  = "Notice";
   static const String hostel  = "Hostel";
   static const String hostelRooms  = "Hostel Rooms";
   static const String hostelName  = "Hostel Name";
@@ -59,7 +61,9 @@ class AppTags {
   static const String description  = "Description";
   static const String mealType  = "Meal Type";
   static const String add  = "Add";
+  static const String title  = "Title";
   static const String space  = " ";
+  static const String or  = "OR";
   static const String schedule  = "Schedule";
   static const String minutebook  = "Minutebook";
   static const String addMoreSlot  = "Add More slot";
@@ -101,6 +105,7 @@ class AssetsUtils {
   static const String leaveIcon = "assets/images/ic_leave.png";
   static const String upcomingIcon = "assets/images/ic_upcoming.png";
   static const String contentIcon = "assets/images/ic_content.png";
+  static const String communicationIcon = "assets/images/ic_notice.png";
   static const String hostelIcon = "assets/images/ic_hostel.png";
   static const String minutebookIcon = "assets/images/ic_minutebook.png";
   static const String addPtmIcon = "assets/images/ic_ptm_add.png";

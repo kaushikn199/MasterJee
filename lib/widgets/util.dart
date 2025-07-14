@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/widgets/text.dart';
@@ -52,6 +53,103 @@ buildPopupDialog(BuildContext context, items) {
     ],
   );
 }
+
+
+extension $DateTimeExtension on DateTime {
+  String toLocalString([String format = "yyyy-MM-dd hh:mm a"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toUtcString([String format = "yyyy-MM-dd hh:mm a"]) {
+    var strDate = DateFormat(format).format(toUtc());
+    return strDate;
+  }
+
+  String toLocalDateString([String format = "yyyy-MM-dd"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toLocalYMDDateString([String format = "yyyy/MM/dd"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toLocalMnyDateString([String format = "MMM dd, yyyy"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toLocalDMMYYDateString([String format = "dd MMMM yyyy"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toLocalDMYDateString([String format = "dd-MM-yyyy"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toLocalDMMYDateString([String format = "dd-MMM-yyyy"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toLocalMDateString([String format = "MMMM"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toLocalTimeString([String format = "hh:mm a"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toUTCTimeString([String format = "hh:mm a"]) {
+    var strDate = DateFormat(format).format(toUtc());
+    return strDate;
+  }
+
+  String toLocal24TimeString([String format = "HH:mm"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  String toLocal12TimeString([String format = "hh:mm a"]) {
+    var strDate = DateFormat(format).format(toLocal());
+    return strDate;
+  }
+
+  bool get isToday {
+    var now = DateTime.now();
+    return day == now.day && month == now.month && year == now.year;
+  }
+
+  bool isSameDay(DateTime dateTime) {
+    return day == dateTime.day && month == dateTime.month && year == dateTime.year;
+  }
+}
+
+DateTime fromLocalYMDDateString(String date, [String format = "yyyy/MM/dd"]) {
+  DateTime tempDate = DateFormat(format).parse(date);
+  return tempDate;
+}
+DateTime fromLocalYMDDateTimeString(String date, [String format = "yyyy-MM-dd hh:mm:ss"]) {
+  DateTime tempDate = DateFormat(format).parse(date);
+  return tempDate;
+}
+
+DateTime fromLocalDDMMMYYYDateString(String date, [String format = "dd-MMM-yyyy"]) {
+  DateTime tempDate = DateFormat(format).parse(date);
+  return tempDate;
+}
+
+DateTime fromLocalYMMDateString(String date, [String format = "yyyy-MM-dd"]) {
+  DateTime tempDate = DateFormat(format).parse(date);
+  return tempDate;
+}
+
 
 deletePopupDialog(BuildContext context, type) {
   return AlertDialog(
