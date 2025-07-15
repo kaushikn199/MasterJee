@@ -120,29 +120,24 @@ class ExamApi with ChangeNotifier {
     return AssessmentInfoResponse.fromJson(responseData);
   }
 
-  /*Future<PtmResponse> savePtm(
+  Future<ObservationInfoResponse> saveObservation(
       String userId,
-      String ptmTitle,
-      String date,
-      String remark,
-      List<Map<String, String>> slots) async {
+      String obsrvId,
+      String obsrvName,
+      String obsrvDescription,
+      List<Map<String, String>> parametersData)
+  async {
     Map<String, dynamic> body = {
       'userId': userId,
-      'ptmTitle': ptmTitle,
-      'date': date,
-      'remark': remark,
-      'slots': slots, // <-- List of maps here
+      'obsrvId': obsrvId,
+      'obsrvName': obsrvName,
+      'obsrvDescription': obsrvDescription,
+      'parametersData': parametersData,
     };
-
     print("body : ${body}");
-    final responseData = await ApiHelper.post(ApiHelper.savePtm, body);
+    final responseData = await ApiHelper.post(ApiHelper.saveObservation, body);
     print("responseData : ${responseData}");
-    return PtmResponse.fromJson(responseData);
-  }*/
-
-
-
-
-
+    return ObservationInfoResponse.fromJson(responseData);
+  }
 
 }

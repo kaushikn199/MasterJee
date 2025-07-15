@@ -56,7 +56,7 @@ class ObservationModel {
 class ObservationParamModel {
   final String id;
   final String cbseExamObservationId;
-  final String cbseObservationParameterId;
+  String cbseObservationParameterId;
   final String maximumMarks;
   final String description;
   final String? createdBy;
@@ -66,6 +66,7 @@ class ObservationParamModel {
   final String pvcopid;
   final String pname;
   String? selectedParam;
+  String? selectedParamId;
 
   ObservationParamModel({
      this.id = "",
@@ -80,6 +81,7 @@ class ObservationParamModel {
      this.pvcopid = "",
      this.pname = "",
      this.selectedParam = null,
+     this.selectedParamId = null,
   });
 
   factory ObservationParamModel.fromJson(Map<String, dynamic> json) {
@@ -97,6 +99,7 @@ class ObservationParamModel {
       pvcopid: json['pvcopid'] ?? '',
       pname: pname,
       selectedParam: pname.isNotEmpty ? pname : null,
+      selectedParamId: null,
     );
   }
 

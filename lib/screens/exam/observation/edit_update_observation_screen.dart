@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/class_timetable/add_lesson_plan_response.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/exam/ObservationResponse.dart';
 import 'package:masterjee/models/exam/observation/ObservationInfoResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
@@ -103,6 +106,41 @@ class _EditUpdateObservationScreenState extends State<EditUpdateObservationScree
   List<Lesson> lessonsMainList = [];
   int _indexLesson = 0;
 
+  List<Map<String, String>> parametersData = [];
+
+  Future<void> callApiSaveAssessment() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      ObservationInfoResponse data =
+      await Provider.of<ExamApi>(context, listen: false).saveObservation(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+        observationModel.id,
+        observationNameController.text,
+        descriptionController.text,
+        parametersData,
+      );
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+          Navigator.of(context).pop(true);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     //_ensureSlotController(0);
@@ -118,6 +156,18 @@ class _EditUpdateObservationScreenState extends State<EditUpdateObservationScree
         cornersRadius: 10,
         text: AppTags.add,
         onPressed: () {
+          for (int i = 0; i < paramsList.length; i++) {
+           // if(paramsList[i].selectedParamId != null) {
+              parametersData.add({
+                "prmvlId": paramsList[i].pvid , //observationInfo - parameters - id
+                "paramId": paramsList[i].cbseObservationParameterId?? "0", //allObservation - params - id
+                "paramMaxMarks": maxMarkController[i].text
+              });
+           // }
+          }
+          print(jsonEncode(parametersData));
+
+          callApiSaveAssessment();
         },
       ).paddingOnly(bottom: 30, left: 10, right: 10),
       body: Builder(builder: (context) {
@@ -257,6 +307,11 @@ class _EditUpdateObservationScreenState extends State<EditUpdateObservationScree
                     //  _selectedLesson = cd.name;
                      // observationModel.params[index].selectedParam = null;
                       paramsList[index].selectedParam = cd.name;
+                      paramsList[index].cbseObservationParameterId = cd.id;
+                      print("id : ${cd.id}");
+                      print("name : ${cd.name}");
+                      print("description : ${cd.description}");
+                      print("createdAt : ${cd.createdAt}");
                       /*for (int i = 0; i < parameterList.length; i++) {
                         if (parameterList[i].id == cd.id) {
                           _indexLesson = i;

@@ -95,16 +95,7 @@ class _EditUpdateAssessmentScreenState
     }
   }
 
-  List<Map<String, String>> assessTypeData = [
-    /*{
-      "fromTime": "09:00",
-      "toTime": "10:00",
-    },
-    {
-      "fromTime": "10:00",
-      "toTime": "11:00",
-    }*/
-  ];
+  List<Map<String, String>> assessTypeData = [];
 
   Future<void> callApiSaveAssessment() async {
     setState(() {
@@ -122,15 +113,6 @@ class _EditUpdateAssessmentScreenState
       if (data.result) {
         setState(() {
           _isLoading = false;
-
-         // gradeNameController.clear();
-         // descriptionController.clear();
-        //  assessTypeData.clear();
-
-        //  rangeNameController.clear();
-        //  minimumPercentageController.clear();
-        //  maxPercentageController.clear();
-        //  description2Controller.clear();
 
           CommonFunctions.showWarningToast(data.message);
           Navigator.of(context).pop(true);
