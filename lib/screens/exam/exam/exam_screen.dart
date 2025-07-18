@@ -3,7 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/exam/ExamResponse.dart';
+import 'package:masterjee/models/exam/exam/ExamStudentsResponse.dart';
+import 'package:masterjee/models/exam/exam/ExamSubjectsResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/screens/exam/exam/add_score_screen.dart';
@@ -25,14 +28,68 @@ class ExamScreen extends StatefulWidget {
 class _ExamScreenState extends State<ExamScreen> {
 
   var _isLoading = false;
- // late List<int> followupList = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   late List<Exam> examList = [];
-
+  late List<Student> examStudentsList = [];
+  late List<ExamSubjectData> examSubjectDataList = [];
 
   @override
   void initState() {
     callApiAllExams();
     super.initState();
+  }
+
+  Future<void> callApiExamSubjects(String examId) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      ExamSubjectResponse data =
+      await Provider.of<ExamApi>(context, listen: false).examSubjects(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          examId
+      );
+      if (data.result) {
+        setState(() {
+          examSubjectDataList = data.data;
+          showCustomSubjectDialog();
+          _isLoading = false;
+        });
+        return;
+      }else{
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      _isLoading = false;
+    }
+  }
+
+  Future<void> callApiExamStudents(String examId,BuildContext c) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      ExamStudentsResponse data =
+      await Provider.of<ExamApi>(context, listen: false).getExamStudents(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          examId
+      );
+      if (data.result) {
+        setState(() {
+          examStudentsList = data.data;
+          showCustomStudentDialog(c);
+          _isLoading = false;
+        });
+        return;
+      }else{
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      _isLoading = false;
+    }
   }
 
   Future<void> callApiAllExams() async {
@@ -59,6 +116,34 @@ class _ExamScreenState extends State<ExamScreen> {
       }
     } catch (error) {
       _isLoading = false;
+    }
+  }
+
+  Future<void> callApiGenerateRank(String examId) async {
+   /* setState(() {
+      _isLoading = true;
+    });*/
+    try {
+      ExamResponse data =
+      await Provider.of<ExamApi>(context, listen: false).generateRank(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          examId,
+      );
+      if (data.result) {
+        setState(() {
+          //_isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+        });
+        return;
+      }else{
+        /*setState(() {
+          _isLoading = false;
+        });*/
+        CommonFunctions.showWarningToast(data.message);
+      }
+    } catch (error) {
+      CommonFunctions.showWarningToast(error.toString());
+      //_isLoading = false;
     }
   }
 
@@ -172,7 +257,7 @@ class _ExamScreenState extends State<ExamScreen> {
                   children: [
                     InkWell(
                       onTap: () {
-                        showCustomStudentDialog();
+                        callApiExamStudents(data.id,context);
                       },
                       child: SvgPicture.asset(
                         colorFilter: const ColorFilter.mode(
@@ -200,7 +285,7 @@ class _ExamScreenState extends State<ExamScreen> {
                     ),
                     InkWell(
                       onTap: () {
-                        showCustomSubjectDialog();
+                        callApiExamSubjects(data.id);
                       },
                       child: SvgPicture.asset(
                         colorFilter: const ColorFilter.mode(
@@ -227,7 +312,9 @@ class _ExamScreenState extends State<ExamScreen> {
                       ).paddingAll(10),
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        callApiGenerateRank(data.id);
+                      },
                       child: SvgPicture.asset(
                         colorFilter: const ColorFilter.mode(
                           Colors.black,
@@ -238,7 +325,7 @@ class _ExamScreenState extends State<ExamScreen> {
                         height: 15.sp,
                       ).paddingAll(10),
                     ),
-                    InkWell(
+                    /*InkWell(
                       onTap: () {},
                       child: SvgPicture.asset(
                         colorFilter: const ColorFilter.mode(
@@ -249,7 +336,7 @@ class _ExamScreenState extends State<ExamScreen> {
                         width: 15.sp,
                         height: 15.sp,
                       ).paddingAll(10),
-                    )
+                    )*/
                   ],
                 )
               ],
@@ -271,20 +358,9 @@ class _ExamScreenState extends State<ExamScreen> {
     ]);
   }
 
-  List<Map<String, dynamic>> items = [
-    {'id': 1, 'name': '918772 Aishwarya', 'isChecked': false},
-    {'id': 2, 'name': '78299 Dhanashree', 'isChecked': false},
-    {'id': 3, 'name': '12365 Eshwar L', 'isChecked': false},
-  ];
+  bool _isChecked = false;
 
-  List<Map<String, dynamic>> items1 = [
-    {'date': "2024-02-16", 'name': 'business management', 'isChecked': false},
-    {'date': "	2024-02-05", 'name': 'Science', 'isChecked': false},
-  ];
-
-  bool _isChecked = true;
-
-  void showCustomStudentDialog() {
+  void showCustomStudentDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -292,14 +368,13 @@ class _ExamScreenState extends State<ExamScreen> {
           insetPadding: EdgeInsets.zero,
           child: LayoutBuilder(
             builder: (context, constraints) {
-              return Container(
-                width: MediaQuery.of(context).size.width - 30.sp,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+              return StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width - 30.sp,
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Row(
                           children: [
@@ -308,48 +383,47 @@ class _ExamScreenState extends State<ExamScreen> {
                               onChanged: (bool? value) {
                                 setState(() {
                                   _isChecked = value ?? false;
+                                  // Update all students' checkboxes
+                                  for (var student in examStudentsList) {
+                                    student.isCheck = _isChecked;
+                                  }
                                 });
                               },
                               checkColor: Colors.white,
                               activeColor: Colors.green,
                             ),
-                            CommonText.bold(
-                              'All',
-                              size: 14.sp,
-                              color: colorBlack,
-                              overflow: TextOverflow.fade,
-                            ),
+                            CommonText.bold('All',
+                                size: 14.sp, color: colorBlack),
+                            gap(50.w),
+                            CommonText.bold('Student',
+                                size: 14.sp, color: colorBlack),
                           ],
                         ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: examStudentsList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return InkWell(
+                              onTap: () {},
+                              child: studentRow(examStudentsList[index], setState),
+                            );
+                          },
+                        ),
                         gap(50.w),
-                        CommonText.bold('Student',
-                            size: 14.sp,
-                            color: colorBlack,
-                            overflow: TextOverflow.fade),
+                        CommonButton(
+                          cornersRadius: 30,
+                          text: AppTags.add,
+                          onPressed: () {
+                            for(int i = 0 ; i < examStudentsList.length;i++){
+                              print("isCheck : ${examStudentsList[i].isCheck}");
+                            }
+                            // Handle save
+                          },
+                        ).paddingOnly(left: 15, right: 15, bottom: 10),
                       ],
                     ),
-                    ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: items.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return InkWell(
-                              onTap: () {
-                                //Navigator.push(context);
-                              },
-                              child: studentRow(items[index])
-                          );
-                        }),
-                    gap(50.w),
-                    CommonButton(
-                      cornersRadius: 30,
-                      text: AppTags.add,
-                      onPressed: () {
-                        setState(() {
-                        });
-                      },
-                    ).paddingOnly(left: 15,right: 15,bottom: 10) ,
-                  ],
-                ),
+                  );
+                },
               );
             },
           ),
@@ -358,7 +432,8 @@ class _ExamScreenState extends State<ExamScreen> {
     );
   }
 
-  Widget studentRow(Map<String, dynamic> data){
+
+  Widget studentRow(Student data, StateSetter setState) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -367,10 +442,10 @@ class _ExamScreenState extends State<ExamScreen> {
         Transform.scale(
           scale: 0.85,
           child: Checkbox(
-            value: _isChecked,
+            value: data.isCheck,
             onChanged: (bool? value) {
               setState(() {
-                _isChecked = value ?? false;
+                data.isCheck = value ?? false;
               });
             },
             checkColor: Colors.white,
@@ -379,9 +454,9 @@ class _ExamScreenState extends State<ExamScreen> {
             visualDensity: VisualDensity.compact,
           ),
         ),
-        const SizedBox(width: 80,height: 0,),
+        const SizedBox(width: 80, height: 0),
         CommonText.medium(
-          data['name'],
+          "${data.admissionNo} ${data.firstname} ${data.middlename}",
           size: 14.sp,
           color: colorBlack,
           overflow: TextOverflow.fade,
@@ -389,6 +464,7 @@ class _ExamScreenState extends State<ExamScreen> {
       ],
     );
   }
+
 
   void showCustomSubjectDialog() {
     showDialog(
@@ -403,13 +479,13 @@ class _ExamScreenState extends State<ExamScreen> {
                 padding: const EdgeInsets.only(left: 16,right: 16,top: 16,bottom: 25),
                 child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: items1.length,
+                    itemCount: examSubjectDataList.length,
                     itemBuilder: (BuildContext context, int index) {
                       return InkWell(
                           onTap: () {
                             //Navigator.push(context);
                           },
-                          child: subjectRow(items1[index],context)
+                          child: subjectRow(examSubjectDataList[index],context)
                       );
                     }),
               );
@@ -420,11 +496,11 @@ class _ExamScreenState extends State<ExamScreen> {
     );
   }
 
-  Widget subjectRow(Map<String, dynamic> data,BuildContext c){
+  Widget subjectRow(ExamSubjectData data,BuildContext c){
     return InkWell(
       onTap: () {
         Navigator.of(c).pop();
-        Navigator.of(context).pushNamed(AddScoreScreen.routeName);
+        Navigator.of(context).pushNamed(AddScoreScreen.routeName,arguments: data);
       },
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,14 +510,14 @@ class _ExamScreenState extends State<ExamScreen> {
             fit: FlexFit.tight,
             flex: 1,
             child: CommonText.medium(
-              data["name"],
+              data.name,
               size: 14.sp,
               color: colorBlack,
               overflow: TextOverflow.fade,
             ),
           ),
           CommonText.medium(
-            data["date"],
+           data.date,
             size: 14.sp,
             color: colorBlack,
             overflow: TextOverflow.fade,

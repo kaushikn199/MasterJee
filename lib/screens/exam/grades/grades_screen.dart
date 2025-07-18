@@ -133,7 +133,7 @@ class _GradesScreenState extends State<GradesScreen> {
                     InkWell(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, EditUpdateGradeScreen.routeName);
+                            context, EditUpdateGradeScreen.routeName,arguments: data.id);
                       },
                       child: Container(
                         decoration: BoxDecoration(

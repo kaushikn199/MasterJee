@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/attendance/class_attendance_model.dart';
+import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/models/exam/observation/ObservationInfoResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/exam/assessment/assesment_screen.dart';
 import 'package:masterjee/screens/exam/exam/exam_screen.dart';
@@ -13,6 +18,7 @@ import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class ExamMainScreen extends StatefulWidget {
   const ExamMainScreen({super.key});
@@ -31,6 +37,41 @@ class _ExamMainScreenState extends State<ExamMainScreen> with WidgetsBindingObse
   List<int> contentData = [];
   int selectedIndex = 0;
 
+  Future<void> callApiSaveTerm() async {
+   /* setState(() {
+      _isLoading = true;
+    });*/
+    try {
+      ObservationInfoResponse data = await Provider.of<ExamApi>(context, listen: false)
+          .saveTerm(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          termNameController.text,
+          termCodeController.text,
+        termDescriptionController.text,
+      );
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          termNameController.text = "";
+          termCodeController.text = "";
+          termDescriptionController.text = "";
+          CommonFunctions.showWarningToast(data.message);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+        });
+      }
+    } catch (error) {
+      print("callApiExamSchedule_error : $error");
+      /*setState(() {
+        _isLoading = false;
+      });*/
+    }
+  }
+
   @override
   void initState() {
     tabController = TabController(length: 5, vsync: this);
@@ -47,6 +88,7 @@ class _ExamMainScreenState extends State<ExamMainScreen> with WidgetsBindingObse
 
   late var termNameController = TextEditingController();
   late var termCodeController = TextEditingController();
+  late var termDescriptionController = TextEditingController();
 
 
   void showTermsDialog() {
@@ -98,10 +140,10 @@ class _ExamMainScreenState extends State<ExamMainScreen> with WidgetsBindingObse
                       maxLines: 3,
                       hintText: 'Description',
                       isReadonly: false,
-                      controller: termCodeController,
+                      controller: termDescriptionController,
                       keyboardType: TextInputType.name,
                       onSave: (value) {
-                        termCodeController.text = value as String;
+                        termDescriptionController.text = value as String;
                       },
                     ),
                     gap(10.0),
@@ -110,6 +152,17 @@ class _ExamMainScreenState extends State<ExamMainScreen> with WidgetsBindingObse
                       text: AppTags.add,
                       onPressed: () {
                         setState(() {
+
+                          if(termNameController.text == ""){
+                            CommonFunctions.showWarningToast("Please enter term name");
+                          }else if(termCodeController.text == ""){
+                            CommonFunctions.showWarningToast("Please enter term code");
+                          }else if(termDescriptionController.text == ""){
+                            CommonFunctions.showWarningToast("Please enter term description");
+                          }else{
+                            callApiSaveTerm();
+                            Navigator.of(context).pop();
+                          }
                         });
                       },
                     ).paddingOnly(left: 15,right: 15,bottom: 10) ,

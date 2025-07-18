@@ -80,10 +80,18 @@ class ApiHelper {
   static const allObservation = 'allObservation';
   static const assessmentInfo = 'assessmentInfo';
   static const saveParameter = 'saveParameter';
+  static const assignObservation = 'assignObservation';
   static const examSchedule = 'examSchedule';
   static const observationInfo = 'observationInfo';
   static const saveAssessment = 'saveAssessment';
   static const saveObservation = 'saveObservation';
+  static const saveTerm = 'saveTerm';
+  static const generateRank = 'generateRank';
+  static const getExamStudents = 'getExamStudents';
+  static const examSubjects = 'examSubjects';
+  static const examScore = 'examScore';
+  static const allTerms = 'allTerms';
+  static const gradesInfo = 'gradesInfo';
 
   static const Map<String, String> defaultHeaders = {
     'Client-Service': "smartschool",

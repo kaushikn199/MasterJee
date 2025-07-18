@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
-import 'package:masterjee/models/class_timetable/add_lesson_plan_response.dart';
 import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/exam/ObservationResponse.dart';
+import 'package:masterjee/models/exam/observation/AllTermsResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/screens/exam/observation/edit_update_observation_screen.dart';
@@ -27,8 +27,8 @@ class _ObservationScreenState extends State<ObservationScreen> {
   var _isLoading = false;
   var _dialogLoading = false;
 
-  //List<int> ptmList = [0, 1, 2, 3, 4];
   late List<ObservationModel> observationList = [];
+  late List<TermData> termList = [];
 
   late var paramController = TextEditingController();
   late var descriptionController = TextEditingController();
@@ -36,7 +36,44 @@ class _ObservationScreenState extends State<ObservationScreen> {
   @override
   void initState() {
     callApiAllObservation();
+    callApiAllTerms();
     super.initState();
+  }
+
+  Future<void> callApiAllTerms() async {
+    try {
+      TermListResponse data = await Provider.of<ExamApi>(context, listen: false)
+          .allTerms(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString());
+      if (data.result) {
+        setState(() {
+          termList = data.data ?? [];
+        });
+        return;
+      }
+    } catch (error) {}
+  }
+
+  Future<void> callApiAssignObservation(String obsrvId, String termId,BuildContext c) async {
+    try {
+      ObservationResponse data =
+          await Provider.of<ExamApi>(context, listen: false).assignObservation(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              obsrvId,
+              termId,
+              descriptionController.text);
+      if (data.result) {
+        setState(() {
+          _indexTerm = -1;
+          _indexObservation = -1;
+          _selectedTerm = null;
+          _selectedTopic = null;
+          CommonFunctions.showWarningToast(data.message);
+          Navigator.of(c).pop();
+        });
+        return;
+      }
+    } catch (error) {}
   }
 
   Future<void> callApiAllObservation() async {
@@ -63,31 +100,33 @@ class _ObservationScreenState extends State<ObservationScreen> {
     }
   }
 
-  Future<void> callApiSaveParameter(String paramName,BuildContext parentContext,BuildContext context) async {
+  Future<void> callApiSaveParameter(String paramName,
+      BuildContext parentContext, BuildContext context) async {
     setState(() {
       _dialogLoading = true;
     });
     try {
-      ObservationResponse data =
-      await Provider.of<ExamApi>(parentContext, listen: false).saveParameter(
-          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-          paramName
-      );
+      ObservationResponse data = await Provider.of<ExamApi>(parentContext,
+              listen: false)
+          .saveParameter(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              paramName);
       if (data.result) {
         setState(() {
           _dialogLoading = false;
           paramController.text = "";
           Navigator.pop(context);
-          CommonFunctions.showWarningToast(data.message ?? "Something went wrong");
+          CommonFunctions.showWarningToast(
+              data.message ?? "Something went wrong");
         });
         return;
       } else {
         setState(() {
           _dialogLoading = false;
-          CommonFunctions.showWarningToast(data.message ?? "Something went wrong");
+          CommonFunctions.showWarningToast(
+              data.message ?? "Something went wrong");
         });
       }
-
     } catch (error) {
       setState(() {
         print(error.toString());
@@ -96,6 +135,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
       });
     }
   }
+
   void showParameterDialog(BuildContext parentContext) {
     showDialog(
       context: parentContext,
@@ -130,20 +170,23 @@ class _ObservationScreenState extends State<ObservationScreen> {
                     ),
                     gap(50.0),
                     SizedBox(
-                      child: _dialogLoading ? const Center(child: CircularProgressIndicator() ) :
-                      CommonButton(
-                        cornersRadius: 30,
-                        text: AppTags.add,
-                        onPressed: () {
-                          if(paramController.text == null || paramController.text == ""){
-                            CommonFunctions.showWarningToast("Please enter param name");
-                          }else{
-                            callApiSaveParameter(paramController.text,parentContext,context);
-                          }
-                        },
-                      ),
-                    )
-                    ,
+                      child: _dialogLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : CommonButton(
+                              cornersRadius: 30,
+                              text: AppTags.add,
+                              onPressed: () {
+                                if (paramController.text == null ||
+                                    paramController.text == "") {
+                                  CommonFunctions.showWarningToast(
+                                      "Please enter param name");
+                                } else {
+                                  callApiSaveParameter(paramController.text,
+                                      parentContext, context);
+                                }
+                              },
+                            ),
+                    ),
                   ],
                 ),
               );
@@ -154,173 +197,169 @@ class _ObservationScreenState extends State<ObservationScreen> {
     );
   }
 
-  String? _selectedLesson;
-  String? _selectedTopic;
-  List<Lesson> lessonsMainList = [];
-  int _indexLesson = 0;
+  String? _selectedTerm = null;
+  String? _selectedTopic = null;
+  int _indexTerm = -1;
+  int _indexObservation = -1;
 
-  void showAssignDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          insetPadding: EdgeInsets.zero,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: kBackgroundColor, // background color
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.transparent,
-                    width: 0,
+  String? _selectedObservation;
+
+  Widget showAssignDialog(BuildContext context) {
+    var widthSize = MediaQuery.of(context).size.width;
+    return AlertDialog(
+      backgroundColor: kSecondBackgroundColor,
+      surfaceTintColor: kSecondBackgroundColor,
+      insetPadding: const EdgeInsets.only(left: 10, right: 10),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      content: StatefulBuilder(
+        builder: (context, setState) {
+          return SizedBox(
+            width: widthSize,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                gap(10.0),
+                Card(
+                  elevation: 0.1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.sp),
+                  ),
+                  color: colorWhite,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    child: DropdownButton(
+                      hint: const CommonText('Select observation',
+                          size: 14, color: Colors.black54),
+                      value: _selectedObservation,
+                      icon: const Card(
+                        elevation: 0.1,
+                        color: colorWhite,
+                        child: Icon(Icons.keyboard_arrow_down_outlined),
+                      ),
+                      underline: const SizedBox(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedObservation = value.toString();
+                        });
+                      },
+                      isExpanded: true,
+                      items: observationList.map((cd) {
+                        return DropdownMenuItem(
+                          value: cd.id,
+                          onTap: () {
+                            setState(() {
+                              _selectedObservation = null;
+                              _selectedObservation = cd.name;
+                              for (int i = 0; i < observationList.length; i++) {
+                                if (observationList[i].id == cd.id) {
+                                  _indexObservation = i;
+                                  break;
+                                }
+                              }
+                            });
+                          },
+                          child: Text(
+                            cd.name.toString(),
+                            style: const TextStyle(
+                              color: colorBlack,
+                              fontSize: 14,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
-                width: MediaQuery.of(context).size.width - 30.sp,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    gap(10.0),
-                    Card(
-                      elevation: 0.1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.sp),
+                gap(5.0),
+                Card(
+                  elevation: 0.1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.sp),
+                  ),
+                  color: colorWhite,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    child: DropdownButton(
+                      hint: const CommonText('Select team',
+                          size: 14, color: Colors.black54),
+                      value: _selectedTerm,
+                      icon: const Card(
+                        elevation: 0.1,
+                        color: colorWhite,
+                        child: Icon(Icons.keyboard_arrow_down_outlined),
                       ),
-                      color: colorWhite,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 2),
-                        child: DropdownButton(
-                          hint: const CommonText('Select observation',
-                              size: 14, color: Colors.black54),
-                          value: _selectedLesson,
-                          icon: const Card(
-                            elevation: 0.1,
-                            color: colorWhite,
-                            child: Icon(Icons.keyboard_arrow_down_outlined),
-                          ),
-                          underline: const SizedBox(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedLesson = null;
-                              _selectedLesson = value.toString();
-                              _selectedTopic = null;
-                            });
-                          },
-                          isExpanded: true,
-                          items: lessonsMainList.map((cd) {
-                            return DropdownMenuItem(
-                              value: cd.id,
-                              onTap: () {
-                                setState(() {
-                                  _selectedLesson = cd.name;
-                                  for (int i = 0;
-                                      i < lessonsMainList.length;
-                                      i++) {
-                                    if (lessonsMainList[i].id == cd.id) {
-                                      _indexLesson = i;
-                                      _selectedTopic = null;
-                                      //_selectedLessonId = lessonsMainList[i].id;
-                                      break;
-                                    }
-                                  }
-                                });
-                              },
-                              child: Text(
-                                cd.name.toString(),
-                                style: const TextStyle(
-                                  color: colorBlack,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                    gap(5.0),
-                    Card(
-                      elevation: 0.1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.sp),
-                      ),
-                      color: colorWhite,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 2),
-                        child: DropdownButton(
-                          hint: const CommonText('Select team',
-                              size: 14, color: Colors.black54),
-                          value: _selectedLesson,
-                          icon: const Card(
-                            elevation: 0.1,
-                            color: colorWhite,
-                            child: Icon(Icons.keyboard_arrow_down_outlined),
-                          ),
-                          underline: const SizedBox(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedLesson = null;
-                              _selectedLesson = value.toString();
-                              _selectedTopic = null;
-                            });
-                          },
-                          isExpanded: true,
-                          items: lessonsMainList.map((cd) {
-                            return DropdownMenuItem(
-                              value: cd.id,
-                              onTap: () {
-                                setState(() {
-                                  _selectedLesson = cd.name;
-                                  for (int i = 0;
-                                      i < lessonsMainList.length;
-                                      i++) {
-                                    if (lessonsMainList[i].id == cd.id) {
-                                      _indexLesson = i;
-                                      _selectedTopic = null;
-                                      //_selectedLessonId = lessonsMainList[i].id;
-                                      break;
-                                    }
-                                  }
-                                });
-                              },
-                              child: Text(
-                                cd.name.toString(),
-                                style: const TextStyle(
-                                  color: colorBlack,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                    gap(5.0),
-                    CustomTextField(
-                      maxLines: 2,
-                      hintText: 'Description',
-                      isReadonly: false,
-                      controller: descriptionController,
-                      keyboardType: TextInputType.name,
-                      onSave: (value) {
-                        descriptionController.text = value as String;
+                      underline: const SizedBox(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedTerm = value.toString();
+                        });
                       },
+                      isExpanded: true,
+                      items: termList.map((cd) {
+                        return DropdownMenuItem(
+                          value: cd.id,
+                          onTap: () {
+                            setState(() {
+                              _selectedTerm = cd.name;
+                              for (int i = 0; i < termList.length; i++) {
+                                if (termList[i].id == cd.id) {
+                                  _indexTerm = i;
+                                  break;
+                                }
+                              }
+                            });
+                          },
+                          child: Text(
+                            cd.name.toString(),
+                            style: const TextStyle(
+                              color: colorBlack,
+                              fontSize: 14,
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
-                    gap(50.0),
-                    CommonButton(
-                      cornersRadius: 30,
-                      text: AppTags.add,
-                      onPressed: () {},
-                    ),
-                  ],
+                  ),
                 ),
-              );
-            },
-          ),
-        );
-      },
+                gap(5.0),
+                CustomTextField(
+                  maxLines: 2,
+                  hintText: 'Description',
+                  isReadonly: false,
+                  controller: descriptionController,
+                  keyboardType: TextInputType.name,
+                  onSave: (value) {
+                    descriptionController.text = value as String;
+                  },
+                ),
+                gap(50.0),
+                CommonButton(
+                  cornersRadius: 30,
+                  text: AppTags.add,
+                  onPressed: () {
+                    if (_indexObservation == -1) {
+                      CommonFunctions.showWarningToast(
+                          "Please Select Observation");
+                    } else if (_indexTerm == -1) {
+                      CommonFunctions.showWarningToast("Please Select Term");
+                    } else if (descriptionController.text == "") {
+                      CommonFunctions.showWarningToast(
+                          "Please enter description");
+                    } else {
+                      callApiAssignObservation(
+                          observationList[_indexObservation].id,
+                          termList[_indexTerm].id,context);
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -383,7 +422,11 @@ class _ObservationScreenState extends State<ObservationScreen> {
               Flexible(
                   child: InkWell(
                 onTap: () {
-                  showAssignDialog();
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        showAssignDialog(context),
+                  );
                 },
                 child: Center(
                   child: Container(
@@ -461,7 +504,8 @@ class _ObservationScreenState extends State<ObservationScreen> {
                     InkWell(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, EditUpdateObservationScreen.routeName,arguments: data);
+                            context, EditUpdateObservationScreen.routeName,
+                            arguments: data);
                       },
                       child: Container(
                         decoration: BoxDecoration(
