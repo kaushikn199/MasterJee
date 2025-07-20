@@ -5,6 +5,8 @@ import 'package:masterjee/models/exam/ExamResponse.dart';
 import 'package:masterjee/models/exam/GhradeResponse.dart';
 import 'package:masterjee/models/exam/ObservationResponse.dart';
 import 'package:masterjee/models/exam/assesment/assessment_info/AssessmentInfoResponse.dart';
+import 'package:masterjee/models/exam/exam/AllExamAssessmentsResponse.dart';
+import 'package:masterjee/models/exam/exam/ExamAssignedStudentsResponse.dart';
 import 'package:masterjee/models/exam/exam/ExamScoreResponse.dart';
 import 'package:masterjee/models/exam/exam/ExamStudentsResponse.dart';
 import 'package:masterjee/models/exam/exam/ExamSubjectsResponse.dart';
@@ -238,6 +240,23 @@ class ExamApi with ChangeNotifier {
     return ExamScoreResponse.fromJson(responseData);
   }
 
+
+  Future<ExamScoreResponse> saveExamScore(
+      String userId,
+      String examTimetableId,
+      List<Map<String, dynamic>> studentsData)
+  async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'examTimetableId': examTimetableId,
+      'studentsData': studentsData
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveExamScore, body);
+    print("responseData : ${responseData}");
+    return ExamScoreResponse.fromJson(responseData);
+  }
+
   Future<GradesInfoResponse> gradesInfo(String userId,String gradeId)
   async {
     Map<String, dynamic> body = {
@@ -248,6 +267,98 @@ class ExamApi with ChangeNotifier {
     final responseData = await ApiHelper.post(ApiHelper.gradesInfo, body);
     print("responseData : ${responseData}");
     return GradesInfoResponse.fromJson(responseData);
+  }
+
+  Future<GradesInfoResponse> saveGrade(
+      String userId,
+      String gradeId,
+      String gradeName,
+      String gradeDescription,
+      List<Map<String, dynamic>> rangesData)
+  async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'gradeId': gradeId,
+      'gradeName': gradeName,
+      'gradeDescription': gradeDescription,
+      'rangesData': rangesData,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveGrade, body);
+    print("responseData : ${responseData}");
+    return GradesInfoResponse.fromJson(responseData);
+  }
+
+
+  Future<ExamAssignedStudentsResponse> getExamAssignedStudents(
+      String userId,
+      String examId)
+  async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'examId': examId};
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.getExamAssignedStudents, body);
+    print("responseData : ${responseData}");
+    return ExamAssignedStudentsResponse.fromJson(responseData);
+  }
+
+  Future<ExamAssignedStudentsResponse> addExamAttendance(
+      String userId,
+      String examId,
+      String etdays,
+      List<Map<String, dynamic>> attendances
+      )
+  async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'examId': examId,
+      'etdays': etdays,
+      'attendances': attendances,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.addExamAttendance, body);
+    print("responseData : ${responseData}");
+    return ExamAssignedStudentsResponse.fromJson(responseData);
+  }
+
+  Future<AllExamAssessmentsResponse> allExamAssessments(String userId,String examId)
+  async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'examId': examId
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.allExamAssessments, body);
+    print("responseData : ${responseData}");
+    return AllExamAssessmentsResponse.fromJson(responseData);
+  }
+
+  Future<AllExamAssessmentsResponse> saveExamSubjects(
+      String userId,
+      String examId,
+      String subjectId,
+      String examDate,
+      String examTime,
+      String duration,
+      String roomNumber,
+      List<Map<String, dynamic>> assessData
+      )
+  async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'examId': examId,
+      'subjectId': subjectId,
+      'examDate': examDate,
+      'examTime': examTime,
+      'duration': duration,
+      'roomNumber': roomNumber,
+      'assessData': assessData,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveExamSubjects, body);
+    print("responseData : ${responseData}");
+    return AllExamAssessmentsResponse.fromJson(responseData);
   }
 
 }

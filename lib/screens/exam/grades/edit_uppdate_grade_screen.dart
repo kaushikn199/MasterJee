@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/exam/grades/GradesInfoResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
@@ -47,6 +48,8 @@ class _EditUpdateGradeScreenState extends State<EditUpdateGradeScreen> {
   bool _isInitialized = false;
   String gradeId = "";
 
+  List<Map<String, dynamic>> rangesData = [];
+
   @override
   void didChangeDependencies() {
     if (!_isInitialized) {
@@ -55,6 +58,38 @@ class _EditUpdateGradeScreenState extends State<EditUpdateGradeScreen> {
       _isInitialized = true;
     }
     super.didChangeDependencies();
+  }
+
+  Future<void> callApiSaveGrade() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      GradesInfoResponse data =
+          await Provider.of<ExamApi>(context, listen: false).saveGrade(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              gradeId,
+              gradeNameController.text,
+              descriptionController.text,
+              rangesData);
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+          Navigator.of(context).pop(true);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> callApiGradesInfo() async {
@@ -103,7 +138,18 @@ class _EditUpdateGradeScreenState extends State<EditUpdateGradeScreen> {
         paddingHorizontal: 7,
         cornersRadius: 10,
         text: AppTags.add,
-        onPressed: () {},
+        onPressed: () {
+          for (int i = 0; i < data.ranges.length; i++) {
+            rangesData.add({
+              "rangeId": data.ranges[i].id,
+              "rname": rangeNameController[i].text,
+              "rangeMini": minimumPercentageController[i].text,
+              "rangeMax": maxPercentageController[i].text,
+              "rangeDescription": description2Controller[i].text
+            });
+          }
+          callApiSaveGrade();
+        },
       ).paddingOnly(bottom: 30, left: 10, right: 10),
       body: Builder(builder: (context) {
         if (_isLoading) {

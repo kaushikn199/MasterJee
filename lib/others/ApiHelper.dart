@@ -90,8 +90,14 @@ class ApiHelper {
   static const getExamStudents = 'getExamStudents';
   static const examSubjects = 'examSubjects';
   static const examScore = 'examScore';
+  static const saveExamScore = 'saveExamScore';
   static const allTerms = 'allTerms';
   static const gradesInfo = 'gradesInfo';
+  static const saveGrade = 'saveGrade';
+  static const getExamAssignedStudents = 'getExamAssignedStudents';
+  static const addExamAttendance = 'addExamAttendance';
+  static const allExamAssessments = 'allExamAssessments';
+  static const saveExamSubjects = 'saveExamSubjects';
 
   static const Map<String, String> defaultHeaders = {
     'Client-Service': "smartschool",

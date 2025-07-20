@@ -29,6 +29,7 @@ import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/exam/assessment/assesment_screen.dart';
 import 'package:masterjee/screens/exam/assessment/edit_update_assesment_screen.dart';
+import 'package:masterjee/screens/exam/exam/add_exam_attendance_screen.dart';
 import 'package:masterjee/screens/exam/exam/add_score_screen.dart';
 import 'package:masterjee/screens/exam/exam/add_subject_screen.dart';
 import 'package:masterjee/screens/exam/exam/exam_screen.dart';
@@ -223,6 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         AddSubjectScreen.routeName: (ctx) => const AddSubjectScreen(),
                         AddScoreScreen.routeName: (ctx) => const AddScoreScreen(),
                         EditUpdateAssessmentScreen.routeName: (ctx) => const EditUpdateAssessmentScreen(),
+                        AddExamAttendanceScreen.routeName: (ctx) => const AddExamAttendanceScreen(),
                       },
                       home: const SplashScreen()),
                 );

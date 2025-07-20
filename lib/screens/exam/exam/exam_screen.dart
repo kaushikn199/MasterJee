@@ -16,6 +16,8 @@ import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
 
+import 'add_exam_attendance_screen.dart';
+
 class ExamScreen extends StatefulWidget {
   const ExamScreen({super.key});
 
@@ -271,7 +273,7 @@ class _ExamScreenState extends State<ExamScreen> {
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).pushNamed(AddSubjectScreen.routeName);
+                        Navigator.of(context).pushNamed(AddSubjectScreen.routeName,arguments: data);
                       },
                       child: SvgPicture.asset(
                         colorFilter: const ColorFilter.mode(
@@ -299,7 +301,7 @@ class _ExamScreenState extends State<ExamScreen> {
                     ),
                     InkWell(
                       onTap: () {
-
+                        Navigator.of(context).pushNamed(AddExamAttendanceScreen.routeName,arguments: data);
                       },
                       child: SvgPicture.asset(
                         colorFilter: const ColorFilter.mode(

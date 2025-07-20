@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/exam/exam/ExamScoreResponse.dart';
 import 'package:masterjee/models/exam/exam/ExamSubjectsResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
@@ -23,12 +26,11 @@ class AddScoreScreen extends StatefulWidget {
 }
 
 class _AddScoreScreenState extends State<AddScoreScreen> {
-
   var _isLoading = false;
   late List<TextEditingController> nameController = [];
   late List<TextEditingController> notesController = [];
   late List<List<TextEditingController>> theoryMarkControllers = [];
-  List<Map<String, String>> studentsData = [];
+  List<Map<String, dynamic>> studentsData = [];
 
   @override
   void initState() {
@@ -37,7 +39,6 @@ class _AddScoreScreenState extends State<AddScoreScreen> {
 
   bool _isInitialized = false;
   late ExamSubjectData examSubjectData;
-
   late List<ExamScoreData> examScoreList = [];
 
   @override
@@ -50,6 +51,37 @@ class _AddScoreScreenState extends State<AddScoreScreen> {
         callApiExamScore();
       }
       _isInitialized = true;
+    }
+  }
+
+  Future<void> callApiSaveExamScore(String examTimetableId) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      ExamScoreResponse data =
+          await Provider.of<ExamApi>(context, listen: false).saveExamScore(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              examTimetableId,
+              studentsData);
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          studentsData.clear();
+          CommonFunctions.showWarningToast(data.message);
+          //Navigator.of(context).pop(true);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -67,10 +99,12 @@ class _AddScoreScreenState extends State<AddScoreScreen> {
         setState(() {
           examScoreList = data.data;
           for (var student in examScoreList) {
-            nameController.add(TextEditingController(text: student.studentName));
+            nameController
+                .add(TextEditingController(text: student.studentName));
             notesController.add(TextEditingController(text: student.notes));
 
-            List<TextEditingController> scoreControllers = student.assessmentScores
+            List<TextEditingController> scoreControllers = student
+                .assessmentScores
                 .map((score) => TextEditingController(text: score.score ?? ""))
                 .toList();
             theoryMarkControllers.add(scoreControllers);
@@ -101,25 +135,22 @@ class _AddScoreScreenState extends State<AddScoreScreen> {
           text: AppTags.submit,
           onPressed: () {
 
-            for (int studentIndex = 0; studentIndex < examScoreList.length; studentIndex++) {
-
-            }
-
+            String examTimetableId = "";
             for (int studentIndex = 0; studentIndex < theoryMarkControllers.length; studentIndex++) {
-              print("Student $studentIndex Scores:");
+              Map<String, dynamic> data = {};
+              data["examStudentId"] = examScoreList[studentIndex].examStudentId;
               for (int scoreIndex = 0; scoreIndex < theoryMarkControllers[studentIndex].length; scoreIndex++) {
-                String value = theoryMarkControllers[studentIndex][scoreIndex].text;
-                print("Assessment $scoreIndex: $value");
-                studentsData.add({
-                  "examStudentId": "", //exam_student_id
-                  "tatid": "", // assessment_type_id
-                  "eatid": "", // assessment_id
-                  "eascore": theoryMarkControllers[studentIndex][scoreIndex].text,
-                  "note": ""
-                });
+                if(studentIndex == 0 && scoreIndex == 0){
+                  examTimetableId = examScoreList[studentIndex].assessmentScores[scoreIndex].examTimetableId;
+                }
+                data["tatid"] = examScoreList[studentIndex].assessmentScores[scoreIndex].assessmentTypeId;
+                data["eatid"] = examScoreList[studentIndex].assessmentScores[scoreIndex].assessmentTypeId;
+                data["eascore"] = theoryMarkControllers[studentIndex][scoreIndex].text;
+                data["note"] = notesController[studentIndex].text;
               }
+              studentsData.add(data);
             }
-
+            callApiSaveExamScore(examTimetableId);
 
           },
         ).paddingOnly(bottom: 30, left: 10, right: 10),
@@ -219,5 +250,4 @@ class _AddScoreScreenState extends State<AddScoreScreen> {
       ),
     );
   }
-
 }

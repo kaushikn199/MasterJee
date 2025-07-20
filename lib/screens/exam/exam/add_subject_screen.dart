@@ -4,14 +4,22 @@ import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/class_timetable/add_lesson_plan_response.dart';
+import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/models/exam/ExamResponse.dart';
+import 'package:masterjee/models/exam/exam/AllExamAssessmentsResponse.dart';
+import 'package:masterjee/models/exam/exam/ExamSubjectsResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class AddSubjectScreen extends StatefulWidget {
   const AddSubjectScreen({super.key});
+
   static String routeName = 'addSubjectScreen';
 
   @override
@@ -19,42 +27,174 @@ class AddSubjectScreen extends StatefulWidget {
 }
 
 class _AddSubjectScreenState extends State<AddSubjectScreen> {
-
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
-
-  String? _selectedLesson;
-  String? _selectedTopic;
+  String? _selectedLesson = null;
   List<Lesson> lessonsMainList = [];
+  List<AssessmentData> allExamAssessmentsList = [];
   int _indexLesson = 0;
-
   DateTime? _selectedFromDate;
   final _fromDateController = TextEditingController();
-
   late String startTime;
   final _fromStartTimeControllers = TextEditingController();
-
   final _durationController = TextEditingController();
-
   final roomController = TextEditingController();
+  var _isLoading = false;
+  bool _isInitialized = false;
+  late Exam exam;
+  late List<ExamSubjectData> examSubjectDataList = [];
+  List<Map<String, dynamic>> assessData = [];
 
-  List<Map<String, dynamic>> items = [
-    {'id': 1, 'name': 'Theory', 'isChecked': false},
-    {'id': 2, 'name': 'Assignment', 'isChecked': false},
-    {'id': 3, 'name': 'Practical', 'isChecked': false},
-  ];
-  bool _isChecked = true;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      exam = ModalRoute.of(context)!.settings.arguments as Exam;
+      if (exam != null) {
+        callApiAllExamAssessments();
+        callApiExamSubjects();
+      }
+      _isInitialized = true;
+    }
+  }
+
+  Future<void> callApiExamSubjects() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      ExamSubjectResponse data =
+          await Provider.of<ExamApi>(context, listen: false).examSubjects(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              exam.id);
+      if (data.result) {
+        setState(() {
+          examSubjectDataList = data.data;
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      _isLoading = false;
+    }
+  }
+
+  Future<void> callApiAllExamAssessments() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AllExamAssessmentsResponse data =
+          await Provider.of<ExamApi>(context, listen: false).allExamAssessments(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              exam.id);
+      if (data.result) {
+        setState(() {
+          allExamAssessmentsList = data.data;
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> callApiSaveExamSubjects() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AllExamAssessmentsResponse data =
+          await Provider.of<ExamApi>(context, listen: false).saveExamSubjects(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              exam.id,
+              examSubjectDataList[_indexLesson].id,
+              _fromDateController.text,
+              _fromStartTimeControllers.text,
+              _durationController.text,
+              roomController.text,
+              assessData);
+      if (data.result) {
+        setState(() {
+          /*_selectedLesson = null;
+          _indexLesson = -1;
+          _fromDateController.text = "";
+          _fromStartTimeControllers.text = "";
+          _durationController.text = "";
+          roomController.text = "";
+          assessData.clear();
+          _isLoading = false;*/
+          CommonFunctions.showWarningToast(data.message);
+          Navigator.pop(context);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarTwo(title: AppTags.addSubject),
       backgroundColor: colorGaryBG,
-      bottomNavigationBar: CommonButton(
-        paddingHorizontal: 7,
-        cornersRadius: 10,
-        text: AppTags.add,
-        onPressed: () {},
-      ).paddingOnly(bottom: 30, left: 10, right: 10),
+      bottomNavigationBar: SizedBox(
+        child: _isLoading ? const Center(
+          child: CircularProgressIndicator(),
+        ) : CommonButton(
+          paddingHorizontal: 7,
+          cornersRadius: 10,
+          text: AppTags.add,
+          onPressed: () {
+            assessData.clear();
+            int a = 0;
+            for (int i = 0; i < allExamAssessmentsList.length; i++) {
+              AssessmentData data = allExamAssessmentsList[i];
+              if (data.isChecked) {
+                a = a + 1;
+                assessData.add({
+                  "assessId": data.id,
+                });
+              }
+            }
+            if (_selectedLesson == null) {
+              CommonFunctions.showWarningToast("Please select lesson");
+            } else if (_fromDateController.text == null ||
+                _fromDateController.text == "") {
+              CommonFunctions.showWarningToast("Please select date");
+            } else if (_fromStartTimeControllers.text == null ||
+                _fromStartTimeControllers.text == "") {
+              CommonFunctions.showWarningToast("Please select time");
+            } else if (_durationController.text == null ||
+                _durationController.text == "") {
+              CommonFunctions.showWarningToast("Please enter duration");
+            } else if (roomController.text == null || roomController.text == "") {
+              CommonFunctions.showWarningToast("Please enter room");
+            } else if (a == 0) {
+              CommonFunctions.showWarningToast("Please select assessments");
+            } else {
+              callApiSaveExamSubjects();
+            }
+          },
+        ).paddingOnly(bottom: 30, left: 10, right: 10),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -66,8 +206,8 @@ class _AddSubjectScreenState extends State<AddSubjectScreen> {
               ),
               color: colorWhite,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 2),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                 child: DropdownButton(
                   hint: const CommonText('Select...',
                       size: 14, color: Colors.black54),
@@ -75,32 +215,25 @@ class _AddSubjectScreenState extends State<AddSubjectScreen> {
                   icon: const Card(
                     elevation: 0.1,
                     color: colorWhite,
-                    child: Icon(
-                        Icons.keyboard_arrow_down_outlined),
+                    child: Icon(Icons.keyboard_arrow_down_outlined),
                   ),
                   underline: const SizedBox(),
                   onChanged: (value) {
                     setState(() {
                       _selectedLesson = null;
                       _selectedLesson = value.toString();
-                      _selectedTopic = null;
                     });
                   },
                   isExpanded: true,
-                  items: lessonsMainList.map((cd) {
+                  items: examSubjectDataList.map((cd) {
                     return DropdownMenuItem(
-                      value: cd.id,
+                      value: cd.id + cd.ttid,
                       onTap: () {
                         setState(() {
                           _selectedLesson = cd.name;
-                          for (int i = 0;
-                          i < lessonsMainList.length;
-                          i++) {
-                            if (lessonsMainList[i].id ==
-                                cd.id) {
+                          for (int i = 0; i < examSubjectDataList.length; i++) {
+                            if (examSubjectDataList[i].id == cd.id) {
                               _indexLesson = i;
-                              _selectedTopic = null;
-                              //_selectedLessonId = lessonsMainList[i].id;
                               break;
                             }
                           }
@@ -184,17 +317,16 @@ class _AddSubjectScreenState extends State<AddSubjectScreen> {
             gap(10.0),
             ListView.builder(
                 shrinkWrap: true,
-                itemCount: items.length,
+                itemCount: allExamAssessmentsList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
                       onTap: () {
                         //Navigator.push(context);
                       },
-                      child: studentRow(items[index])
-                  );
+                      child: studentRow(allExamAssessmentsList[index]));
                 }),
           ],
-        ).paddingOnly(left: 10,right: 10),
+        ).paddingOnly(left: 10, right: 10),
       ),
     );
   }
@@ -237,7 +369,7 @@ class _AddSubjectScreenState extends State<AddSubjectScreen> {
     }
   }
 
-  Widget studentRow(Map<String, dynamic> data){
+  Widget studentRow(AssessmentData data) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -246,10 +378,10 @@ class _AddSubjectScreenState extends State<AddSubjectScreen> {
         Transform.scale(
           scale: 0.85,
           child: Checkbox(
-            value: _isChecked,
+            value: data.isChecked,
             onChanged: (bool? value) {
               setState(() {
-                _isChecked = value ?? false;
+                data.isChecked = value ?? false;
               });
             },
             checkColor: Colors.white,
@@ -258,9 +390,12 @@ class _AddSubjectScreenState extends State<AddSubjectScreen> {
             visualDensity: VisualDensity.compact,
           ),
         ),
-        const SizedBox(width: 30,height: 0,),
+        const SizedBox(
+          width: 10,
+          height: 0,
+        ),
         CommonText.medium(
-          data['name'],
+          data.name,
           size: 14.sp,
           color: colorBlack,
           overflow: TextOverflow.fade,
@@ -268,5 +403,4 @@ class _AddSubjectScreenState extends State<AddSubjectScreen> {
       ],
     );
   }
-
 }
