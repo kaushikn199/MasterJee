@@ -89,6 +89,7 @@ class ApiHelper {
   static const generateRank = 'generateRank';
   static const getExamStudents = 'getExamStudents';
   static const examSubjects = 'examSubjects';
+  static const assignStudents  = 'assignStudents';
   static const examScore = 'examScore';
   static const saveExamScore = 'saveExamScore';
   static const allTerms = 'allTerms';

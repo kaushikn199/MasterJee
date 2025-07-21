@@ -227,6 +227,19 @@ class ExamApi with ChangeNotifier {
     return ExamSubjectResponse.fromJson(responseData);
   }
 
+  Future<ExamScoreResponse> assignStudents (String userId,String eId,List<Map<String, dynamic>> stuIds)
+  async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'examId': eId,
+      'stuIds': stuIds
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.assignStudents, body);
+    print("responseData : ${responseData}");
+    return ExamScoreResponse.fromJson(responseData);
+  }
+
   Future<ExamScoreResponse> examScore(String userId,String eId,String sId)
   async {
     Map<String, dynamic> body = {

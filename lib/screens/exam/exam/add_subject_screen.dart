@@ -65,7 +65,7 @@ class _AddSubjectScreenState extends State<AddSubjectScreen> {
       ExamSubjectResponse data =
           await Provider.of<ExamApi>(context, listen: false).examSubjects(
               StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-              exam.id);
+              "");
       if (data.result) {
         setState(() {
           examSubjectDataList = data.data;
