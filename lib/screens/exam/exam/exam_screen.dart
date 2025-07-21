@@ -420,6 +420,7 @@ class _ExamScreenState extends State<ExamScreen> {
                                   // Update all students' checkboxes
                                   for (var student in examStudentsList) {
                                     student.isCheck = _isChecked;
+
                                   }
                                 });
                               },
