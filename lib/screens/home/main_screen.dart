@@ -24,6 +24,7 @@ import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/hostel/hostel_screen.dart';
 import 'package:masterjee/screens/leads/leads_screen.dart';
 import 'package:masterjee/screens/ptm/ptm.dart';
+import 'package:masterjee/screens/reports/reports_main_screen.dart';
 import 'package:masterjee/screens/signup_screen.dart';
 import 'package:masterjee/screens/student_behaviour/student_behaviour_screen.dart';
 import 'package:masterjee/screens/student_progress/student_progress_screen.dart';
@@ -742,6 +743,16 @@ class _MainScreenState extends State<MainScreen> {
                     Navigator.pushNamed(context, HostelRoomsScreen.routeName);
                   },
                 ),
+                cardHomeWidget(
+                    name: AppTags.reports,
+                    image: AssetsUtils.leadIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(context, ReportsMainScreen.routeName);
+                      }
+                    }),
                 cardHomeWidget(
                     name: AppTags.leads,
                     image: AssetsUtils.leadIcon,

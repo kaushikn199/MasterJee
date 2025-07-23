@@ -18,6 +18,7 @@ import 'package:masterjee/providers/hostel_api.dart';
 import 'package:masterjee/providers/leads_api.dart';
 import 'package:masterjee/providers/pay_slip_api.dart';
 import 'package:masterjee/providers/ptm_api.dart';
+import 'package:masterjee/providers/reports_api.dart';
 import 'package:masterjee/providers/student_behavior_api.dart';
 import 'package:masterjee/providers/student_progress_api.dart';
 import 'package:masterjee/screens/apply_leave/apply_leave_screen.dart';
@@ -57,6 +58,13 @@ import 'package:masterjee/screens/ptm/minutebook/minutebook_screen.dart';
 import 'package:masterjee/screens/ptm/ptm.dart';
 import 'package:masterjee/screens/ptm/schedule/schedule_screen.dart';
 import 'package:masterjee/screens/ptm/upcoming/upcoming_screen.dart';
+import 'package:masterjee/screens/reports/assignment/assignment_reports_screen.dart';
+import 'package:masterjee/screens/reports/guardian/guardian_reports_screen.dart';
+import 'package:masterjee/screens/reports/hostel/hostel_reports_screen.dart';
+import 'package:masterjee/screens/reports/parent_login/parent_login_screen.dart';
+import 'package:masterjee/screens/reports/reports_main_screen.dart';
+import 'package:masterjee/screens/reports/student/student_reports_screen.dart';
+import 'package:masterjee/screens/reports/transport/transport_reports_screen.dart';
 import 'package:masterjee/screens/splash_screen.dart';
 import 'package:masterjee/screens/home/main_screen.dart';
 import 'package:masterjee/screens/signup_screen.dart';
@@ -136,6 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => HostelRooms()),
           ChangeNotifierProvider(create: (ctx) => ExamApi()),
           ChangeNotifierProvider(create: (ctx) => CommunicationProvider()),
+          ChangeNotifierProvider(create: (ctx) => ReportsApi()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>
@@ -225,6 +234,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         AddScoreScreen.routeName: (ctx) => const AddScoreScreen(),
                         EditUpdateAssessmentScreen.routeName: (ctx) => const EditUpdateAssessmentScreen(),
                         AddExamAttendanceScreen.routeName: (ctx) => const AddExamAttendanceScreen(),
+                        AssignmentReportsScreen.routeName: (ctx) => const AssignmentReportsScreen(),
+                        HostelReportsScreen.routeName: (ctx) => const HostelReportsScreen(),
+                        GuardianReportsScreen.routeName: (ctx) => const GuardianReportsScreen(),
+                        ParentLoginScreen.routeName: (ctx) => const ParentLoginScreen(),
+                        StudentReportsScreen.routeName: (ctx) => const StudentReportsScreen(),
+                        TransportReportsScreen.routeName: (ctx) => const TransportReportsScreen(),
+                        ReportsMainScreen.routeName: (ctx) => const ReportsMainScreen(),
                       },
                       home: const SplashScreen()),
                 );

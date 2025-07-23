@@ -83,6 +83,13 @@ class AppTags {
   static const String observation = 'Observation';
   static const String addSubject = 'Add subject';
   static const String addScore = 'Add score';
+  static const String reports = 'Reports';
+  static const String hostelReports = 'Hotel reports';
+  static const String transportReports = 'Transport reports';
+  static const String assignmentReports = 'Assignment reports';
+  static const String studentReports = 'Student reports';
+  static const String guardianReports = 'Guardian reports';
+  static const String parentLogin = 'Parent login';
 
 }
 

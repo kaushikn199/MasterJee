@@ -99,6 +99,10 @@ class ApiHelper {
   static const addExamAttendance = 'addExamAttendance';
   static const allExamAssessments = 'allExamAssessments';
   static const saveExamSubjects = 'saveExamSubjects';
+  static const hostelReports = 'hostelReports';
+  static const transportReports = 'transportReports';
+  static const assignmentReports = 'assignmentReports';
+  static const studentsReports = 'studentsReports';
 
   static const Map<String, String> defaultHeaders = {
     'Client-Service': "smartschool",
