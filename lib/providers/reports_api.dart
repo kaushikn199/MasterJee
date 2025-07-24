@@ -48,7 +48,33 @@ class ReportsApi with ChangeNotifier {
       'sectionId': sectionId
     };
     print("body : ${body}");
-    final responseData = await ApiHelper.post(ApiHelper.assignmentReports, body);
+    final responseData = await ApiHelper.post(ApiHelper.studentsReports, body);
+    print("responseData : ${responseData}");
+    return Hostelreportsresponse.fromJson(responseData);
+  }
+
+
+  Future<Hostelreportsresponse> parentLoginReports(String userId,String classId,String sectionId) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'classId': classId,
+      'sectionId': sectionId
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.parentLoginReports, body);
+    print("responseData : ${responseData}");
+    return Hostelreportsresponse.fromJson(responseData);
+  }
+
+
+  Future<Hostelreportsresponse> siblingReports(String userId,String classId,String sectionId) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'classId': classId,
+      'sectionId': sectionId
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.siblingReports, body);
     print("responseData : ${responseData}");
     return Hostelreportsresponse.fromJson(responseData);
   }

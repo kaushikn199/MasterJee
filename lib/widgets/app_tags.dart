@@ -126,4 +126,5 @@ class AssetsUtils {
   static const String news = "assets/images/ic_news.svg";
   static const String newspaper = "assets/images/ic_newspaper.svg";
   static const String calendar = "assets/images/ic_calendar.svg";
+  static const String report = "assets/images/ic_report.png";
 }

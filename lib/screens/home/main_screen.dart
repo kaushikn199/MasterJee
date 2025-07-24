@@ -745,7 +745,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 cardHomeWidget(
                     name: AppTags.reports,
-                    image: AssetsUtils.leadIcon,
+                    image: AssetsUtils.report,
                     onTap: () {
                       if (isClassOrSectionIdMissing()) {
                         openDialog();

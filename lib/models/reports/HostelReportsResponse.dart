@@ -9,6 +9,7 @@ class Hostelreportsresponse {
     required this.message,
     required this.result,
     required this.data,
+
   });
 
   factory Hostelreportsresponse.fromJson(Map<String, dynamic> json) {
@@ -20,12 +21,77 @@ class Hostelreportsresponse {
           ? (json['data'] as List)
           .map((e) => StudentModel.fromJson(e))
           .toList()
-          : [],);
+          : [],
+    );
   }
 }
 
+class LoginInfo {
+  final String id;
+  final String userId;
+  final String username;
+  final String password;
+  final String childs;
+  final String role;
+  final String langId;
+  final String currencyId;
+  final String verificationCode;
+  final String isActive;
+  final String createdAt;
+  final String? updatedAt;
+
+  LoginInfo({
+    required this.id,
+    required this.userId,
+    required this.username,
+    required this.password,
+    required this.childs,
+    required this.role,
+    required this.langId,
+    required this.currencyId,
+    required this.verificationCode,
+    required this.isActive,
+    required this.createdAt,
+    this.updatedAt,
+  });
+
+  factory LoginInfo.fromJson(Map<String, dynamic> json) {
+    return LoginInfo(
+      id: json['id'] ?? '',
+      userId: json['user_id'] ?? '',
+      username: json['username'] ?? '',
+      password: json['password'] ?? '',
+      childs: json['childs'] ?? '',
+      role: json['role'] ?? '',
+      langId: json['lang_id'] ?? '',
+      currencyId: json['currency_id'] ?? '',
+      verificationCode: json['verification_code'] ?? '',
+      isActive: json['is_active'] ?? '',
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "user_id": userId,
+      "username": username,
+      "password": password,
+      "childs": childs,
+      "role": role,
+      "lang_id": langId,
+      "currency_id": currencyId,
+      "verification_code": verificationCode,
+      "is_active": isActive,
+      "created_at": createdAt,
+      "updated_at": updatedAt,
+    };
+  }
+}
 
 class StudentModel {
+  final LoginInfo loginInfo;
   final String? id;
   final String? sessionId;
   final String? studentId;
@@ -109,6 +175,7 @@ class StudentModel {
   final HostelInfoModel? hostelInfo;
 
   StudentModel({
+    required this.loginInfo,
     this.id,
     this.sessionId,
     this.studentId,
@@ -275,6 +342,7 @@ class StudentModel {
       ssid: json['ssid'],
       costPerBed: json['cost_per_bed'],
       hostelInfo: json['hostelInfo'] != null ? HostelInfoModel.fromJson(json['hostelInfo']) : null,
+      loginInfo: LoginInfo.fromJson(json['loginInfo'] ?? {}),
     );
   }
 }
@@ -311,6 +379,8 @@ class HostelInfoModel {
   final String? description;
   final String? roomType;
   final String? costPerBed;
+  final String? password;
+  final String? username;
 
   HostelInfoModel({
     this.id,
@@ -344,6 +414,8 @@ class HostelInfoModel {
     this.roomType,
     this.type,
     this.costPerBed,
+    this.password,
+    this.username,
   });
 
   factory HostelInfoModel.fromJson(Map<String, dynamic> json) {
@@ -379,6 +451,8 @@ class HostelInfoModel {
       roomType: json['room_type'],
       type: json['type'],
       costPerBed: json['cost_per_bed'],
+      password: json['password'],
+      username: json['username'],
     );
   }
 }
