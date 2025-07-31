@@ -10,6 +10,7 @@ import 'package:masterjee/models/exam/exam/ExamStudentsResponse.dart';
 import 'package:masterjee/models/exam/exam/ExamSubjectsResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
+import 'package:masterjee/screens/exam/exam/add_exam_screen.dart';
 import 'package:masterjee/screens/exam/exam/add_score_screen.dart';
 import 'package:masterjee/screens/exam/exam/add_subject_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
@@ -42,7 +43,7 @@ class _ExamScreenState extends State<ExamScreen> {
 
   List<Map<String, dynamic>> stuIds = [];
 
-  Future<void> callApiAssignStudents(String examId,BuildContext c) async {
+  Future<void> callApiAssignStudents(String examId, BuildContext c) async {
     setState(() {
       _isLoading = true;
     });
@@ -180,47 +181,54 @@ class _ExamScreenState extends State<ExamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * .5,
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-    if (examList.isEmpty) {
-      return Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-            CommonText.medium('No Record Found',
-                size: 16.sp,
-                color: kDarkGreyColor,
-                overflow: TextOverflow.fade),
-          ],
-        ),
-      );
-    }
-    return Container(
-      height: double.infinity,
-      color: kBackgroundColor,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.sp),
-        child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: examList.length,
-            padding: EdgeInsets.only(top: 10.sp),
-            itemBuilder: (BuildContext c, int index) {
-              Exam data = examList[index];
-              return InkWell(
-                  onTap: () {
-                    //Navigator.push(context);
-                  },
-                  child: leadsCard(data, context));
-            }),
-      ),
+    return Scaffold(
+      backgroundColor: kBackgroundColor,
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed(AddExamScreen.routeName);
+          },
+          backgroundColor: colorGreen,
+          child: const Icon(Icons.add, color: colorWhite)),
+      body: _isLoading
+          ? SizedBox(
+              height: MediaQuery.of(context).size.height * .5,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : examList.isEmpty
+              ? Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.hourglass_empty_outlined, size: 100.sp),
+                      CommonText.medium(
+                        'No Record Found',
+                        size: 16.sp,
+                        color: kDarkGreyColor,
+                        overflow: TextOverflow.fade,
+                      ),
+                    ],
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: examList.length,
+                    padding: EdgeInsets.only(top: 10.sp),
+                    itemBuilder: (BuildContext c, int index) {
+                      Exam data = examList[index];
+                      return InkWell(
+                        onTap: () {
+                          //Navigator.push(context);
+                        },
+                        child: leadsCard(data, context),
+                      );
+                    },
+                  ),
+                ),
     );
   }
 
@@ -420,7 +428,6 @@ class _ExamScreenState extends State<ExamScreen> {
                                   // Update all students' checkboxes
                                   for (var student in examStudentsList) {
                                     student.isCheck = _isChecked;
-
                                   }
                                 });
                               },
@@ -464,7 +471,7 @@ class _ExamScreenState extends State<ExamScreen> {
                               CommonFunctions.showWarningToast(
                                   "Please select any student");
                             } else {
-                              callApiAssignStudents(examId,context);
+                              callApiAssignStudents(examId, context);
                             }
                             // Handle save
                           },

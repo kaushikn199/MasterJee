@@ -9,6 +9,7 @@ import 'package:masterjee/models/exam/assesment/AssessmentModel.dart';
 import 'package:masterjee/models/exam/assesment/AssessmentTypeModel.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
+import 'package:masterjee/screens/exam/assessment/add_assesment_screen.dart';
 import 'package:masterjee/screens/exam/assessment/edit_update_assesment_screen.dart';
 import 'package:masterjee/screens/exam/grades/edit_uppdate_grade_screen.dart';
 import 'package:masterjee/widgets/app_tags.dart';
@@ -69,38 +70,48 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return SizedBox(
+    return Scaffold(
+      backgroundColor: kBackgroundColor,
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, AddAssessmentScreen.routeName);
+          },
+          backgroundColor: colorGreen,
+          child: const Icon(Icons.add, color: colorWhite)),
+      body: _isLoading
+          ? SizedBox(
         height: MediaQuery.of(context).size.height * .5,
         child: const Center(
           child: CircularProgressIndicator(),
         ),
-      );
-    }
-    if (assessmentList.isEmpty) {
-      return Center(
+      )
+          : assessmentList.isEmpty
+          ? Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-            CommonText.medium('No Record Found',
-                size: 16.sp,
-                color: kDarkGreyColor,
-                overflow: TextOverflow.fade),
+            CommonText.medium(
+              'No Record Found',
+              size: 16.sp,
+              color: kDarkGreyColor,
+              overflow: TextOverflow.fade,
+            ),
           ],
         ),
-      );
-    }
-    return  Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10.sp),
-      child: ListView.builder(
+      )
+          : Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.sp),
+        child: ListView.builder(
           shrinkWrap: true,
           itemCount: assessmentList.length,
           padding: EdgeInsets.only(top: 10.sp),
           itemBuilder: (BuildContext context, int index) {
             return assignmentCard(assessmentList[index], false);
-          }),
+          },
+        ),
+      ),
     );
   }
 

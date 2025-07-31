@@ -105,6 +105,7 @@ class ApiHelper {
   static const studentsReports = 'studentsReports';
   static const parentLoginReports = 'parentLoginReports';
   static const siblingReports = 'siblingReports';
+  static const saveStudentBehaviour = 'saveStudentBehaviour';
 
   static const Map<String, String> defaultHeaders = {
     'Client-Service': "smartschool",

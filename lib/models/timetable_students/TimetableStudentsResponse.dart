@@ -106,8 +106,7 @@ class TimetableStudentsData {
   final String disableAt;
   final String faceAuth;
   final String ssid;
-  final String attendance;
-   int? selectedValue;
+  String attendance;
    String selectedValueText;
 
   TimetableStudentsData({
@@ -191,7 +190,6 @@ class TimetableStudentsData {
     required this.faceAuth,
     required this.ssid,
     required this.attendance,
-    required this.selectedValue,
     required this.selectedValueText,
   });
 
@@ -277,7 +275,6 @@ class TimetableStudentsData {
       faceAuth: json['face_auth'] ?? '',
       ssid: json['ssid'] ?? '',
       attendance: json['attendance'] ?? '',
-      selectedValue: json['selectedValue'] ,
       selectedValueText: json['selectedValueText'] ?? "Present",
     );
   }

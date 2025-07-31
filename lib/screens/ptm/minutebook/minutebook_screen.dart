@@ -538,7 +538,7 @@ class _MinutebookScreenState extends State<MinutebookScreen> {
                   });
                 },
               ),
-              CommonText("${(_progressValue * 10).toInt()}%",
+              CommonText("${(_progressValue * 10).toInt()}",
                   size: 14, color: colorBlack).paddingOnly(left: 20,right: 15),
               gap(15.sp),
               CustomTextField(

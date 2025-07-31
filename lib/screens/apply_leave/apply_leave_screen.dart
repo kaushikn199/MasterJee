@@ -312,7 +312,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         borderRadius: BorderRadius.circular(10.r),
         boxShadow: const [
           BoxShadow(
-            color: Colors.grey,
+            color: Colors.green,
             spreadRadius: -2.0,
             blurRadius: 5.0,
           ),
@@ -327,7 +327,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(10.r),
                     topLeft: Radius.circular(10.r)),
-                color: kToastTextColor),
+                color: kDarkButtonBg),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -335,6 +335,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                 Text(
                   "Student Leave",
                   style: TextStyle(
+                    color: colorWhite,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                   ),
@@ -358,6 +359,8 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                     physics: NeverScrollableScrollPhysics(),
                     padding: EdgeInsets.only(top: 10.sp),
                     itemBuilder: (BuildContext context, int index) {
+                      print("studentLeaveContainer : ${data.studentsLeave[index].status}");
+
                       return Column(
                         children: [
                           Row(
@@ -365,17 +368,15 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                               Expanded(
                                   child: rowValue("Leave type",
                                       data.studentsLeave[index].reason)),
-                              InkWell(
+                              data.studentsLeave[index].status != "" ? InkWell(
                                 child: Container(
                                     padding: EdgeInsets.symmetric(
                                         vertical: 4.sp, horizontal: 8.sp),
                                     decoration: BoxDecoration(
                                         color:
-                                            (data.studentsLeave[index].status ==
-                                                    "")
+                                            (data.studentsLeave[index].status == "")
                                                 ? colorGaryText
-                                                : (data.studentsLeave[index]
-                                                            .status ==
+                                                : (data.studentsLeave[index].status ==
                                                         "1")
                                                     ? colorGreen
                                                     : (data.studentsLeave[index]
@@ -388,13 +389,9 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                     child: CommonText.semiBold(
                                         (data.studentsLeave[index].status == "")
                                             ? "Pending"
-                                            : (data.studentsLeave[index]
-                                                        .status ==
-                                                    "1")
-                                                ? "Approve"
-                                                : (data.studentsLeave[index]
-                                                            .status ==
-                                                        "2")
+                                            : (data.studentsLeave[index].status == "1")
+                                                ? "Approved"
+                                                : (data.studentsLeave[index].status == "2")
                                                     ? "Denied"
                                                     : "",
                                         color: Colors.white,
@@ -441,7 +438,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                     ),
                                   );
                                 },
-                              ),
+                              ) : const SizedBox(),
                             ],
                           ),
                           gap(5.sp),
@@ -487,7 +484,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(10.r),
                     topLeft: Radius.circular(10.r)),
-                color: kToastTextColor),
+                color: colorBlueText),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -495,6 +492,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                 Text(
                   "Staff Leave",
                   style: TextStyle(
+                    color: colorWhite,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                   ),
@@ -525,7 +523,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                       getLeaveType(
                                           data.staffLeave[index].leaveTypeId ??
                                               ""))),
-                              InkWell(
+                               InkWell(
                                 child: Container(
                                     padding: EdgeInsets.symmetric(
                                         vertical: 4.sp, horizontal: 8.sp),
@@ -547,12 +545,9 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                         //disapproved
                                         (data.staffLeave[index].status == "")
                                             ? "Pending"
-                                            : (data.staffLeave[index].status ==
-                                                    "approved")
-                                                ? "Approve"
-                                                : (data.staffLeave[index]
-                                                            .status ==
-                                                        "disapproved")
+                                            : (data.staffLeave[index].status == "approved")
+                                                ? "Approved"
+                                                : (data.staffLeave[index].status == "disapproved")
                                                     ? "Denied"
                                                     : "",
                                         color: Colors.white,

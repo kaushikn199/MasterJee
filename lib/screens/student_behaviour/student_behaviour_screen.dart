@@ -95,6 +95,38 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
     }
   }
 
+  List<Map<String, String>> behaviours = [];
+
+  Future<void> callApiSaveStudentBehaviour() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AllStudentsResponse data = await Provider.of<ClassAttendanceApi>(context,
+          listen: false)
+          .saveStudentBehaviour(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          "",
+          behaviours);
+      if (data.result!) {
+        setState(() {
+          studentList = data.data ?? [];
+          _isLoading = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
 
   @override
   void initState() {
@@ -241,6 +273,11 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
                       text: AppTags.submit,
                       onPressed: () {
                         //checkValidation(context);
+                        /*for (int i = 0; i < keyPointList.length; i++) {
+                          behaviours.add({
+                            "incident_id": keyPointList[i].id,
+                          });
+                        }*/
                       },
                     ),
                     gap(10.0)

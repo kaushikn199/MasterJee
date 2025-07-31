@@ -7,10 +7,19 @@ import 'package:masterjee/models/users_info.dart';
 import 'package:masterjee/others/ApiHelper.dart';
 
 class ClassAttendanceApi with ChangeNotifier {
+
   Future<AllStudentsResponse> getAllStudents(String userId, String classId, String sectionId) async {
     Map<String, dynamic> body = {'userId': userId, 'classId': classId, 'sectionId': sectionId};
     print("body : ${body}");
     final responseData = await ApiHelper.post(ApiHelper.getAllStudents, body);
+    print("responseData : ${responseData}");
+    return AllStudentsResponse.fromJson(responseData);
+  }
+
+  Future<AllStudentsResponse> saveStudentBehaviour(String userId, String studentId, List<Map<String, String>> behaviours) async {
+    Map<String, dynamic> body = {'userId': userId, 'studentId': studentId, 'behaviours': behaviours};
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveStudentBehaviour, body);
     print("responseData : ${responseData}");
     return AllStudentsResponse.fromJson(responseData);
   }

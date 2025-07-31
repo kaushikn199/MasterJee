@@ -96,7 +96,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           listen: false)
           .saveStudentAttendance(
           StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-          StorageHelper.getStringData(StorageHelper.classIdKey).toString(),
+          _fromDateController.text,
           students);
       if (data.result) {
         setState(() {

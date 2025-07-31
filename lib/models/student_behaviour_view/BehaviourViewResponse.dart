@@ -1,7 +1,7 @@
 class BehaviourViewResponse {
   final String status;
   final String message;
-  final StudentDataWrapper data;
+  final StudentDataWrapper? data;
   final bool result;
 
   BehaviourViewResponse({
@@ -14,15 +14,17 @@ class BehaviourViewResponse {
   factory BehaviourViewResponse.fromJson(Map<String, dynamic> json) {
     return BehaviourViewResponse(
       status: json['status'] ?? "",
-      message: json['message']  ?? "",
-      data: StudentDataWrapper.fromJson(json['data']),
-      result: json['result']  ?? "",
+      message: json['message'] ?? "",
+      data: json['data'] != null
+          ? StudentDataWrapper.fromJson(json['data'])
+          : null, // Provide a default
+      result: json['result'] ?? false,
     );
   }
+
 }
 
 class StudentDataWrapper {
-
   final Student studentData;
   final List<IncidentData> incidentData;
 
@@ -39,7 +41,9 @@ class StudentDataWrapper {
           .toList(),
     );
   }
+
 }
+
 
 class Student {
   final String id;

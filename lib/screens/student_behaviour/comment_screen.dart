@@ -42,7 +42,7 @@ class _CommentScreenState extends State<CommentScreen> {
           studentId);
       if (data.result) {
         setState(() {
-          incidentList = data.data.incidentData;
+          incidentList = data.data!.incidentData;
           _isLoading = false;
         });
         return;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/student_behaviour_view/BehaviourViewResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/student_behavior_api.dart';
@@ -63,9 +64,9 @@ class _ViewScreenState extends State<ViewScreen> {
                   studentId);
       if (data.result) {
         setState(() {
-          stuData = data.data.studentData;
-          incidentList = data.data.incidentData;
-          controllers = List.generate(data.data.incidentData.length, (index) => TextEditingController());
+          stuData = data.data!.studentData;
+          incidentList = data.data!.incidentData;
+          controllers = List.generate(data.data!.incidentData.length, (index) => TextEditingController());
           _isLoading = false;
         });
         return;
@@ -97,9 +98,13 @@ class _ViewScreenState extends State<ViewScreen> {
       if (data.result) {
         setState(() {
           _isLoading = false;
-          for (var controller in controllers) {
+          /*for (var controller in controllers) {
             controller.dispose();
+          }*/
+          for (int i = 0 ; i < controllers.length ; i++){
+            controllers[i].text = "";
           }
+          CommonFunctions.showWarningToast(data.message);
           callApiStudentBehaviourView(studentId);
         });
         return;

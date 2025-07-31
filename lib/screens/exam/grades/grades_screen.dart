@@ -5,6 +5,7 @@ import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/exam/GhradeResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
+import 'package:masterjee/screens/exam/grades/add_grades_screen.dart';
 import 'package:masterjee/screens/exam/grades/edit_uppdate_grade_screen.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
@@ -56,40 +57,51 @@ class _GradesScreenState extends State<GradesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return SizedBox(
+    return Scaffold(
+      backgroundColor: kBackgroundColor, // Optional: your theme background
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, AddGradesScreen.routeName);
+          },
+          backgroundColor: colorGreen,
+          child: const Icon(Icons.add, color: colorWhite)),
+      body: _isLoading
+          ? SizedBox(
         height: MediaQuery.of(context).size.height * .5,
         child: const Center(
           child: CircularProgressIndicator(),
         ),
-      );
-    }
-    if (gradeList.isEmpty) {
-      return Center(
+      )
+          : gradeList.isEmpty
+          ? Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-            CommonText.medium('No Record Found',
-                size: 16.sp,
-                color: kDarkGreyColor,
-                overflow: TextOverflow.fade),
+            CommonText.medium(
+              'No Record Found',
+              size: 16.sp,
+              color: kDarkGreyColor,
+              overflow: TextOverflow.fade,
+            ),
           ],
         ),
-      );
-    }
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10.sp),
-      child: ListView.builder(
+      )
+          : Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.sp),
+        child: ListView.builder(
           shrinkWrap: true,
           itemCount: gradeList.length,
           padding: EdgeInsets.only(top: 10.sp),
           itemBuilder: (BuildContext context, int index) {
             return assignmentCard(gradeList[index], false);
-          }),
+          },
+        ),
+      ),
     );
   }
+
 
   Widget assignmentCard(GradeModel data, bool isClosed) {
     return Container(

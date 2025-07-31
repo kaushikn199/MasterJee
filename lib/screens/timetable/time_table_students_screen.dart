@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -111,6 +113,18 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
 
   List<Map<String, String>> students = [];
 
+  String getValue(String type){
+    return type == "1"
+        ? present
+        : type == "3"
+        ? leave
+        : type == "4"
+        ? absent
+        : type == "6"
+        ? halfDay
+        : present;
+  }
+
   Future<void> callApiSaveStudentPeriodAttendance() async {
     setState(() {
       _isLoading = true;
@@ -158,29 +172,30 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
               text: AppTags.submit,
               onPressed: () {
                 setState(() {
-                  int count = 0;
+                 /* int count = 0;
                   for (int i = 0; i < timetableStudentsList.length; i++) {
                     if (timetableStudentsList[i].selectedValue != 0 &&
                         timetableStudentsList[i].selectedValueText != null &&
                         timetableStudentsList[i].selectedValueText != "") {
                       count = count + 1;
                     }
-                  }
+                  }*/
                   /*if (_fromDateController.text == null ||
                       _fromDateController.text == "") {
                     CommonFunctions.showWarningToast("Please select date");
-                  } else*/ if (count == 0) {
+                  } else*/ /*if (count == 0) {
                     CommonFunctions.showWarningToast("Please select student");
-                  } else {
+                  } else {*/
                     for (int i = 0; i < timetableStudentsList.length; i++) {
-                      String type =
-                          timetableStudentsList[i].selectedValueText ?? "";
-                      if (timetableStudentsList[i].selectedValue != 0 &&
+                      String type = timetableStudentsList[i].selectedValueText ?? "";
+                      String attendance = timetableStudentsList[i].attendance ?? "";
+                     /* if (timetableStudentsList[i].attendance != 0 &&
                           timetableStudentsList[i].selectedValueText != null &&
-                          timetableStudentsList[i].selectedValueText != "") {
+                          timetableStudentsList[i].selectedValueText != "") {*/
                         students.add({
                           "student_id": timetableStudentsList[i].studentId,
-                          "attendance_status": type == present
+                          "attendance_status": timetableStudentsList[i].attendance ?? "1"
+                          /*"attendance_status": type == present
                               ? "1"
                               : type == leave
                                   ? "3"
@@ -188,12 +203,13 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
                                       ? "4"
                                       : type == halfDay
                                           ? "6"
-                                          : "0"
+                                          : "0"*/
                         });
-                      }
+                      //}
                     }
+                    print("callApiSaveStudentPeriodAttendance : ${jsonEncode(students)}");
                     callApiSaveStudentPeriodAttendance();
-                  }
+                  //}
                 });
               },
             ).paddingOnly(left: 15, right: 15, bottom: 30)
@@ -289,13 +305,11 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
                                   child: buildRadioOption(
                                     title: present,
                                     value: 1,
-                                    groupValue: timetableStudentsList[index]
-                                            .selectedValue ??
-                                        1,
+                                    groupValue: int.tryParse(timetableStudentsList[index].attendance ?? '') ?? 1,
                                     onChanged: (value) {
                                       setState(() {
                                         timetableStudentsList[index].selectedValueText = present;
-                                        timetableStudentsList[index].selectedValue = value;
+                                        timetableStudentsList[index].attendance = value.toString();
                                       });
                                     },
                                   ),
@@ -303,14 +317,13 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
                                 Expanded(
                                   child: buildRadioOption(
                                     title: leave,
-                                    value: 2,
-                                    groupValue: timetableStudentsList[index].selectedValue ?? 1,
+                                    value: 3,
+                                    groupValue: int.tryParse(timetableStudentsList[index].attendance ?? '') ?? 1,
                                     onChanged: (value) {
                                       setState(() {
                                         timetableStudentsList[index]
                                             .selectedValueText = leave;
-                                        timetableStudentsList[index]
-                                            .selectedValue = value;
+                                        timetableStudentsList[index].attendance = value.toString();
                                       });
                                     },
                                   ),
@@ -324,16 +337,14 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
                                 Expanded(
                                   child: buildRadioOption(
                                     title: absent,
-                                    value: 3,
-                                    groupValue: timetableStudentsList[index]
-                                            .selectedValue ??
-                                        1,
+                                    value: 4,
+                                    groupValue:int.tryParse(timetableStudentsList[index].attendance ?? '') ?? 1,
                                     onChanged: (value) {
                                       setState(() {
                                         timetableStudentsList[index]
                                             .selectedValueText = absent;
                                         timetableStudentsList[index]
-                                            .selectedValue = value;
+                                            .attendance = value.toString();
                                       });
                                     },
                                   ),
@@ -341,16 +352,13 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
                                 Expanded(
                                   child: buildRadioOption(
                                     title: halfDay,
-                                    value: 4,
-                                    groupValue: timetableStudentsList[index]
-                                            .selectedValue ??
-                                        1,
+                                    value: 6,
+                                    groupValue: int.tryParse(timetableStudentsList[index].attendance ?? '') ?? 1,
                                     onChanged: (value) {
                                       setState(() {
-                                        timetableStudentsList[index]
-                                            .selectedValueText = halfDay;
-                                        timetableStudentsList[index]
-                                            .selectedValue = value;
+                                        timetableStudentsList[index].selectedValueText = halfDay;
+                                        timetableStudentsList[index].attendance = value.toString();
+                                        ;
                                       });
                                     },
                                   ),
@@ -367,5 +375,11 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
         );
       }),
     );
+
+
+
   }
+
+
+
 }

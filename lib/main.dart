@@ -28,15 +28,19 @@ import 'package:masterjee/screens/attendance/homework_list/homework_list_screen.
 import 'package:masterjee/screens/communication/communication.dart';
 import 'package:masterjee/screens/content/content_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
+import 'package:masterjee/screens/exam/assessment/add_assesment_screen.dart';
 import 'package:masterjee/screens/exam/assessment/assesment_screen.dart';
 import 'package:masterjee/screens/exam/assessment/edit_update_assesment_screen.dart';
 import 'package:masterjee/screens/exam/exam/add_exam_attendance_screen.dart';
+import 'package:masterjee/screens/exam/exam/add_exam_screen.dart';
 import 'package:masterjee/screens/exam/exam/add_score_screen.dart';
 import 'package:masterjee/screens/exam/exam/add_subject_screen.dart';
 import 'package:masterjee/screens/exam/exam/exam_screen.dart';
 import 'package:masterjee/screens/exam/exam_main_screen.dart';
+import 'package:masterjee/screens/exam/grades/add_grades_screen.dart';
 import 'package:masterjee/screens/exam/grades/edit_uppdate_grade_screen.dart';
 import 'package:masterjee/screens/exam/grades/grades_screen.dart';
+import 'package:masterjee/screens/exam/observation/add_observation_screen.dart';
 import 'package:masterjee/screens/exam/observation/edit_update_observation_screen.dart';
 import 'package:masterjee/screens/exam/observation/observation_screen.dart';
 import 'package:masterjee/screens/face_auth/face_auth_screen.dart';
@@ -241,6 +245,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         StudentReportsScreen.routeName: (ctx) => const StudentReportsScreen(),
                         TransportReportsScreen.routeName: (ctx) => const TransportReportsScreen(),
                         ReportsMainScreen.routeName: (ctx) => const ReportsMainScreen(),
+                        AddExamScreen.routeName: (ctx) => const AddExamScreen(),
+                        AddAssessmentScreen.routeName: (ctx) => const AddAssessmentScreen(),
+                        AddGradesScreen.routeName: (ctx) => const AddGradesScreen(),
+                        AddObservationScreen.routeName: (ctx) => const AddObservationScreen(),
                       },
                       home: const SplashScreen()),
                 );

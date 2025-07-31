@@ -7,6 +7,7 @@ import 'package:masterjee/models/exam/ObservationResponse.dart';
 import 'package:masterjee/models/exam/observation/AllTermsResponse.dart';
 import 'package:masterjee/others/StorageHelper.dart';
 import 'package:masterjee/providers/exam_api.dart';
+import 'package:masterjee/screens/exam/observation/add_observation_screen.dart';
 import 'package:masterjee/screens/exam/observation/edit_update_observation_screen.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_tags.dart';
@@ -365,99 +366,108 @@ class _ObservationScreenState extends State<ObservationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return SizedBox(
+    return Scaffold(
+      backgroundColor: kBackgroundColor,
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, AddObservationScreen.routeName);
+          },
+          backgroundColor: colorGreen,
+          child: const Icon(Icons.add, color: colorWhite)),
+      body: _isLoading
+          ? SizedBox(
         height: MediaQuery.of(context).size.height * .5,
         child: const Center(
           child: CircularProgressIndicator(),
         ),
-      );
-    }
-    if (observationList.isEmpty) {
-      return Center(
+      )
+          : observationList.isEmpty
+          ? Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-            CommonText.medium('No Record Found',
-                size: 16.sp,
-                color: kDarkGreyColor,
-                overflow: TextOverflow.fade),
+            CommonText.medium(
+              'No Record Found',
+              size: 16.sp,
+              color: kDarkGreyColor,
+              overflow: TextOverflow.fade,
+            ),
           ],
         ),
-      );
-    }
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10.sp),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Flexible(
+      )
+          : Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.sp),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Flexible(
                   child: InkWell(
-                onTap: () {
-                  showParameterDialog(context);
-                },
-                child: Center(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: colorGreen,
-                      border: Border.all(color: colorGreen, width: 1),
-                      // Border color and width
-                      borderRadius:
-                          BorderRadius.circular(20), // Rounded corners
+                    onTap: () {
+                      showParameterDialog(context);
+                    },
+                    child: Center(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: colorGreen,
+                          border: Border.all(color: colorGreen),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const CommonText.medium(
+                          "Parameters",
+                          textAlign: TextAlign.center,
+                          size: 13,
+                          color: colorWhite,
+                        ).paddingOnly(top: 5, bottom: 5, left: 30, right: 30),
+                      ),
                     ),
-                    child: const CommonText.medium("Parameters",
-                            textAlign: TextAlign.center,
-                            size: 13,
-                            color: colorWhite)
-                        .paddingOnly(top: 5, bottom: 5, left: 30, right: 30),
                   ),
                 ),
-              )),
-              gap(10.0),
-              Flexible(
+                gap(10.0),
+                Flexible(
                   child: InkWell(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        showAssignDialog(context),
-                  );
-                },
-                child: Center(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: colorGreen,
-                      border: Border.all(color: colorGreen, width: 1),
-                      // Border color and width
-                      borderRadius:
-                          BorderRadius.circular(20), // Rounded corners
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            showAssignDialog(context),
+                      );
+                    },
+                    child: Center(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: colorGreen,
+                          border: Border.all(color: colorGreen),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const CommonText.medium(
+                          "Assign",
+                          textAlign: TextAlign.center,
+                          size: 13,
+                          color: colorWhite,
+                        ).paddingOnly(top: 5, bottom: 5, left: 30, right: 30),
+                      ),
                     ),
-                    child: const CommonText.medium("Assign",
-                            textAlign: TextAlign.center,
-                            size: 13,
-                            color: colorWhite)
-                        .paddingOnly(top: 5, bottom: 5, left: 30, right: 30),
                   ),
                 ),
-              )),
-            ],
-          ),
-          Expanded(
-            child: ListView.builder(
+              ],
+            ),
+            Expanded(
+              child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: observationList.length,
                 padding: EdgeInsets.only(top: 10.sp),
                 itemBuilder: (BuildContext context, int index) {
                   return assignmentCard(observationList[index], false);
-                }),
-          ),
-        ],
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
