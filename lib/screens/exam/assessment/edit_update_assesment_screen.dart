@@ -34,17 +34,17 @@ class _EditUpdateAssessmentScreenState
   late var gradeNameController = TextEditingController();
   late var descriptionController = TextEditingController();
 
-  final List<TextEditingController> rangeNameController = [];
-  final List<TextEditingController> minimumPercentageController = [];
-  final List<TextEditingController> maxPercentageController = [];
-  final List<TextEditingController> description2Controller = [];
+  final List<TextEditingController> assessTypeController = [];
+  final List<TextEditingController> codeController = [];
+  final List<TextEditingController> maxMarksController = [];
+  final List<TextEditingController> passPercentController = [];
 
   void _ensureSlotController(int index) {
-    while (rangeNameController.length <= index) {
-      rangeNameController.add(TextEditingController());
-      minimumPercentageController.add(TextEditingController());
-      maxPercentageController.add(TextEditingController());
-      description2Controller.add(TextEditingController());
+    while (assessTypeController.length <= index) {
+      assessTypeController.add(TextEditingController());
+      codeController.add(TextEditingController());
+      maxMarksController.add(TextEditingController());
+      passPercentController.add(TextEditingController());
     }
   }
 
@@ -144,10 +144,10 @@ class _EditUpdateAssessmentScreenState
           for (int i = 0; i < data.types.length; i++) {
             assessTypeData.add({
                 "typeId": data.types[i].id,
-                "assessType": rangeNameController[i].text,
-                "assessCode": data.types[i].code,
-                "assessMaxMarks": maxPercentageController[i].text,
-                "assessPassPercent": description2Controller[i].text
+                "assessType": assessTypeController[i].text,
+                "assessCode": codeController[i].text,
+                "assessMaxMarks": maxMarksController[i].text,
+                "assessPassPercent": passPercentController[i].text
             });
           }
           callApiSaveAssessment();
@@ -190,7 +190,7 @@ class _EditUpdateAssessmentScreenState
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         CustomTextField(
-                          hintText: 'Grade Name',
+                          hintText: 'Assessment Name',
                           isReadonly: false,
                           controller: gradeNameController,
                           keyboardType: TextInputType.name,
@@ -243,52 +243,52 @@ class _EditUpdateAssessmentScreenState
   }
 
   Widget assignmentCard(AssessmentTypeModel a, int index) {
-    rangeNameController[index].text = a.name;
-    minimumPercentageController[index].text = a.code;
-    maxPercentageController[index].text = a.maximumMarks;
-    description2Controller[index].text = a.passPercentage;
+    assessTypeController[index].text = a.name;
+    codeController[index].text = a.code;
+    maxMarksController[index].text = a.maximumMarks;
+    passPercentController[index].text = a.passPercentage;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         gap(10.0),
         CustomTextField(
-          hintText: 'Range Name',
+          hintText: 'Assessment type',
           isReadonly: false,
-          controller: rangeNameController[index],
+          controller: assessTypeController[index],
           keyboardType: TextInputType.name,
           onSave: (value) {
-            rangeNameController[index].text = value as String;
+            assessTypeController[index].text = value as String;
           },
         ),
         gap(10.0),
         CustomTextField(
-          hintText: 'Minimum Percentage',
+          hintText: 'Code',
           isReadonly: false,
-          controller: minimumPercentageController[index],
+          controller: codeController[index],
           keyboardType: TextInputType.text,
           onSave: (value) {
-            minimumPercentageController[index].text = value as String;
+            codeController[index].text = value as String;
           },
         ),
         gap(10.0),
         CustomTextField(
-          hintText: 'Max Percentage',
+          hintText: 'Max marks',
           isReadonly: false,
-          controller: maxPercentageController[index],
+          controller: maxMarksController[index],
           keyboardType: TextInputType.number,
           onSave: (value) {
-            maxPercentageController[index].text = value as String;
+            maxMarksController[index].text = value as String;
           },
         ),
         gap(10.0),
         CustomTextField(
-          hintText: 'Description',
+          hintText: 'Passing percentage',
           isReadonly: false,
-          controller: description2Controller[index],
+          controller: passPercentController[index],
           keyboardType: TextInputType.number,
           onSave: (value) {
-            description2Controller[index].text = value as String;
+            passPercentController[index].text = value as String;
           },
         ),
       ],

@@ -284,7 +284,7 @@ class _EditUpdateGradeScreenState extends State<EditUpdateGradeScreen> {
           hintText: 'Description',
           isReadonly: false,
           controller: description2Controller[index],
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.text,
           onSave: (value) {
             description2Controller[index].text = value as String;
           },

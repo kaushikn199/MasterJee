@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:masterjee/models/leads/add_camp_response.dart';
 import 'package:masterjee/models/leads/campaign_leads_response.dart';
+import 'package:masterjee/models/leads/campaign_response.dart';
 import 'package:masterjee/models/leads/followup_response.dart';
 import 'package:masterjee/models/leads/leads_response.dart';
 import 'package:masterjee/models/leads/missed_leads_response.dart';
@@ -17,6 +19,50 @@ class LeadsApi with ChangeNotifier {
     final responseData = await ApiHelper.post(ApiHelper.leads, body);
     print("responseData : ${responseData}");
     return LeadResponse.fromJson(responseData);
+  }
+
+
+  Future<CampaignResponse> campaign(String userId) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.campaign, body);
+    print("responseData : ${responseData}");
+    return CampaignResponse.fromJson(responseData);
+  }
+
+  Future<LeadResponse> takeLead(String userId,String lId) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'lId': lId,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.takeLead, body);
+    print("responseData : ${responseData}");
+    return LeadResponse.fromJson(responseData);
+  }
+
+  Future<AddCampResponse> addCampaign(String userId) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.addCampaign, body);
+    print("responseData : ${responseData}");
+    return AddCampResponse.fromJson(responseData);
+  }
+
+  Future<CampaignResponse> startCampaign(String userId,String newCampId,String actCampId) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'newCampId': newCampId,
+      'actCampId': actCampId,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.startCampaign, body);
+    print("responseData : ${responseData}");
+    return CampaignResponse.fromJson(responseData);
   }
 
   Future<FollowupResponse> allFollowup(String userId) async {
@@ -57,6 +103,27 @@ class LeadsApi with ChangeNotifier {
     print("responseData : ${responseData}");
     return CampaignLeadsResponse.fromJson(responseData);
   }
+
+  Future<CampaignLeadsResponse> saveCampaign(
+      String userId,
+      String ctId,
+      String cpId,
+      String cTitle,
+      String cDescription) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      "ctId": ctId,
+      "cpId": cpId,
+      "cTitle": cTitle,
+      "cDescription": cDescription,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveCampaign, body);
+    print("responseData : ${responseData}");
+    return CampaignLeadsResponse.fromJson(responseData);
+  }
+
+
 
   Future<ViewLeadsResponse> leadsView(String userId, String lId) async {
     Map<String, dynamic> body = {'userId': userId, "lId": lId};

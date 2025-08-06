@@ -48,6 +48,9 @@ import 'package:masterjee/screens/forgot_password_screen.dart';
 import 'package:masterjee/screens/gmeet_live_classes/gmeet_live_classes_screen.dart';
 import 'package:masterjee/screens/homework/homework_screen.dart';
 import 'package:masterjee/screens/hostel/hostel_screen.dart';
+import 'package:masterjee/screens/leads/add_campaign_screen.dart';
+import 'package:masterjee/screens/leads/add_lead_screen.dart';
+import 'package:masterjee/screens/leads/all_screen.dart';
 import 'package:masterjee/screens/leads/campaign_leads_screen.dart';
 import 'package:masterjee/screens/leads/edit_leads_screen.dart';
 import 'package:masterjee/screens/leads/followups_screen.dart';
@@ -249,6 +252,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         AddAssessmentScreen.routeName: (ctx) => const AddAssessmentScreen(),
                         AddGradesScreen.routeName: (ctx) => const AddGradesScreen(),
                         AddObservationScreen.routeName: (ctx) => const AddObservationScreen(),
+                        AddCampaignScreen.routeName: (ctx) => const AddCampaignScreen(),
+                        AddLeadScreen.routeName: (ctx) => const AddLeadScreen(),
+                        AllScreen.routeName: (ctx) => const AllScreen(),
                       },
                       home: const SplashScreen()),
                 );

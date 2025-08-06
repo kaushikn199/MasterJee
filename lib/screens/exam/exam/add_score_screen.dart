@@ -144,7 +144,7 @@ class _AddScoreScreenState extends State<AddScoreScreen> {
                   examTimetableId = examScoreList[studentIndex].assessmentScores[scoreIndex].examTimetableId;
                 }
                 data["tatid"] = examScoreList[studentIndex].assessmentScores[scoreIndex].assessmentTypeId;
-                data["eatid"] = examScoreList[studentIndex].assessmentScores[scoreIndex].assessmentTypeId;
+                data["eatid"] = examScoreList[studentIndex].assessmentScores[scoreIndex].assessmentId;
                 data["eascore"] = theoryMarkControllers[studentIndex][scoreIndex].text;
                 data["note"] = notesController[studentIndex].text;
               }

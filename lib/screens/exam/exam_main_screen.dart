@@ -204,7 +204,7 @@ class _ExamMainScreenState extends State<ExamMainScreen> with WidgetsBindingObse
                           size: 13, color: colorWhite)
                           .paddingOnly(top: 5, bottom: 5, left: 30, right: 30),
                     ),
-                  ).paddingOnly(left: 20,bottom: 10),
+                  ).paddingOnly(left: 20,bottom: 10,top: 10),
                   TabBar(
                     isScrollable: true,
                     controller: tabController,

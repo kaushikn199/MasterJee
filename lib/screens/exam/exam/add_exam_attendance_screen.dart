@@ -111,7 +111,7 @@ class _AddExamAttendanceScreenState extends State<AddExamAttendanceScreen> {
         appBar: AppBarTwo(title: AppTags.attendance),
         backgroundColor: colorGaryBG,
         bottomNavigationBar: CommonButton(
-          paddingHorizontal: 7,
+          paddingHorizontal: 10,
           cornersRadius: 10,
           text: AppTags.submit,
           onPressed: () {
@@ -123,7 +123,7 @@ class _AddExamAttendanceScreenState extends State<AddExamAttendanceScreen> {
             }
             callApiAddExamAttendance();
           },
-        ).paddingOnly(bottom: 30, left: 10, right: 10),
+        ).paddingOnly(bottom: 30, left:20, right: 20),
         body: Stack(
           children: [
             Builder(builder: (context) {
@@ -163,7 +163,7 @@ class _AddExamAttendanceScreenState extends State<AddExamAttendanceScreen> {
                         totalAttendanceDayController.text = value as String;
                       },
                     ),
-                    gap(10.0),
+                    gap(5.0),
                     Flexible(
                       child: ListView.builder(
                           shrinkWrap: true,
@@ -184,26 +184,28 @@ class _AddExamAttendanceScreenState extends State<AddExamAttendanceScreen> {
   Widget assignmentCard(ExamAssignedStudentsData data, int i) {
     totalPresentController.add(TextEditingController());
     return Container(
-      margin: EdgeInsets.only(bottom: 10.sp),
-      child: Row(
+      margin: EdgeInsets.only(left: 10,right: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
           CommonText.medium(
               "${data.firstname} ${data.lastname} ${" - ${data.fatherName}"}",
               size: 12.sp,
               color: kDarkGreyColor,
               overflow: TextOverflow.fade),
-          gap(10.0),
-          Flexible(
-            child: CustomTextField(
-              hintText: 'Total Present',
-              isReadonly: false,
-              controller: totalPresentController[i],
-              keyboardType: TextInputType.number,
-              onSave: (value) {
-                totalPresentController[i].text = value as String;
-              },
-            ),
+          gap(5.0),
+          CustomTextField(
+            hintText: 'Total Present',
+            isReadonly: false,
+            controller: totalPresentController[i],
+            keyboardType: TextInputType.number,
+            onSave: (value) {
+              totalPresentController[i].text = value as String;
+            },
           ),
+          gap(15.0),
         ],
       ),
     );

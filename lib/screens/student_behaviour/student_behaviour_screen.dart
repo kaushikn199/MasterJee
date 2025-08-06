@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/all_student/all_students_model.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/student_behavior/student_behavior_response.dart';
 import 'package:masterjee/others/ApiHelper.dart';
 import 'package:masterjee/others/StorageHelper.dart';
@@ -97,7 +100,7 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
 
   List<Map<String, String>> behaviours = [];
 
-  Future<void> callApiSaveStudentBehaviour() async {
+  Future<void> callApiSaveStudentBehaviour(String studentId) async {
     setState(() {
       _isLoading = true;
     });
@@ -106,12 +109,15 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
           listen: false)
           .saveStudentBehaviour(
           StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
-          "",
+          studentId,
           behaviours);
-      if (data.result!) {
+      if (data.result) {
         setState(() {
-          studentList = data.data ?? [];
+          behaviours.clear();
+          _selectedSubjectId = null;
           _isLoading = false;
+          _selectedSubject = null;
+          callApiStudentBehaviour();
         });
         return;
       } else {
@@ -272,12 +278,28 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
                       cornersRadius: 30,
                       text: AppTags.submit,
                       onPressed: () {
-                        //checkValidation(context);
-                        /*for (int i = 0; i < keyPointList.length; i++) {
-                          behaviours.add({
-                            "incident_id": keyPointList[i].id,
-                          });
-                        }*/
+                        int count = 0;
+                        for (int i = 0; i < keyPointList.length; i++) {
+                          if(keyPointList[i].isSelected == true) {
+                            count = count + 1;
+                          }
+                        }
+                        if(_selectedSubjectId == null){
+                          CommonFunctions.showWarningToast("Please select any student");
+                        }else if(count == 0){
+                          CommonFunctions.showWarningToast("Please select any checkbox");
+                        } else{
+                          for (int i = 0; i < keyPointList.length; i++) {
+                            if(keyPointList[i].isSelected == true) {
+                              behaviours.add({
+                                "incident_id": keyPointList[i].id!,
+                              });
+                            }
+                          }
+                          print("behaviours : ${jsonEncode(behaviours)} : ${behaviours.length}");
+                          print("_selectedSubjectId : $_selectedSubjectId");
+                          callApiSaveStudentBehaviour(_selectedSubjectId!);
+                        }
                       },
                     ),
                     gap(10.0)

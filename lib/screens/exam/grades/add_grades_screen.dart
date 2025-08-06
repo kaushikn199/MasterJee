@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/exam/grades/GradesInfoResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/exam_api.dart';
 
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class AddGradesScreen extends StatefulWidget {
   const AddGradesScreen({super.key});
@@ -43,6 +47,42 @@ class _AddGradesScreenState extends State<AddGradesScreen> {
 
   List<int> data = [];
 
+  List<Map<String, dynamic>> rangesData = [];
+
+  Future<void> callApiSaveGrade() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      GradesInfoResponse data =
+      await Provider.of<ExamApi>(context, listen: false).saveGrade(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          "",
+          gradeNameController.text,
+          descriptionController.text,
+          rangesData);
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+          Navigator.of(context).pop(true);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+        CommonFunctions.showWarningToast(error.toString());
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +93,22 @@ class _AddGradesScreenState extends State<AddGradesScreen> {
         cornersRadius: 10,
         text: AppTags.add,
         onPressed: () {
+          if(gradeNameController.text == ""){
+            CommonFunctions.showWarningToast("Please enter name");
+          }else if (descriptionController.text == ""){
+            CommonFunctions.showWarningToast("Please enter description");
+          }else{
+            for (int i = 0; i < data.length; i++) {
+              rangesData.add({
+                "rangeId": "",
+                "rname": rangeNameController[i].text,
+                "rangeMini": minimumPercentageController[i].text,
+                "rangeMax": maxPercentageController[i].text,
+                "rangeDescription": description2Controller[i].text
+              });
+            }
+            callApiSaveGrade();
+          }
         },
       ).paddingOnly(bottom: 30, left: 10, right: 10),
       body: Builder(builder: (context) {
@@ -127,10 +183,6 @@ class _AddGradesScreenState extends State<AddGradesScreen> {
   }
 
   Widget assignmentCard(int index) {
-   /* rangeNameController[index].text = data.name;
-    minimumPercentageController[index].text = data.minimumPercentage;
-    maxPercentageController[index].text = data.maximumPercentage;
-    description2Controller[index].text = data.description;*/
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +222,7 @@ class _AddGradesScreenState extends State<AddGradesScreen> {
           hintText: 'Description',
           isReadonly: false,
           controller: description2Controller[index],
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.text,
           onSave: (value) {
             description2Controller[index].text = value as String;
           },

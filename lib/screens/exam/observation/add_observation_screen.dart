@@ -5,13 +5,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
 import 'package:masterjee/models/exam/ObservationResponse.dart';
 import 'package:masterjee/models/exam/exam/ExamSubjectsResponse.dart';
+import 'package:masterjee/models/exam/observation/ObservationInfoResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class AddObservationScreen extends StatefulWidget {
   const AddObservationScreen({super.key});
@@ -31,14 +36,66 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
   late var descriptionController = TextEditingController();
   String? _selectedLesson = null;
   List<int> paramsList = [];
+  List<ObservationParamModel> paramsDropDownList = [];
   void _ensureSlotController(int index) {
     while (selectParameterController.length <= index) {
       selectParameterController.add(TextEditingController());
       maxMarkController.add(TextEditingController());
     }
   }
-  late List<ExamSubjectData> examSubjectDataList = [];
+  //late List<ExamSubjectData> examSubjectDataList = [];
   int _indexLesson = 0;
+  List<Map<String, String>> parametersData = [];
+  late ObservationModel observationModel;
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      observationModel = ModalRoute.of(context)!.settings.arguments as ObservationModel ;
+      if (observationModel != null && observationModel.id != null) {
+        paramsDropDownList = observationModel.params;
+        _ensureSlotController(paramsList.length);
+      }
+      _isInitialized = true;
+    }
+  }
+
+  Future<void> callApiSaveAssessment() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      ObservationInfoResponse data =
+      await Provider.of<ExamApi>(context, listen: false).saveObservation(
+        StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+        "",
+        observationNameController.text,
+        descriptionController.text,
+        parametersData,
+      );
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+          Navigator.of(context).pop(true);
+        });
+        return;
+      } else {
+        setState(() {
+          CommonFunctions.showWarningToast(data.message);
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        CommonFunctions.showWarningToast(error.toString());
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +107,16 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
         cornersRadius: 10,
         text: AppTags.add,
         onPressed: () {
+          /*for (int i = 0; i < paramsList.length; i++) {
+            parametersData.add({
+              "prmvlId": paramsList[i].pvid , //observationInfo - parameters - id
+              "paramId": paramsList[i].cbseObservationParameterId?? "0", //allObservation - params - id
+              "paramMaxMarks": maxMarkController[i].text
+            });
+          }
+          print(jsonEncode(parametersData));
+
+          callApiSaveAssessment();*/
         },
       ).paddingOnly(bottom: 30, left: 10, right: 10),
       body: Builder(builder: (context) {
@@ -138,12 +205,15 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
           ),
           color: colorWhite,
           child: Padding(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-            child: DropdownButton(
-              hint: const CommonText('Select class',
+            padding: const EdgeInsets.symmetric(
+                horizontal: 10, vertical: 2),
+            child:
+            DropdownButton(
+              hint: const CommonText('Select parameter',
                   size: 14, color: Colors.black54),
-              value: _selectedLesson,
+              value:  paramsDropDownList.any((e) => e.name == paramsDropDownList[index].selectedParam)
+                  ? paramsDropDownList[index].selectedParam
+                  : null,
               icon: const Card(
                 elevation: 0.1,
                 color: colorWhite,
@@ -152,23 +222,34 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
               underline: const SizedBox(),
               onChanged: (value) {
                 setState(() {
-                  _selectedLesson = null;
-                  _selectedLesson = value.toString();
+                  //observationModel.params[index].selectedParam = null;
+                  paramsDropDownList[index].selectedParam = value;
+                  print("selectedParam :  ${paramsDropDownList[index].selectedParam}");
                 });
               },
               isExpanded: true,
-              items: examSubjectDataList.map((cd) {
+              items: paramsDropDownList.map((cd) {
                 return DropdownMenuItem(
-                  value: cd.id + cd.ttid,
+                  value: cd.name,
                   onTap: () {
                     setState(() {
-                      _selectedLesson = cd.name;
-                      for (int i = 0; i < examSubjectDataList.length; i++) {
-                        if (examSubjectDataList[i].id == cd.id) {
+                      //  _selectedLesson = cd.name;
+                      // observationModel.params[index].selectedParam = null;
+                      paramsDropDownList[index].selectedParam = cd.name;
+                      paramsDropDownList[index].cbseObservationParameterId = cd.id;
+                      print("id : ${cd.id}");
+                      print("name : ${cd.name}");
+                      print("description : ${cd.description}");
+                      print("createdAt : ${cd.createdAt}");
+                      /*for (int i = 0; i < parameterList.length; i++) {
+                        if (parameterList[i].id == cd.id) {
                           _indexLesson = i;
+                          //_selectedTopic = null;
+                          //_selectedLessonId = lessonsMainList[i].id;
                           break;
                         }
-                      }
+                      }*/
+                      print("selectedParam_0 :  ${paramsDropDownList[index].selectedParam}");
                     });
                   },
                   child: Text(

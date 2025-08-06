@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:masterjee/constants.dart';
+import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/models/exam/assesment/assessment_info/AssessmentInfoResponse.dart';
+import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/exam_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class AddAssessmentScreen extends StatefulWidget {
   const AddAssessmentScreen({super.key});
@@ -18,26 +23,60 @@ class AddAssessmentScreen extends StatefulWidget {
 }
 
 class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
-
   var _isLoading = false;
-  late var gradeNameController = TextEditingController();
+  late var assessmentNameController = TextEditingController();
   late var descriptionController = TextEditingController();
 
-  final List<TextEditingController> rangeNameController = [];
-  final List<TextEditingController> minimumPercentageController = [];
-  final List<TextEditingController> maxPercentageController = [];
-  final List<TextEditingController> description2Controller = [];
+  final List<TextEditingController> assessTypeController = [];
+  final List<TextEditingController> codeController = [];
+  final List<TextEditingController> maxMarksController = [];
+  final List<TextEditingController> passPercentController = [];
 
   void _ensureSlotController(int index) {
-    while (rangeNameController.length <= index) {
-      rangeNameController.add(TextEditingController());
-      minimumPercentageController.add(TextEditingController());
-      maxPercentageController.add(TextEditingController());
-      description2Controller.add(TextEditingController());
+    while (assessTypeController.length <= index) {
+      assessTypeController.add(TextEditingController());
+      codeController.add(TextEditingController());
+      maxMarksController.add(TextEditingController());
+      passPercentController.add(TextEditingController());
     }
   }
 
   List<int> data = [];
+  List<Map<String, String>> assessTypeData = [];
+
+  Future<void> callApiSaveAssessment() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AssessmentInfoResponse data =
+          await Provider.of<ExamApi>(context, listen: false).saveAssessment(
+              StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+              "",
+              assessmentNameController.text,
+              descriptionController.text,
+              assessTypeData);
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+          Navigator.of(context).pop(true);
+        });
+        return;
+      } else {
+        setState(() {
+          CommonFunctions.showWarningToast(data.message);
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        CommonFunctions.showWarningToast(error.toString());
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +88,22 @@ class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
         cornersRadius: 10,
         text: AppTags.add,
         onPressed: () {
-
+          if (assessmentNameController.text == "") {
+            CommonFunctions.showWarningToast("Please assessment Name");
+          } else if (descriptionController.text == "") {
+            CommonFunctions.showWarningToast("Please enter description");
+          } else {
+            for (int i = 0; i < data.length; i++) {
+              assessTypeData.add({
+                "typeId": "",
+                "assessType": assessTypeController[i].text,
+                "assessCode": codeController[i].text,
+                "assessMaxMarks": maxMarksController[i].text,
+                "assessPassPercent": passPercentController[i].text
+              });
+            }
+            callApiSaveAssessment();
+          }
         },
       ).paddingOnly(bottom: 30, left: 10, right: 10),
       body: Builder(builder: (context) {
@@ -72,12 +126,12 @@ class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       CustomTextField(
-                        hintText: 'Grade Name',
+                        hintText: 'Assessment Name',
                         isReadonly: false,
-                        controller: gradeNameController,
+                        controller: assessmentNameController,
                         keyboardType: TextInputType.name,
                         onSave: (value) {
-                          gradeNameController.text = value as String;
+                          assessmentNameController.text = value as String;
                         },
                       ),
                       gap(10.0),
@@ -124,56 +178,51 @@ class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
   }
 
   Widget assignmentCard(int index) {
-    /*rangeNameController[index].text = a.name;
-    minimumPercentageController[index].text = a.code;
-    maxPercentageController[index].text = a.maximumMarks;
-    description2Controller[index].text = a.passPercentage;*/
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         gap(10.0),
         CustomTextField(
-          hintText: 'Range Name',
+          hintText: 'Assessment type',
           isReadonly: false,
-          controller: rangeNameController[index],
+          controller: assessTypeController[index],
           keyboardType: TextInputType.name,
           onSave: (value) {
-            rangeNameController[index].text = value as String;
+            assessTypeController[index].text = value as String;
           },
         ),
         gap(10.0),
         CustomTextField(
-          hintText: 'Minimum Percentage',
+          hintText: 'Code',
           isReadonly: false,
-          controller: minimumPercentageController[index],
+          controller: codeController[index],
           keyboardType: TextInputType.text,
           onSave: (value) {
-            minimumPercentageController[index].text = value as String;
+            codeController[index].text = value as String;
           },
         ),
         gap(10.0),
         CustomTextField(
-          hintText: 'Max Percentage',
+          hintText: 'Max marks',
           isReadonly: false,
-          controller: maxPercentageController[index],
+          controller: maxMarksController[index],
           keyboardType: TextInputType.number,
           onSave: (value) {
-            maxPercentageController[index].text = value as String;
+            maxMarksController[index].text = value as String;
           },
         ),
         gap(10.0),
         CustomTextField(
-          hintText: 'Description',
+          hintText: 'Passing percentage',
           isReadonly: false,
-          controller: description2Controller[index],
+          controller: passPercentController[index],
           keyboardType: TextInputType.number,
           onSave: (value) {
-            description2Controller[index].text = value as String;
+            passPercentController[index].text = value as String;
           },
         ),
       ],
     );
   }
-
 }

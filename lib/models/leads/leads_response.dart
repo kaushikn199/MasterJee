@@ -135,6 +135,7 @@ class MissedFollowup {
   }
 }
 
+/*
 class Lead {
   final String leadId;
   final String name;
@@ -165,4 +166,72 @@ class Lead {
       'take_lead_url': takeLeadUrl,
     };
   }
+}*/
+
+class Lead {
+  final String lId;
+  final String cId;
+  final String lName;
+  final String lGender;
+  final String lDob;
+  final String lAadharNo;
+  final String lPhoneNumber;
+  final String lEmail;
+  final String lStatus;
+  final String cTitle;
+  final String cDescription;
+  final String cDate;
+  final String cStatus;
+
+  Lead({
+    required this.lId,
+    required this.cId,
+    required this.lName,
+    required this.lGender,
+    required this.lDob,
+    required this.lAadharNo,
+    required this.lPhoneNumber,
+    required this.lEmail,
+    required this.lStatus,
+    required this.cTitle,
+    required this.cDescription,
+    required this.cDate,
+    required this.cStatus,
+  });
+
+  factory Lead.fromJson(Map<String, dynamic> json) {
+    return Lead(
+      lId: json['l_id'] as String? ?? '',
+      cId: json['c_id'] as String? ?? '',
+      lName: json['l_name'] as String? ?? '',
+      lGender: json['l_gender'] as String? ?? '',
+      lDob: json['l_dob'] as String? ?? '',
+      lAadharNo: json['l_aadhar_no'] as String? ?? '',
+      lPhoneNumber: json['l_phone_number'] as String? ?? '',
+      lEmail: json['l_email'] as String? ?? '',
+      lStatus: json['l_status'] as String? ?? '',
+      cTitle: json['c_title'] as String? ?? '',
+      cDescription: json['c_description'] as String? ?? '',
+      cDate: json['c_date'] as String? ?? '',
+      cStatus: json['c_status'] as String? ?? '',
+    );
+  }
+
+
+  Map<String, dynamic> toJson() => {
+    'l_id': lId,
+    'c_id': cId,
+    'l_name': lName,
+    'l_gender': lGender,
+    'l_dob': lDob,
+    'l_aadhar_no': lAadharNo,
+    'l_phone_number': lPhoneNumber,
+    'l_email': lEmail,
+    'l_status': lStatus,
+    'c_title': cTitle,
+    'c_description': cDescription,
+    'c_date': cDate,
+    'c_status': cStatus,
+  };
 }
+

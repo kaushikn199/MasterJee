@@ -90,6 +90,11 @@ class AppTags {
   static const String studentReports = 'Student reports';
   static const String guardianReports = 'Guardian reports';
   static const String parentLogin = 'Parent login';
+  static const String addCampaign = 'Add Campaign';
+  static const String addLeads = 'Add Leads';
+  static const String takeLeads = 'Take Leads';
+  static const String all = 'All';
+  static const String myCamp = 'My Camp';
 
 }
 

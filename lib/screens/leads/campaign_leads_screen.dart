@@ -71,7 +71,7 @@ class _CampaignLeadsScreenState extends State<CampaignLeadsScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBarTwo(title: AppTags.attendance),
+      appBar: AppBarTwo(title: AppTags.leads),
       body: Builder(builder: (context) {
         if (_isLoading) {
           return SizedBox(

@@ -92,7 +92,7 @@ class _ViewScreenState extends State<ViewScreen> {
       BehaviourViewResponse data =
       await Provider.of<StudentBehaviorApi>(context, listen: false)
           .saveIncidentComment(
-          userId,
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
           incidentId,
           comment);
       if (data.result) {
