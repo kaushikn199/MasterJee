@@ -111,6 +111,9 @@ class ApiHelper {
   static const startCampaign = 'startCampaign';
   static const addCampaign = 'addCampaign';
   static const saveCampaign = 'saveCampaign';
+  static const addLead = 'addLead';
+  static const importLead = 'importLead';
+  static const saveExam = 'saveExam';
 
   static const Map<String, String> defaultHeaders = {
     'Client-Service': "smartschool",

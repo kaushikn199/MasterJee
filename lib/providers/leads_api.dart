@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:masterjee/models/leads/add_camp_response.dart';
+import 'package:masterjee/models/leads/add_lead_response.dart';
 import 'package:masterjee/models/leads/campaign_leads_response.dart';
 import 'package:masterjee/models/leads/campaign_response.dart';
 import 'package:masterjee/models/leads/followup_response.dart';
@@ -75,9 +76,16 @@ class LeadsApi with ChangeNotifier {
     return FollowupResponse.fromJson(responseData);
   }
 
-  Future<MissedLeadsResponse> missedLeads(String userId) async {
+  Future<MissedLeadsResponse> missedLeads(
+      String userId,
+      String fdate,
+      String tdate,
+      String mnumber) async {
     Map<String, dynamic> body = {
       'userId': userId,
+      'fdate': fdate,
+      'tdate': tdate,
+      'mnumber': mnumber,
     };
     print("body : ${body}");
     final responseData = await ApiHelper.post(ApiHelper.missedLeads, body);
@@ -85,9 +93,12 @@ class LeadsApi with ChangeNotifier {
     return MissedLeadsResponse.fromJson(responseData);
   }
 
-  Future<MissedLeadsResponse> walkinLeads(String userId) async {
+  Future<MissedLeadsResponse> walkinLeads(String userId,String fdate,String tdate,String mnumber) async {
     Map<String, dynamic> body = {
       'userId': userId,
+      'fdate': fdate,
+      'tdate': tdate,
+      'mnumber': mnumber,
     };
     print("body : ${body}");
     final responseData = await ApiHelper.post(ApiHelper.walkinLeads, body);
@@ -216,4 +227,26 @@ class LeadsApi with ChangeNotifier {
     print("saveLead : $responseData");
     return GroupedStudentsResponse.fromJson(responseData);
   }
+
+  Future<AddLeadResponse> addLead(String userId) async {
+    Map<String, dynamic> body = {
+      'userId': userId
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.addLead, body);
+    print("responseData : ${responseData}");
+    return AddLeadResponse.fromJson(responseData);
+  }
+
+  Future<AddLeadResponse> importLead(String userId,String file) async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'file': file
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.importLead, body);
+    print("responseData : ${responseData}");
+    return AddLeadResponse.fromJson(responseData);
+  }
+
 }

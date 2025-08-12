@@ -118,6 +118,7 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
           _isLoading = false;
           _selectedSubject = null;
           callApiStudentBehaviour();
+          CommonFunctions.showWarningToast(data.message);
         });
         return;
       } else {
@@ -253,7 +254,7 @@ class _StudentBehaviourScreenState extends State<StudentBehaviourScreen> {
                                 });
                               },
                               child: Text(
-                                cd.firstname.toString(),
+                                  "${cd.admissionNo} ${cd.firstname}",
                                 style: const TextStyle(
                                   color: colorBlack,
                                   fontSize: 14,

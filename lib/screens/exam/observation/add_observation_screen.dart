@@ -29,14 +29,13 @@ class AddObservationScreen extends StatefulWidget {
 
 class _AddObservationScreenState extends State<AddObservationScreen> {
 
+  List<ObservationParamModel> paramsList = [];
   var _isLoading = false;
   late List<TextEditingController> selectParameterController = [];
   late List<TextEditingController> maxMarkController = [];
   late var observationNameController = TextEditingController();
   late var descriptionController = TextEditingController();
   String? _selectedLesson = null;
-  List<int> paramsList = [];
-  List<ObservationParamModel> paramsDropDownList = [];
   void _ensureSlotController(int index) {
     while (selectParameterController.length <= index) {
       selectParameterController.add(TextEditingController());
@@ -46,19 +45,44 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
   //late List<ExamSubjectData> examSubjectDataList = [];
   int _indexLesson = 0;
   List<Map<String, String>> parametersData = [];
-  late ObservationModel observationModel;
   bool _isInitialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_isInitialized) {
-      observationModel = ModalRoute.of(context)!.settings.arguments as ObservationModel ;
+    /*if (!_isInitialized) {
+      observationModel = ModalRoute.of(context)?.settings.arguments as ObservationModel;
       if (observationModel != null && observationModel.id != null) {
         paramsDropDownList = observationModel.params;
         _ensureSlotController(paramsList.length);
       }
       _isInitialized = true;
+    }*/
+    callApiAllObservationInfo();
+  }
+
+  @override
+  void initState() {
+    callApiAllObservationInfo();
+    super.initState();
+  }
+
+  List<Parameter> parameterList = [];
+
+  Future<void> callApiAllObservationInfo() async {
+    try {
+      ObservationInfoResponse data =
+      await Provider.of<ExamApi>(context, listen: false).observationInfo(
+          StorageHelper.getStringData(StorageHelper.userIdKey).toString(),
+          "");
+      if (data.result) {
+        setState(() {
+          parameterList = data.data.parameters ?? [];
+        });
+        return;
+      }
+    } catch (error) {
+        print("callApiAllObservationInfo_error : $error");
     }
   }
 
@@ -107,16 +131,18 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
         cornersRadius: 10,
         text: AppTags.add,
         onPressed: () {
-          /*for (int i = 0; i < paramsList.length; i++) {
+          for (int i = 0; i < paramsList.length; i++) {
+            // if(paramsList[i].selectedParamId != null) {
             parametersData.add({
-              "prmvlId": paramsList[i].pvid , //observationInfo - parameters - id
+              "prmvlId": "" , //observationInfo - parameters - id
               "paramId": paramsList[i].cbseObservationParameterId?? "0", //allObservation - params - id
               "paramMaxMarks": maxMarkController[i].text
             });
+            // }
           }
           print(jsonEncode(parametersData));
 
-          callApiSaveAssessment();*/
+          callApiSaveAssessment();
         },
       ).paddingOnly(bottom: 30, left: 10, right: 10),
       body: Builder(builder: (context) {
@@ -174,7 +200,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
                           onPressed: () {
                             setState(() {
                               _ensureSlotController(paramsList.length + 1);
-                              paramsList.add(0);
+                              paramsList.add(ObservationParamModel());
                             });
                           },
                         ),
@@ -191,8 +217,6 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
   }
 
   Widget assignmentCard(int index) {
-    //maxMarkController[index].text = a.maximumMarks.toString();
-    //  paramsList[index].selectedParam = paramsList[index].pname ?? "";
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,8 +235,8 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
             DropdownButton(
               hint: const CommonText('Select parameter',
                   size: 14, color: Colors.black54),
-              value:  paramsDropDownList.any((e) => e.name == paramsDropDownList[index].selectedParam)
-                  ? paramsDropDownList[index].selectedParam
+              value:  parameterList.any((e) => e.name == paramsList[index].selectedParam)
+                  ? paramsList[index].selectedParam
                   : null,
               icon: const Card(
                 elevation: 0.1,
@@ -223,20 +247,20 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
               onChanged: (value) {
                 setState(() {
                   //observationModel.params[index].selectedParam = null;
-                  paramsDropDownList[index].selectedParam = value;
-                  print("selectedParam :  ${paramsDropDownList[index].selectedParam}");
+                  paramsList[index].selectedParam = value;
+                  print("selectedParam :  ${paramsList[index].selectedParam}");
                 });
               },
               isExpanded: true,
-              items: paramsDropDownList.map((cd) {
+              items: parameterList.map((cd) {
                 return DropdownMenuItem(
                   value: cd.name,
                   onTap: () {
                     setState(() {
                       //  _selectedLesson = cd.name;
                       // observationModel.params[index].selectedParam = null;
-                      paramsDropDownList[index].selectedParam = cd.name;
-                      paramsDropDownList[index].cbseObservationParameterId = cd.id;
+                      paramsList[index].selectedParam = cd.name;
+                      paramsList[index].cbseObservationParameterId = cd.id;
                       print("id : ${cd.id}");
                       print("name : ${cd.name}");
                       print("description : ${cd.description}");
@@ -249,7 +273,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
                           break;
                         }
                       }*/
-                      print("selectedParam_0 :  ${paramsDropDownList[index].selectedParam}");
+                      print("selectedParam_0 :  ${paramsList[index].selectedParam}");
                     });
                   },
                   child: Text(

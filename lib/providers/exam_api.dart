@@ -215,6 +215,36 @@ class ExamApi with ChangeNotifier {
     return ObservationInfoResponse.fromJson(responseData);
   }
 
+  Future<ExamSubjectResponse> saveExam(
+      String userId,
+      String classId,
+      String sectionId,
+      String term,
+      String assessment,
+      String grade,
+      String examName,
+      String description,
+      String publish,
+      )
+  async {
+    Map<String, dynamic> body = {
+      'userId': userId,
+      'classId': classId,
+      'sectionId': sectionId,
+      'term': term,
+      'assessment': assessment,
+      'grade': grade,
+      'examName': examName,
+      'description': description,
+      'publish': publish,
+    };
+    print("body : ${body}");
+    final responseData = await ApiHelper.post(ApiHelper.saveExam, body);
+    print("responseData : ${responseData}");
+    return ExamSubjectResponse.fromJson(responseData);
+  }
+
+
   Future<ExamSubjectResponse> examSubjects(String userId,String examId)
   async {
     Map<String, dynamic> body = {

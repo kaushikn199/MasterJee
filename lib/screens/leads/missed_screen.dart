@@ -24,7 +24,7 @@ class MissedScreen extends StatefulWidget {
 
 class _MissedScreenState extends State<MissedScreen> {
 
-  List<FollowUpStatus> followUpStatusList = [];
+  List<FollowUpStatus> callStatusList = [];
   List<AllFollowUp> missedFollowupList = [];
   bool _isLoading = false;
 
@@ -40,10 +40,14 @@ class _MissedScreenState extends State<MissedScreen> {
     });
     try {
       MissedLeadsResponse data = await Provider.of<LeadsApi>(context, listen: false)
-          .missedLeads(StorageHelper.getStringData(StorageHelper.userIdKey));
+          .missedLeads(
+          StorageHelper.getStringData(StorageHelper.userIdKey),
+          _fromDateController.text,
+          _toDateController.text,
+          _selectedCallStatusId == null ? "" : _selectedCallStatusId.toString());
       if (data.status == "success") {
         setState(() {
-          followUpStatusList = data.data.followUpStatus;
+          callStatusList = data.data.followUpStatus;
           missedFollowupList = data.data.allFollowUp;
           _isLoading = false;
         });
@@ -97,34 +101,12 @@ class _MissedScreenState extends State<MissedScreen> {
     }
   }
 
-  String? _selectedClass;
-  late List<ClassData> loadedClassList = [];
-  String? _selectedSection;
+  String? _selectedCallStatus;
+ // late List<ClassData> loadedClassList = [];
+  String? _selectedCallStatusId = null;
+
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * .5,
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-    if (missedFollowupList.isEmpty) {
-      return Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-            CommonText.medium('No Record Found',
-                size: 16.sp,
-                color: kDarkGreyColor,
-                overflow: TextOverflow.fade),
-          ],
-        ),
-      );
-    }
     return Container(
       height: double.infinity,
       color: kBackgroundColor,
@@ -132,13 +114,12 @@ class _MissedScreenState extends State<MissedScreen> {
         padding: EdgeInsets.symmetric(horizontal: 10.sp),
         child: Column(
           children: [
+            // Row 1: Date fields
             Row(
               children: [
                 Flexible(
                   child: CustomTextField(
-                    onTap: () {
-                      _selectFromDate(context);
-                    },
+                    onTap: () => _selectFromDate(context),
                     hintText: 'From date',
                     isRequired: true,
                     prefixIcon: const Icon(
@@ -155,9 +136,7 @@ class _MissedScreenState extends State<MissedScreen> {
                 gap(10.0),
                 Flexible(
                   child: CustomTextField(
-                    onTap: () {
-                      _selectToDate(context);
-                    },
+                    onTap: () => _selectToDate(context),
                     hintText: 'To date',
                     isRequired: true,
                     prefixIcon: const Icon(
@@ -172,94 +151,117 @@ class _MissedScreenState extends State<MissedScreen> {
                   ),
                 ),
               ],
-            ).paddingOnly(left: 10.0,right: 10.0),
+            ).paddingOnly(left: 10.0, right: 10.0),
+
+            // Row 2: Dropdown + Button
             Row(
               children: [
                 Flexible(
-                    child: Card(
-                      elevation: 0.1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      color: colorWhite,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 2),
-                        child: DropdownButton(
-                          hint: const CommonText('Select class',
-                              size: 14, color: Colors.black54),
-                          value: _selectedClass,
-                          icon: const Card(
-                            elevation: 0.1,
-                            color: colorWhite,
-                            child: Icon(Icons.keyboard_arrow_down_outlined),
-                          ),
-                          underline: const SizedBox(),
-                          onChanged: (value) {},
-                          isExpanded: true,
-                          items: loadedClassList.map((cd) {
-                            return DropdownMenuItem(
-                              value: cd.className,
-                              onTap: () {
-                                setState(() {
-                                  _selectedClass = null;
-                                  _selectedClass = cd.className.toString();
-                                  for (int i = 0;
-                                  i < loadedClassList.length;
-                                  i++) {
-                                    if (loadedClassList[i]
-                                        .className
-                                        .toString()
-                                        .toLowerCase() ==
-                                        cd.className
-                                            .toString()
-                                            .toLowerCase()) {
-                                      //_classId = loadedClassList[i].classId;
-                                     // classData = loadedClassList[i];
-                                      _selectedSection = null;
-                                      break;
-                                    }
-                                  }
-                                });
-                              },
-                              child: Text(
-                                cd.className,
-                                style: const TextStyle(
-                                  color: colorBlack,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                  child: Card(
+                    elevation: 0.1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    color: colorWhite,
+                    child: Padding(
+                      padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                      child: DropdownButton(
+                        hint: const CommonText('Select call status',
+                            size: 14, color: Colors.black54),
+                        value: _selectedCallStatus,
+                        icon: const Card(
+                          elevation: 0.1,
+                          color: colorWhite,
+                          child: Icon(Icons.keyboard_arrow_down_outlined),
                         ),
+                        underline: const SizedBox(),
+                        onChanged: (value) {
+                          _selectedCallStatus = null;
+                          _selectedCallStatus = value.toString();
+                        },
+                        isExpanded: true,
+                        items: callStatusList.map((cd) {
+                          return DropdownMenuItem(
+                            value: cd.fwsId,
+                            onTap: () {
+                              setState(() {
+                                _selectedCallStatus = null;
+                                _selectedCallStatus = cd.title;
+                                for (int i = 0;
+                                i < callStatusList.length;
+                                i++) {
+                                  if (callStatusList[i].fwsId == cd.fwsId) {
+                                    _selectedCallStatusId =
+                                        callStatusList[i].fwsId;
+                                    break;
+                                  }
+                                }
+                              });
+                            },
+                            child: Text(
+                              cd.title,
+                              style: const TextStyle(
+                                color: colorBlack,
+                                fontSize: 14,
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
-                    )
+                    ),
+                  ),
                 ),
                 gap(5.0),
-                Flexible(child: CommonButton(
-                  paddingHorizontal: 5,
-                  cornersRadius: 50,
-                  text: AppTags.submit,
-                  onPressed: () {
-                  },
-                ))
+                Flexible(
+                  child: CommonButton(
+                    paddingHorizontal: 5,
+                    cornersRadius: 50,
+                    text: AppTags.submit,
+                    onPressed: () {
+                      callApiMissedLeads();
+                    },
+                  ),
+                ),
               ],
-            ).paddingOnly(left: 5.0,right: 10.0),
+            ).paddingOnly(left: 5.0, right: 10.0),
+
+            // Main Content
             Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: missedFollowupList.length,
-                  padding: EdgeInsets.only(top: 10.sp),
-                  itemBuilder: (BuildContext context, int index) {
-                    AllFollowUp data = missedFollowupList[index];
-                    return InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context,
-                            LeadsViewScreen.routeName,
-                            arguments:data.lId);
-                      },
-                        child: leadsCard(data, context));
-                  }),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : missedFollowupList.isEmpty
+                  ? Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.hourglass_empty_outlined, size: 100.sp),
+                    CommonText.medium('No Record Found',
+                        size: 16.sp,
+                        color: kDarkGreyColor,
+                        overflow: TextOverflow.fade),
+                  ],
+                ),
+              )
+                  : ListView.builder(
+                shrinkWrap: true,
+                itemCount: missedFollowupList.length,
+                padding: EdgeInsets.only(top: 10.sp),
+                itemBuilder: (BuildContext context, int index) {
+                  AllFollowUp data = missedFollowupList[index];
+                  return InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        LeadsViewScreen.routeName,
+                        arguments: data.lId,
+                      );
+                    },
+                    child: leadsCard(data, context),
+                  );
+                },
+              ),
             ),
           ],
         ),

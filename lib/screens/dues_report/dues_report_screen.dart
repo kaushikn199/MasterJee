@@ -127,7 +127,7 @@ class _DuesReportScreenState extends State<DuesReportScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                     "${data.studentId} ${data.firstname}",
+                     "${data.admissionNo} ${data.studentId} ${data.firstname}",
                       style: TextStyle(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w700,

@@ -12,6 +12,7 @@ import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
+import 'package:quill_html_editor/quill_html_editor.dart';
 
 class WalkInScreen extends StatefulWidget {
   const WalkInScreen({super.key});
@@ -40,7 +41,10 @@ class _WalkInScreenState extends State<WalkInScreen> {
     });
     try {
       MissedLeadsResponse data = await Provider.of<LeadsApi>(context, listen: false)
-          .walkinLeads(StorageHelper.getStringData(StorageHelper.userIdKey));
+          .walkinLeads(StorageHelper.getStringData(StorageHelper.userIdKey),
+          _fromDateController.text,
+          _toDateController.text,
+          mobileNumberController.text);
       if (data.status == "success") {
         setState(() {
           followUpStatusList = data.data.followUpStatus;
@@ -82,6 +86,7 @@ class _WalkInScreenState extends State<WalkInScreen> {
 
   DateTime? _selectedToDate;
   final _toDateController = TextEditingController();
+  final mobileNumberController = TextEditingController();
   Future<void> _selectToDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -103,151 +108,107 @@ class _WalkInScreenState extends State<WalkInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * .5,
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-    if (missedFollowupList.isEmpty) {
-      return Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.hourglass_empty_outlined, size: 100.sp),
-            CommonText.medium('No Record Found',
-                size: 16.sp,
-                color: kDarkGreyColor,
-                overflow: TextOverflow.fade),
-          ],
-        ),
-      );
-    }
-    return Container(
-      height: double.infinity,
-      color: kBackgroundColor,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.sp),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Flexible(
-                  child: CustomTextField(
-                    onTap: () {
-                      _selectFromDate(context);
-                    },
-                    hintText: 'From date',
-                    isRequired: true,
-                    prefixIcon: const Icon(
-                      Icons.date_range_outlined,
-                      color: kTextLowBlackColor,
-                    ),
-                    isReadonly: true,
-                    controller: _fromDateController,
-                    onSave: (value) {
-                      _fromDateController.text = value as String;
-                    },
-                  ),
-                ),
-                gap(10.0),
-                Flexible(
-                  child: CustomTextField(
-                    onTap: () {
-                      _selectToDate(context);
-                    },
-                    hintText: 'To date',
-                    isRequired: true,
-                    prefixIcon: const Icon(
-                      Icons.date_range_outlined,
-                      color: kTextLowBlackColor,
-                    ),
-                    isReadonly: true,
-                    controller: _toDateController,
-                    onSave: (value) {
-                      _toDateController.text = value as String;
-                    },
-                  ),
-                ),
-              ],
-            ).paddingOnly(left: 10.0,right: 10.0),
-            Row(
-              children: [
-                Flexible(
-                    child: Card(
-                      elevation: 0.1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
+      return Container(
+        height: double.infinity,
+        color: kBackgroundColor,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.sp),
+          child: Column(
+            children: [
+              // Row 1: From Date & To Date
+              Row(
+                children: [
+                  Flexible(
+                    child: CustomTextField(
+                      onTap: () {
+                        _selectFromDate(context);
+                      },
+                      hintText: 'From date',
+                      isRequired: true,
+                      prefixIcon: const Icon(
+                        Icons.date_range_outlined,
+                        color: kTextLowBlackColor,
                       ),
-                      color: colorWhite,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 2),
-                        child: DropdownButton(
-                          hint: const CommonText('Select class',
-                              size: 14, color: Colors.black54),
-                          value: _selectedClass,
-                          icon: const Card(
-                            elevation: 0.1,
-                            color: colorWhite,
-                            child: Icon(Icons.keyboard_arrow_down_outlined),
-                          ),
-                          underline: const SizedBox(),
-                          onChanged: (value) {},
-                          isExpanded: true,
-                          items: loadedClassList.map((cd) {
-                            return DropdownMenuItem(
-                              value: cd.className,
-                              onTap: () {
-                                setState(() {
-                                  _selectedClass = null;
-                                  _selectedClass = cd.className.toString();
-                                  for (int i = 0;
-                                  i < loadedClassList.length;
-                                  i++) {
-                                    if (loadedClassList[i]
-                                        .className
-                                        .toString()
-                                        .toLowerCase() ==
-                                        cd.className
-                                            .toString()
-                                            .toLowerCase()) {
-                                      //_classId = loadedClassList[i].classId;
-                                      // classData = loadedClassList[i];
-                                      _selectedSection = null;
-                                      break;
-                                    }
-                                  }
-                                });
-                              },
-                              child: Text(
-                                cd.className,
-                                style: const TextStyle(
-                                  color: colorBlack,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
+                      isReadonly: true,
+                      controller: _fromDateController,
+                      onSave: (value) {
+                        _fromDateController.text = value as String;
+                      },
+                    ),
+                  ),
+                  gap(10.0),
+                  Flexible(
+                    child: CustomTextField(
+                      onTap: () {
+                        _selectToDate(context);
+                      },
+                      hintText: 'To date',
+                      isRequired: true,
+                      prefixIcon: const Icon(
+                        Icons.date_range_outlined,
+                        color: kTextLowBlackColor,
                       ),
-                    )
-                ),
-                gap(5.0),
-                Flexible(child: CommonButton(
-                  paddingHorizontal: 5,
-                  cornersRadius: 50,
-                  text: AppTags.submit,
-                  onPressed: () {
-                  },
-                ))
-              ],
-            ).paddingOnly(left: 5.0,right: 10.0),
-            Expanded(
-              child: ListView.builder(
+                      isReadonly: true,
+                      controller: _toDateController,
+                      onSave: (value) {
+                        _toDateController.text = value as String;
+                      },
+                    ),
+                  ),
+                ],
+              ).paddingOnly(left: 10.0, right: 10.0),
+
+              // Row 2: Mobile Number & Submit
+              Row(
+                children: [
+                  Flexible(
+                    child: CustomTextField(
+                      keyboardType: TextInputType.number,
+                      hintText: 'Mobile number',
+                      isRequired: true,
+                      controller: mobileNumberController,
+                      onSave: (value) {
+                        mobileNumberController.text = value as String;
+                      },
+                    ),
+                  ),
+                  gap(5.0),
+                  Flexible(
+                    child: CommonButton(
+                      paddingHorizontal: 5,
+                      cornersRadius: 50,
+                      text: AppTags.submit,
+                      onPressed: () {
+                        callApiWalkinLeads();
+                      },
+                    ),
+                  )
+                ],
+              ).paddingOnly(left: 5.0, right: 10.0),
+
+              // Row 3: Loader / No Data / List
+              Expanded(
+                child: _isLoading
+                    ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+                    : missedFollowupList.isEmpty
+                    ? Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.hourglass_empty_outlined, size: 100.sp),
+                      CommonText.medium(
+                        'No Record Found',
+                        size: 16.sp,
+                        color: kDarkGreyColor,
+                        overflow: TextOverflow.fade,
+                      ),
+                    ],
+                  ),
+                )
+                    : ListView.builder(
                   shrinkWrap: true,
                   itemCount: missedFollowupList.length,
                   padding: EdgeInsets.only(top: 10.sp),
@@ -255,18 +216,22 @@ class _WalkInScreenState extends State<WalkInScreen> {
                     AllFollowUp data = missedFollowupList[index];
                     return InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context,
-                            LeadsViewScreen.routeName,
-                            arguments:data.lId);
+                        Navigator.pushNamed(
+                          context,
+                          LeadsViewScreen.routeName,
+                          arguments: data.lId,
+                        );
                       },
-                        child: leadsCard(data, context));
-                  }),
-            ),
-          ],
+                      child: leadsCard(data, context),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   Widget leadsCard(AllFollowUp data, BuildContext context) {
     return Container(

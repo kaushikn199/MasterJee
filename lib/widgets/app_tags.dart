@@ -95,6 +95,7 @@ class AppTags {
   static const String takeLeads = 'Take Leads';
   static const String all = 'All';
   static const String myCamp = 'My Camp';
+  static const String importLead = 'Import lead';
 
 }
 

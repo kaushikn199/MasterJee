@@ -57,6 +57,7 @@ class _EditLeadsScreenState extends State<EditLeadsScreen> {
         setState(() {
           _isLoading = false;
           CommonFunctions.showWarningToast(data.message);
+          Navigator.pop(context);
         });
         return;
       } else {

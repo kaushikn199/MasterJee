@@ -262,7 +262,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CommonText.bold(
+                            CommonText.bold("${studentList[index].admissionNo ?? ''} "
                                 "${studentList[index].firstname ?? ''} "
                                     "${studentList[index].middlename ?? ''}",
                                 size: 14,

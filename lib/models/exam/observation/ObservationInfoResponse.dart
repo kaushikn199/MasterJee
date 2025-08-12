@@ -70,12 +70,16 @@ class Parameter {
   final String name;
   final String description;
   final String createdAt;
+  String? selectedParam;
+  String? cbseObservationParameterId;
 
   Parameter({
     required this.id,
     required this.name,
     required this.description,
     required this.createdAt,
+    this.selectedParam,
+    this.cbseObservationParameterId,
   });
 
   factory Parameter.fromJson(Map<String, dynamic> json) {
@@ -84,6 +88,8 @@ class Parameter {
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       createdAt: json['created_at'] ?? '',
+      selectedParam: json['selectedParam'] ?? '',
+      cbseObservationParameterId: json['cbseObservationParameterId'] ?? '',
     );
   }
 }

@@ -293,6 +293,7 @@ class _TimeTableStudentsScreenState extends State<TimeTableStudentsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CommonText.bold(
+                                "${timetableStudentsList[index].admissionNo ?? ''} "
                                 "${timetableStudentsList[index].firstname ?? ''} "
                                 "${timetableStudentsList[index].middlename ?? ''}",
                                 size: 14,

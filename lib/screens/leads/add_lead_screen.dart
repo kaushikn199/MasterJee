@@ -4,14 +4,18 @@ import 'package:get/get_utils/src/extensions/widget_extensions.dart';
 import 'package:location/location.dart';
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/common_functions.dart';
+import 'package:masterjee/models/leads/add_lead_response.dart';
 import 'package:masterjee/models/leads/campaign_leads_response.dart';
 import 'package:masterjee/models/leads/save_lead_body.dart';
+import 'package:masterjee/models/ptm/grouped_students_response.dart';
 import 'package:masterjee/others/StorageHelper.dart';
+import 'package:masterjee/providers/leads_api.dart';
 import 'package:masterjee/widgets/CommonButton.dart';
 import 'package:masterjee/widgets/app_bar_two.dart';
 import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
+import 'package:provider/provider.dart';
 
 class AddLeadScreen extends StatefulWidget {
   const AddLeadScreen({super.key});
@@ -107,6 +111,87 @@ class _AddLeadScreenState extends State<AddLeadScreen> {
       }
     });
   }
+String? _selectedCamp;
+int _selectedCampIndex = -1;
+  List<Camp> campList = [];
+  Future<void> callApiAddLead() async {
+    try {
+      AddLeadResponse data =
+      await Provider.of<LeadsApi>(context, listen: false).addLead(
+          StorageHelper.getStringData(StorageHelper.userIdKey));
+      if (data.result) {
+        setState(() {
+          campList = data.data.allCamp;
+        });
+        return;
+      }
+    } catch (error) {
+      print("error : ${error}");
+    }
+  }
+
+
+  Future<void> callApImportLead(String file) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AddLeadResponse data =
+      await Provider.of<LeadsApi>(context, listen: false).importLead(
+          StorageHelper.getStringData(StorageHelper.userIdKey), file);
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+        CommonFunctions.showWarningToast(error.toString());
+      });
+    }
+  }
+
+  Future<void> callApiSaveLead() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      GroupedStudentsResponse data =
+      await Provider.of<LeadsApi>(context, listen: false).saveLead(body);
+      if (data.result) {
+        setState(() {
+          _isLoading = false;
+          CommonFunctions.showWarningToast(data.message);
+          Navigator.pop(context);
+        });
+        return;
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("error : ${error}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    callApiAddLead();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,41 +202,45 @@ class _AddLeadScreenState extends State<AddLeadScreen> {
         cornersRadius: 10,
         text: AppTags.save,
         onPressed: () {
-          body.userId = StorageHelper.getStringData(StorageHelper.userIdKey);
-          //body.cId = data!.cId;
-          //body.lId = data!.lId;
-          body.lName = nameController.text;
-          body.lDob = _dateController.text;
-          body.lMotherName = motherNameController.text;
-          body.lMotherPhone = motherPhoneController.text;
-          body.lResources = _selectedResource ?? "";
-          body.lat = _locationData?.latitude.toString() ?? "0";
-          body.lng =_locationData?.longitude.toString() ?? "0";
-          body.lGender = _selectedGender?? "";
-          body.lEmail = emailController.text;
-          body.lCaste = casteController.text;
-          body.lSubCaste = subCasteController.text;
-          body.lAadharNo = aadhaarNoController.text;
-          body.lBloodGroup = bloodGroupController.text;
-          body.lReligion = religionController.text;
-          body.lMotherTongue = motherTongueController.text;
-          body.lFatherName = fatherNameController.text;
-          body.lFatherPhone = fatherPhoneController.text;
-          body.lFatherQualification = fatherOccupationController.text;
-          body.lMotherQualification = motherQualificationController.text;
-          body.lGuradianName = guardianNameController.text;
-          body.lGuardianPhone = guardianPhotoController.text;
-          body.lClass = classController.text;
-          body.lEnrolledCourse = courseController.text;
-          body.lElectiveSubjects = subjectController.text;
-          body.lAddress = addressController.text;
-          body.lLocation = locationController.text;
-          body.lPhoneNumber = phoneNumberController.text;
-          body.lAlternativePhone = alternativePhoneNumberController.text;
-          body.lEmergencyContactNo = emergencyPhoneNumberController.text;
-          body.lSource = sourceController.text;
-          print("body : $body");
-         // callApiSaveLead();
+          if(_selectedCampIndex == -1){
+            CommonFunctions.showWarningToast("Please select campaign");
+          }else {
+            body.userId = StorageHelper.getStringData(StorageHelper.userIdKey);
+            body.cId = campList[_selectedCampIndex].cId;
+            body.lId = "";
+            body.lName = nameController.text;
+            body.lDob = _dateController.text;
+            body.lMotherName = motherNameController.text;
+            body.lMotherPhone = motherPhoneController.text;
+            body.lResources = _selectedResource ?? "";
+            body.lat = _locationData?.latitude.toString() ?? "0";
+            body.lng = _locationData?.longitude.toString() ?? "0";
+            body.lGender = _selectedGender ?? "";
+            body.lEmail = emailController.text;
+            body.lCaste = casteController.text;
+            body.lSubCaste = subCasteController.text;
+            body.lAadharNo = aadhaarNoController.text;
+            body.lBloodGroup = bloodGroupController.text;
+            body.lReligion = religionController.text;
+            body.lMotherTongue = motherTongueController.text;
+            body.lFatherName = fatherNameController.text;
+            body.lFatherPhone = fatherPhoneController.text;
+            body.lFatherQualification = fatherOccupationController.text;
+            body.lMotherQualification = motherQualificationController.text;
+            body.lGuradianName = guardianNameController.text;
+            body.lGuardianPhone = guardianPhotoController.text;
+            body.lClass = classController.text;
+            body.lEnrolledCourse = courseController.text;
+            body.lElectiveSubjects = subjectController.text;
+            body.lAddress = addressController.text;
+            body.lLocation = locationController.text;
+            body.lPhoneNumber = phoneNumberController.text;
+            body.lAlternativePhone = alternativePhoneNumberController.text;
+            body.lEmergencyContactNo = emergencyPhoneNumberController.text;
+            body.lSource = sourceController.text;
+            print("body : $body");
+            callApiSaveLead();
+          }
         },
       ).paddingOnly(bottom: 30, left: 10, right: 10),
       body: SingleChildScrollView(
@@ -166,9 +255,68 @@ class _AddLeadScreenState extends State<AddLeadScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      Card(
+                        elevation: 0.1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.sp),
+                        ),
+                        color: colorWhite,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 2),
+                          child: DropdownButton(
+                            hint: const CommonText('Select campaign',
+                                size: 14, color: Colors.black54),
+                            value: _selectedCamp,
+                            icon: const Card(
+                              elevation: 0.1,
+                              color: colorWhite,
+                              child: Icon(Icons.keyboard_arrow_down_outlined),
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedCamp = null;
+                                _selectedCamp = value.toString();
+                              });
+                            },
+                            isExpanded: true,
+                            items: campList.map((cd) {
+                              return DropdownMenuItem(
+                                value: cd.cId,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedCamp = cd.cTitle;
+                                    for (int i = 0; i < campList.length; i++) {
+                                      if (campList[i].cId == cd.cId) {
+                                        _selectedCampIndex = i;
+                                        break;
+                                      }
+                                    }
+                                  });
+                                },
+                                child: Text(
+                                  cd.cTitle.toString(),
+                                  style: const TextStyle(
+                                    color: colorBlack,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      gap(10.0),
+                      CommonButton(
+                        cornersRadius: 10,
+                        text: AppTags.importLead,
+                        onPressed: () {
+                          //callApImportLead
+                        },
+                      ),
+                      gap(30.0),
                       CustomTextField(
-                        validate: (input) =>
-                        input!.length == 0 ? "Please enter name" : null,
                         hintText: 'Name',
                         isReadonly: false,
                         controller: nameController,
