@@ -7,6 +7,9 @@ class AppTags {
   static const String attendance = "Attendance";
   static const String duesReport = "Dues Report";
   static const String timetable = "Timetable";
+  static const String course = "Course";
+  static const String category = "Category";
+  static const String reports = "Reports";
   static const String template = "Template";
   static const String approveleave = "Approve Leave";
   static const String homework = "Homework";
@@ -83,8 +86,11 @@ class AppTags {
   static const String observation = 'Observation';
   static const String addSubject = 'Add subject';
   static const String addScore = 'Add score';
-  static const String reports = 'Reports';
   static const String hostelReports = 'Hotel reports';
+  static const String trending = 'Trending';
+  static const String rating = 'Rating';
+  static const String students = 'Students';
+  static const String complete = 'Complete';
   static const String transportReports = 'Transport reports';
   static const String assignmentReports = 'Assignment reports';
   static const String studentReports = 'Student reports';
@@ -118,6 +124,7 @@ class AssetsUtils {
   static const String leaveIcon = "assets/images/ic_leave.png";
   static const String upcomingIcon = "assets/images/ic_upcoming.png";
   static const String contentIcon = "assets/images/ic_content.png";
+  static const String courseIcon = "assets/images/ic_course.png";
   static const String communicationIcon = "assets/images/ic_notice.png";
   static const String hostelIcon = "assets/images/ic_hostel.png";
   static const String minutebookIcon = "assets/images/ic_minutebook.png";

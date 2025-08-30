@@ -14,6 +14,7 @@ import 'package:masterjee/screens/assesment/assesment_screen.dart';
 import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/communication/communication.dart';
 import 'package:masterjee/screens/content/content_screen.dart';
+import 'package:masterjee/screens/course/course_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/exam/exam_main_screen.dart';
 import 'package:masterjee/screens/face_attendance/mark_attendance/face_screen.dart';
@@ -125,7 +126,7 @@ class _MainScreenState extends State<MainScreen> {
       ClassSectionResponse userData =
           await Provider.of<Auth>(context, listen: false).getClassSection(
               StorageHelper.getStringData(StorageHelper.userIdKey).toString());
-      if (userData.result && userData.data != null) {
+      if (userData.result) {
         await StorageHelper.saveClassList(userData.data);
         loadedClassList = [];
         loadedClassList = await StorageHelper.getClassList();
@@ -724,6 +725,20 @@ class _MainScreenState extends State<MainScreen> {
                         openDialog();
                       } else {
                         Navigator.pushNamed(context, ExamMainScreen.routeName);
+                      }
+                    }),
+                cardHomeWidget(
+                    name: AppTags.course,
+                    image: AssetsUtils.courseIcon,
+                    onTap: () {
+                      if (isClassOrSectionIdMissing()) {
+                        openDialog();
+                      } else {
+                        Navigator.pushNamed(
+                          context,
+                          CourseMainScreen.routeName,
+                          arguments: {'header': AppTags.course},
+                        );
                       }
                     }),
                 cardHomeWidget(

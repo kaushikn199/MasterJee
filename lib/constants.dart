@@ -29,7 +29,17 @@ const kDeepBlueColor = Color(0xFF594CF5);
 const Color scaffoldTopGradientClr = Color(0xff1ec209);
 const Color overlayContainerClr = Color(0xff2E2E2E);
 const Color scaffoldBottomGradientClr = Color(0xffb1fba7);
-
+const kGreenPurchaseColor = Color(0xFF2BD0A8);
+const kTextColor = Color(0xFF273242);
+const kTextLightColor = Color(0xFF000000);
+const kReadOnlyColor = Color(0xfff0f0f0);
+const kInputBorderColor = Color(0xFFd9dee3);
+const kStarColor = Color(0xFFEFD358);
+const kTabBarBg = Color(0xFFEEEEEE);
+const kTextBlueColor = Color(0xFF5594bf);
+const kTimeColor = Color(0xFF366cc6);
+const kTimeBackColor = Color(0xFFe3ebf5);
+const kLessonBackColor = Color(0xFFf8e5d2);
 const kDefaultInputBorder = OutlineInputBorder(
   borderRadius: BorderRadius.all(Radius.circular(12.0)),
   borderSide: BorderSide(color: Colors.white, width: 2),

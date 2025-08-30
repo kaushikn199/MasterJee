@@ -27,6 +27,8 @@ import 'package:masterjee/screens/attendance/attendance_screen.dart';
 import 'package:masterjee/screens/attendance/homework_list/homework_list_screen.dart';
 import 'package:masterjee/screens/communication/communication.dart';
 import 'package:masterjee/screens/content/content_screen.dart';
+import 'package:masterjee/screens/course/course_screen.dart';
+import 'package:masterjee/screens/course/reports_screen.dart';
 import 'package:masterjee/screens/dues_report/dues_report_screen.dart';
 import 'package:masterjee/screens/exam/assessment/add_assesment_screen.dart';
 import 'package:masterjee/screens/exam/assessment/assesment_screen.dart';
@@ -93,6 +95,7 @@ import 'package:provider/provider.dart';
 import 'constants.dart';
 import 'others/StorageHelper.dart';
 import 'others/http_overrides.dart';
+import 'providers/course_api.dart';
 import 'screens/attendance/attendance_report_screen/attendance_report_screen.dart';
 import 'screens/homework/submitted_homework_info.dart';
 
@@ -152,6 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ChangeNotifierProvider(create: (ctx) => ExamApi()),
           ChangeNotifierProvider(create: (ctx) => CommunicationProvider()),
           ChangeNotifierProvider(create: (ctx) => ReportsApi()),
+          ChangeNotifierProvider(create: (ctx) => CourseApi()),
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, _) =>
@@ -255,6 +259,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         AddCampaignScreen.routeName: (ctx) => const AddCampaignScreen(),
                         AddLeadScreen.routeName: (ctx) => const AddLeadScreen(),
                         AllScreen.routeName: (ctx) => const AllScreen(),
+                        CourseMainScreen.routeName: (ctx) => const CourseMainScreen(),
+                        CourseReportsScreen.routeName: (ctx) => const CourseReportsScreen(),
                       },
                       home: const SplashScreen()),
                 );

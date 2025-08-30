@@ -33,6 +33,8 @@ class ApiHelper {
   static const getHostels = 'hostels';
   static const saveHostel = 'saveHostel';
   static const sendNotice = 'sendNotice';
+  static const saveOnlineCourseLesson = 'saveOnlineCourseLesson';
+  static const saveOnlineCourse = 'saveOnlineCourse';
   static const saveCommunication = 'sendMessage';
   static const saveHostelRoom = 'saveHostelRoom';
   static const getHostelRooms = 'hostelRooms';
@@ -75,6 +77,13 @@ class ApiHelper {
   static const saveStudentPeriodAttendance = 'saveStudentPeriodAttendance';
   static const getAssignmentList = 'getAssignmentList';
   static const allExams = 'allExams';
+  static const allCourse = 'allCourse';
+  static const courseInfo = 'courseInfo';
+  static const courseReports = 'courseReports';
+  static const courseCompleteReports = 'courseCompleteReports';
+  static const saveOnlineCourseCategory = 'saveOnlineCourseCategory';
+  static const saveCourseSections = 'saveCourseSections';
+  static const saveCourseOutcomes = 'saveCourseOutcomes';
   static const allAssessments = 'allAssessments';
   static const allGrades = 'allGrades';
   static const allObservation = 'allObservation';
@@ -142,11 +151,11 @@ class ApiHelper {
         body: jsonEncode(body),
       );
 
+      print('API BODY [$endpoint] => ${jsonEncode(body)}');
       print('API POST [$endpoint] => ${response.statusCode}');
       print('Response: ${response.body}');
 
       final responseData = json.decode(response.body);
-      print('responseData: $responseData');
 
       if (response.statusCode == 200) {
         return responseData;
@@ -177,6 +186,59 @@ class ApiHelper {
       requestBody.files.add(multipartFile);
     } else {
       requestBody.fields[type] = "";
+    }
+    print("requestBody");
+    print(requestBody.files);
+    print(requestBody.fields);
+    print(requestBody.url);
+    print(requestBody.method);
+    try {
+      int attempts = 0;
+      while (attempts < 3) {
+        attempts++;
+        final r = await requestBody.send().timeout(Duration(seconds: file == null ? 10 : 30));
+        final result = await http.Response.fromStream(r);
+        final responseData = json.decode(result.body);
+        print(responseData);
+        if (result.statusCode == 200) {
+          return responseData;
+        } else {
+          CommonFunctions.showWarningToast((responseData['message'] ?? 'Something went wrong'));
+          //throw Exception(responseData['message'] ?? 'Something went wrong');
+          return responseData;
+        }
+      }
+    } catch (e) {
+      print('API ERROR: $e');
+      rethrow;
+    }
+    return {};
+  }
+
+  static Future<Map<String, dynamic>> postImagesDataWithBody(String endpoint, Map<String, String> body, File? file, File? file2,
+      {Map<String, String>? customHeaders, String type = 'image',String type2 = 'image'}) async {
+    var url = Uri.parse('$BASE_URL$endpoint');
+    var requestBody = http.MultipartRequest('POST', url);
+    requestBody.headers['Client-Service'] = "smartschool";
+    requestBody.headers['Auth-Key'] = "schoolAdmin@";
+    requestBody.headers['Content-Type'] = "application/json";
+
+    requestBody.fields.addAll(body);
+    if (file != null) {
+      var stream = http.ByteStream(file.openRead())..cast();
+      var length = await file.length();
+      var multipartFile = http.MultipartFile(type, stream, length, filename: basename(file.path));
+      requestBody.files.add(multipartFile);
+    } else {
+      requestBody.fields[type] = "";
+    }
+    if (file2 != null) {
+      var stream = http.ByteStream(file2.openRead())..cast();
+      var length = await file2.length();
+      var multipartFile = http.MultipartFile(type, stream, length, filename: basename(file2.path));
+      requestBody.files.add(multipartFile);
+    } else {
+      requestBody.fields[type2] = "";
     }
     print("requestBody");
     print(requestBody.files);
