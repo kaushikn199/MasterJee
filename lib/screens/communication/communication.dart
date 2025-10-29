@@ -24,7 +24,8 @@ import 'package:masterjee/widgets/text.dart';
 import 'package:masterjee/widgets/util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:quill_html_editor/quill_html_editor.dart';
+// import 'package:quill_html_editor/quill_html_editor.dart';
+import 'package:quill_html_editor_v2/quill_html_editor_v2.dart';
 
 class CommunicationScreen extends StatefulWidget {
   const CommunicationScreen({super.key});

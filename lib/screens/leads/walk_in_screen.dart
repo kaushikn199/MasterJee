@@ -12,7 +12,7 @@ import 'package:masterjee/widgets/app_tags.dart';
 import 'package:masterjee/widgets/custom_form_field.dart';
 import 'package:masterjee/widgets/text.dart';
 import 'package:provider/provider.dart';
-import 'package:quill_html_editor/quill_html_editor.dart';
+import 'package:quill_html_editor_v2/quill_html_editor_v2.dart';
 
 class WalkInScreen extends StatefulWidget {
   const WalkInScreen({super.key});

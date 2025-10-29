@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:masterjee/constants.dart';
 import 'package:masterjee/models/common_functions.dart';
-import 'package:open_file_plus/open_file_plus.dart';
+import 'package:open_file_safe_plus/open_file_safe_plus.dart';
 import 'package:path/path.dart' as pName;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -36,7 +36,7 @@ class DownloadFileController extends GetxController {
   }
 
   openFile(filePath) async {
-    OpenFile.open(filePath);
+    OpenFileSafePlus.open(filePath);
   }
 
   Future<bool> checkPermission() async {

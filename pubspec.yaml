@@ -58,17 +58,14 @@ dependencies:
   google_mlkit_face_detection: ^0.13.1
   flutter_face_api: ^4.1.1
   pod_player: ^0.2.0
-  flutter_barcode_scanner:
-    git:
-      url: https://github.com/wrteam-anish/flutter_barcode_scanner.git
-      ref: master
+  flutter_barcode_scanner_plus:
   location:
   syncfusion_flutter_charts: ^26.2.14
   app_settings: ^5.1.1
-  file_picker: ^6.1.1
-  open_file_plus:
+  file_picker: any
+  open_file_safe_plus: ^0.0.6
   webview_flutter: ^4.0.6
-  quill_html_editor:
+  quill_html_editor_v2: ^2.2.10
   flutter_widget_from_html: ^0.15.3
 
 

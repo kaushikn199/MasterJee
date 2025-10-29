@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+// import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:masterjee/constants.dart';
